@@ -1,5 +1,5 @@
 # Git
-
+ 
 ## Branch Strategy 
 * **Main branch**: (Production), all developers must approve the pull request to merge the changes to main branch
 * **Test branch**: before merging to main on this branch the product must be tested thoroughly.
