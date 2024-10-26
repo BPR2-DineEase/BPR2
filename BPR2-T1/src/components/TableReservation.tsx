@@ -22,14 +22,53 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import ReservationProccess from "./ReservationProccess";
-
+import { postReservation } from "@/api/ReservationApi";
 
 const TableReservation = () => {
+  const [comment, setComment] = React.useState<string>("");
+  const [company, setCompany] = React.useState<string>("");
+  const [email, setEmail] = React.useState<string>("");
+  const [name, setName] = React.useState<string>("");
+  const [phoneNumber, setPhoneNumber] = React.useState<number>(0);
+
   const [date, setDate] = React.useState<Date>();
   const [time, setTime] = React.useState<string>("");
   const [numOfPeople, setNumOfPeople] = React.useState<number>();
   const [isPopoverOpen, setIsPopoverOpen] = React.useState<boolean>(false);
   const today = startOfDay(new Date());
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!date) return;
+    if (!numOfPeople) return;
+
+    try {
+      await postReservation({
+        date,
+        time,
+        numOfPeople,
+        name,
+        phoneNumber,
+        comment,
+        company,
+        email,
+      });
+      alert("Reservation created successfully");
+    } catch (err) {
+      console.error("Failed to create Reservation. ");
+    }
+
+    setDate(undefined);
+    setTime("");
+    setIsPopoverOpen(false);
+    setNumOfPeople(0);
+    setComment("");
+    setEmail("");
+    setName("");
+    setComment("");
+    setPhoneNumber(0);
+  };
 
   const handleDateChange = (selectedDate: Date | undefined) => {
     if (selectedDate && !isBefore(selectedDate, today)) {
@@ -48,7 +87,6 @@ const TableReservation = () => {
     <>
       <ReservationProccess step={getStep()} />
 
-      {/* Date Picker */}
       <div className="flex justify-center w-full h-full mt-6">
         <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
           <PopoverTrigger asChild>
@@ -58,7 +96,7 @@ const TableReservation = () => {
                 "w-[300px] justify-start text-left font-normal",
                 !date && "text-muted-foreground"
               )}
-              onClick={() => setIsPopoverOpen(!isPopoverOpen)} // Toggle popover on button click
+              onClick={() => setIsPopoverOpen(!isPopoverOpen)}
             >
               <CalendarIcon />
               {date ? format(date, "PPP") : <span>Pick a date</span>}
@@ -82,6 +120,7 @@ const TableReservation = () => {
           <input
             type="time"
             value={time}
+            required
             onChange={(e) => setTime(e.target.value)}
             className="w-[300px] p-2 border rounded-md shadow-sm"
           />
@@ -93,6 +132,7 @@ const TableReservation = () => {
           <input
             type="number"
             value={numOfPeople || ""}
+            required
             placeholder="How many people are coming?"
             onChange={(e) => setNumOfPeople(parseInt(e.target.value))}
             className="w-[300px] p-2 border rounded-md shadow-sm"
@@ -101,18 +141,21 @@ const TableReservation = () => {
       )}
       {numOfPeople && (
         <div className="mt-10 flex justify-center">
-          <Card className="w-[350px] ">
+          <Card className="w-[350px]">
             <CardHeader>
               <CardTitle>Personal information</CardTitle>
             </CardHeader>
             <CardContent>
-              <form>
+              <form onSubmit={handleSubmit}>
                 <div className="grid w-auto items-center gap-4">
                   <div className="flex gap-2">
                     <div className="flex flex-col space-y-1.5">
                       <Label htmlFor="name">Name</Label>
                       <Input
                         id="name"
+                        value={name}
+                        required
+                        onChange={(e) => setName(e.target.value)}
                         type="text"
                         placeholder="Enter your name"
                       />
@@ -121,6 +164,11 @@ const TableReservation = () => {
                       <Label htmlFor="PhoneNumber">Phone Number</Label>
                       <Input
                         id="PhoneNumber"
+                        value={phoneNumber}
+                        required
+                        onChange={(e) =>
+                          setPhoneNumber(parseInt(e.target.value))
+                        }
                         type="number"
                         placeholder="Enter your phone number"
                       />
@@ -131,6 +179,8 @@ const TableReservation = () => {
                       <Label htmlFor="company">Company</Label>
                       <Input
                         id="company"
+                        value={company}
+                        onChange={(e) => setCompany(e.target.value)}
                         type="text"
                         placeholder="Enter company name"
                       />
@@ -139,6 +189,9 @@ const TableReservation = () => {
                       <Label htmlFor="email">E-mail</Label>
                       <Input
                         id="email"
+                        value={email}
+                        required
+                        onChange={(e) => setEmail(e.target.value)}
                         type="email"
                         placeholder="Enter your e-mail address"
                       />
@@ -149,17 +202,21 @@ const TableReservation = () => {
                     <textarea
                       className="border-2 rounded-lg"
                       id="Comment"
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
                       maxLength={100}
                       placeholder="If you have any comments"
                     />
                   </div>
                 </div>
+                <CardFooter className="flex justify-between mt-10">
+                  <Button type="button" variant="outline">
+                    Cancel
+                  </Button>
+                  <Button type="submit">Confirm</Button>
+                </CardFooter>
               </form>
             </CardContent>
-            <CardFooter className="flex justify-between">
-              <Button variant="outline">Cancel</Button>
-              <Button>Confirm</Button>
-            </CardFooter>
           </Card>
         </div>
       )}
