@@ -1,7 +1,9 @@
+import TableReservation from "./components/TableReservation";
+
 function App() {
   return (
-    <div>
-      <h1 className="text-3xl flex justify-center items-center font-bold ">DineEase</h1>
+    <div className="h-full w-full">
+      <TableReservation />
     </div>
   );
 }
