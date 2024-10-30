@@ -1,0 +1,23 @@
+# Step 1: Build the React app
+FROM node:18 AS build
+
+# Set working directory inside container
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+
+
+# Copy all files and build the project
+COPY . .
+RUN npm install
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+
+
+# Expose port 80 for Nginx
+EXPOSE 80
+
+# Start Nginx server
+CMD ["nginx", "-g", "daemon off;"]
