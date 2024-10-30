@@ -1,14 +1,14 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5173";
+const API_BASE_URL = "http://localhost:5109";
 
 export type ReservationData = {
   date: Date;
   time: string;
   numOfPeople: number;
-  name: string;
-  phoneNumber: number;
-  comment: string;
+  guestName: string;
+  phoneNumber: string;
+  comments: string;
   company: string;
   email: string;
 };
