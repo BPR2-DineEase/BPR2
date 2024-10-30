@@ -25,11 +25,11 @@ import ReservationProccess from "./ReservationProccess";
 import { postReservation } from "@/api/ReservationApi";
 
 const TableReservation = () => {
-  const [comment, setComment] = React.useState<string>("");
+  const [comments, setComment] = React.useState<string>("");
   const [company, setCompany] = React.useState<string>("");
   const [email, setEmail] = React.useState<string>("");
-  const [name, setName] = React.useState<string>("");
-  const [phoneNumber, setPhoneNumber] = React.useState<number>(0);
+  const [guestName, setName] = React.useState<string>("");
+  const [phoneNumber, setPhoneNumber] = React.useState<string>("");
 
   const [date, setDate] = React.useState<Date>();
   const [time, setTime] = React.useState<string>("");
@@ -48,9 +48,9 @@ const TableReservation = () => {
         date,
         time,
         numOfPeople,
-        name,
+        guestName,
         phoneNumber,
-        comment,
+        comments,
         company,
         email,
       });
@@ -67,7 +67,7 @@ const TableReservation = () => {
     setEmail("");
     setName("");
     setComment("");
-    setPhoneNumber(0);
+    setPhoneNumber("");
   };
 
   const handleDateChange = (selectedDate: Date | undefined) => {
@@ -153,7 +153,7 @@ const TableReservation = () => {
                       <Label htmlFor="name">Name</Label>
                       <Input
                         id="name"
-                        value={name}
+                        value={guestName}
                         required
                         onChange={(e) => setName(e.target.value)}
                         type="text"
@@ -167,7 +167,7 @@ const TableReservation = () => {
                         value={phoneNumber}
                         required
                         onChange={(e) =>
-                          setPhoneNumber(parseInt(e.target.value))
+                          setPhoneNumber(e.target.value)
                         }
                         type="number"
                         placeholder="Enter your phone number"
@@ -202,7 +202,7 @@ const TableReservation = () => {
                     <textarea
                       className="border-2 rounded-lg"
                       id="Comment"
-                      value={comment}
+                      value={comments}
                       onChange={(e) => setComment(e.target.value)}
                       maxLength={100}
                       placeholder="If you have any comments"
