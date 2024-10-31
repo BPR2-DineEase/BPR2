@@ -8,7 +8,7 @@ public class Restaurant
     public string City { get; set; }
     
     public string OpenHours { get; set; }
-    public string Cousine { get; set; }
+    public string Cuisine { get; set; }
     public string Info { get; set; }
     public ICollection<Review> Reviews { get; set; }
 }

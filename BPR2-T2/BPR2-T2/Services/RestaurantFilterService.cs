@@ -12,7 +12,7 @@ public class RestaurantFilterService : IRestaurantFilterService
             Name = "test1",
             Address = "123 main street",
             OpenHours = "10-16",
-            Cousine = "vegan",
+            Cuisine = "French",
             City = "Horsens",
             Reviews = new List<Review>
             {
@@ -32,7 +32,7 @@ public class RestaurantFilterService : IRestaurantFilterService
             Name = "test1",
             Address = "123 main street",
             OpenHours = "10-16",
-            Cousine = "vegan",
+            Cuisine = "Italian",
             City = "Horsens",
             Reviews = new List<Review>
             {
@@ -48,17 +48,17 @@ public class RestaurantFilterService : IRestaurantFilterService
         }
     };
 
-    public Task<Restaurant?> FilterByName(string RestaurantName)
+    public Task<List<Restaurant>> RestaurantFilterByCuisine(string cuisine)
     {
-        Restaurant? restaurant = restaurants.FirstOrDefault(r => r.Name == RestaurantName);
+        var cuisines = restaurants.Where(r => r.Cuisine == cuisine).ToList();
 
 
-        return Task.FromResult(restaurant);
+        return Task.FromResult(cuisines);
     }
 
     public Task<List<Restaurant>> SearchByCity(string city)
     {
-        var restaurantsInCity = restaurants.Where(r => r.City == city).ToList(); 
+        var restaurantsInCity = restaurants.Where(r => r.City == city).ToList();
         return Task.FromResult(restaurantsInCity);
     }
 }

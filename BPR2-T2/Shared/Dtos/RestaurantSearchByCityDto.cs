@@ -1,6 +1,6 @@
 namespace Shared.Dtos;
 
-public class RestaurantSearchByCity
+public class RestaurantSearchByCityDto
 {
     public string City { get; set; }
 }

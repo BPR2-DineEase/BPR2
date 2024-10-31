@@ -18,11 +18,11 @@ public class RestaurantController : ControllerBase
 
     // Make name a query parameter
     [HttpGet("filter")]
-    public async Task<ActionResult> FilterByRestaurantName([FromQuery] RestaurantFilterByName restaurant)
+    public async Task<ActionResult> RestaurantFilterByCuisine([FromQuery] RestaurantFilterByCuisineDto restaurant)
     {
         try
         {
-            var filteredRestaurant = await restaurantFilterService.FilterByName(restaurant.Name);
+            var filteredRestaurant = await restaurantFilterService.RestaurantFilterByCuisine(restaurant.Cuisine);
             return Ok(filteredRestaurant);
         }
         catch (Exception e)
@@ -32,12 +32,12 @@ public class RestaurantController : ControllerBase
     }
 
     [HttpGet("search")]
-    public async Task<ActionResult> SearchByRestaurantLocation([FromQuery] RestaurantSearchByCity restaurant)
+    public async Task<ActionResult> SearchByRestaurantLocation([FromQuery] RestaurantSearchByCityDto restaurant)
     {
         try
         {
-            var filteredRestaurant = await restaurantFilterService.SearchByCity(restaurant.City);
-            return Ok(filteredRestaurant);
+            var searchedRestaurant = await restaurantFilterService.SearchByCity(restaurant.City);
+            return Ok(searchedRestaurant);
         }
         catch (Exception e)
         {
