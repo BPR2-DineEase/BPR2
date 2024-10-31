@@ -22,7 +22,21 @@ public class RestaurantController : ControllerBase
     {
         try
         {
-            Restaurant? filteredRestaurant = await restaurantFilterService.FilterByName(restaurant.Name);
+            var filteredRestaurant = await restaurantFilterService.FilterByName(restaurant.Name);
+            return Ok(filteredRestaurant);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpGet("search")]
+    public async Task<ActionResult> SearchByRestaurantLocation([FromQuery] RestaurantSearchByCity restaurant)
+    {
+        try
+        {
+            var filteredRestaurant = await restaurantFilterService.SearchByCity(restaurant.City);
             return Ok(filteredRestaurant);
         }
         catch (Exception e)
