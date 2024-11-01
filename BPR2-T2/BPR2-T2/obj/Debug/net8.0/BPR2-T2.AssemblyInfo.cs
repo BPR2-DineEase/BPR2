@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BPR2-T2")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f2e9b167f77b1e19c150a3e67f28e9b4a6692698")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4da489ba167710ba91490955494e9ab744c801fb")]
 [assembly: System.Reflection.AssemblyProductAttribute("BPR2-T2")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BPR2-T2")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

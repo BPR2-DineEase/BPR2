@@ -16,21 +16,6 @@ public class RestaurantController : ControllerBase
         this.restaurantFilterService = restaurantFilterService;
     }
 
-    // Make name a query parameter
-    [HttpGet("filter")]
-    public async Task<ActionResult> RestaurantFilterByCuisine([FromQuery] RestaurantFilterByCuisineDto restaurant)
-    {
-        try
-        {
-            var filteredRestaurant = await restaurantFilterService.RestaurantFilterByCuisine(restaurant.Cuisine);
-            return Ok(filteredRestaurant);
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
-    }
-
     [HttpGet("search")]
     public async Task<ActionResult> SearchByRestaurantLocation([FromQuery] RestaurantSearchByCityDto restaurant)
     {
@@ -44,4 +29,36 @@ public class RestaurantController : ControllerBase
             return BadRequest(e.Message);
         }
     }
+
+    [HttpGet("filter")]
+    public async Task<ActionResult> FilterRestaurants(
+        [FromQuery] string? name,
+        [FromQuery] string? cuisine,
+        [FromQuery] string? city,
+        [FromQuery] double rating,
+        [FromQuery] int stars)
+    {
+        try
+        {
+            var filter = new RestaurantFilterDto
+            {
+                Name = name,
+                Cuisine = cuisine,
+                City = city,
+                ReviewFilter = new ReviewFilterDto
+                {
+                    Rating = rating,
+                    Stars = stars
+                }
+            };
+
+            List<Restaurant> filteredRestaurants = await restaurantFilterService.FilterRestaurants(filter);
+            return Ok(filteredRestaurants);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
 }
