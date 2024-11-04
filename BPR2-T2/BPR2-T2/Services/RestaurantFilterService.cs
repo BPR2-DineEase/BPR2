@@ -46,7 +46,27 @@ public class RestaurantFilterService : IRestaurantFilterService
                     Stars = 4
                 }
             },
-        }
+        },
+        new Restaurant
+        {
+        Id = 3,
+        Name = "Pizza World",
+        Address = "123 main street",
+        OpenHours = "10-16",
+        Cuisine = "Italian",
+        City = "Aarhus",
+        Reviews = new List<Review>
+        {
+            new Review
+            {
+                Id = 1,
+                Rating = 8.5,
+                Comment = "test3",
+                Date = DateTime.Now,
+                Stars = 4
+            }
+        },
+    }
     };
 
     public Task<List<Restaurant>> RestaurantFilterByCuisine(string cuisine)

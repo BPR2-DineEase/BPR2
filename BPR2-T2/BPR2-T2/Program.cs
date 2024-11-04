@@ -16,7 +16,7 @@ builder.Services.AddDbContext<ReservationContext>(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBPR2-T1", policy =>
-        policy.WithOrigins("http://localhost:5174")
+        policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
             .AllowAnyMethod()
             .AllowAnyHeader());
 });
