@@ -6,13 +6,22 @@ export type Restaurant = {
     id: number;
     name: string;
     city: string;
+    cuisine: string;
     
 };
 
-export const fetchRestaurantsByCity = async (city: string): Promise<Restaurant[]> => {
+export type FilterOptions = {
+    name?: string;
+    cuisine?: string;
+    city?: string;
+    rating?: number;
+    stars?: number;
+};
+
+export const filterRestaurants = async (options: FilterOptions): Promise<Restaurant[]> => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/Restaurant/search`, {
-            params: { city },
+        const response = await axios.get(`${API_BASE_URL}/Restaurant/filter`, {
+            params: options,
         });
         return response.data;
     } catch (err: any) {

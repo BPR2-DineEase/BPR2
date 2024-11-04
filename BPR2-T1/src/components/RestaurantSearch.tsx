@@ -1,16 +1,19 @@
 import React, { useState } from "react";
-import { fetchRestaurantsByCity, Restaurant } from "../api/restaurantApi";
-import { Command, CommandInput, CommandList, CommandItem, CommandEmpty } from "@/components/ui/command"; 
+import { filterRestaurants, Restaurant, FilterOptions } from "../api/restaurantApi";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Command, CommandInput, CommandList, CommandItem, CommandEmpty } from "@/components/ui/command";
 
 const RestaurantSearch: React.FC = () => {
     const [city, setCity] = useState<string>("");
+    const [filterOptions, setFilterOptions] = useState<FilterOptions>({});
     const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
     const [error, setError] = useState<string | null>(null);
 
     const handleSearch = async () => {
         try {
             setError(null);
-            const data = await fetchRestaurantsByCity(city);
+            const data = await filterRestaurants({ ...filterOptions, city });
             setRestaurants(data);
         } catch (error: any) {
             setError(error.message || "An error occurred while fetching restaurants.");
@@ -18,7 +21,9 @@ const RestaurantSearch: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col items-center space-y-4">
+        <div className="flex flex-col items-center space-y-4 p-4">
+            <h2 className="text-xl font-semibold">Search and Filter Restaurants</h2>
+
             <Command className="w-full max-w-md">
                 <CommandInput
                     placeholder="Search for a city..."
@@ -33,12 +38,42 @@ const RestaurantSearch: React.FC = () => {
                 </CommandList>
             </Command>
 
-            {error && <p className="text-red-500">{error}</p>}
+            <div className="w-full max-w-md grid grid-cols-1 gap-4 mt-4">
+                <Input
+                    placeholder="Restaurant Name"
+                    value={filterOptions.name || ""}
+                    onChange={(e) => setFilterOptions((prev) => ({ ...prev, name: e.target.value }))}
+                />
+                <Input
+                    placeholder="Cuisine Type"
+                    value={filterOptions.cuisine || ""}
+                    onChange={(e) => setFilterOptions((prev) => ({ ...prev, cuisine: e.target.value }))}
+                />
+                <Input
+                    type="number"
+                    placeholder="Minimum Rating"
+                    value={filterOptions.rating?.toString() || ""}
+                    onChange={(e) => setFilterOptions((prev) => ({ ...prev, rating: Number(e.target.value) }))}
+                />
+                <Input
+                    type="number"
+                    placeholder="Minimum Stars"
+                    value={filterOptions.stars?.toString() || ""}
+                    onChange={(e) => setFilterOptions((prev) => ({ ...prev, stars: Number(e.target.value) }))}
+                />
+            </div>
 
-            <ul className="mt-4 space-y-2">
+            <Button onClick={handleSearch} className="mt-4">
+                Apply Filters
+            </Button>
+
+            {error && <p className="text-red-500 mt-4">{error}</p>}
+
+            <ul className="mt-4 space-y-2 w-full max-w-md">
                 {restaurants.map((restaurant) => (
                     <li key={restaurant.id} className="p-2 border-b border-gray-200">
-                        {restaurant.name}
+                        <h3 className="font-semibold">{restaurant.name}</h3>
+                        <p>{restaurant.city} - {restaurant.cuisine}</p>
                     </li>
                 ))}
             </ul>
