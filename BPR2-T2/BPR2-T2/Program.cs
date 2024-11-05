@@ -1,10 +1,12 @@
 using BPR2_T2.Data;
+using BPR2_T2.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddScoped<IRestaurantFilterService, RestaurantFilterService>();
 
 // Entity Framework Core with SQL Server
 builder.Services.AddDbContext<ReservationContext>(options =>
@@ -14,7 +16,7 @@ builder.Services.AddDbContext<ReservationContext>(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBPR2-T1", policy =>
-        policy.WithOrigins("http://localhost:5174") 
+        policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
             .AllowAnyMethod()
             .AllowAnyHeader());
 });
@@ -23,14 +25,15 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 
 app.UseCors("AllowBPR2-T1");
