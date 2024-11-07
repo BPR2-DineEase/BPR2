@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BPR2-T2", "BPR2-T2\BPR2-T2.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{3B13788B-39ED-4FEC-8360-1752025E7926}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageHandlerWebApi", "ImageHandlerWebApi\ImageHandlerWebApi.csproj", "{16CC5F45-10A8-4811-B1C4-31FFF110A2F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{3B13788B-39ED-4FEC-8360-1752025E7926}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B13788B-39ED-4FEC-8360-1752025E7926}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B13788B-39ED-4FEC-8360-1752025E7926}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16CC5F45-10A8-4811-B1C4-31FFF110A2F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16CC5F45-10A8-4811-B1C4-31FFF110A2F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16CC5F45-10A8-4811-B1C4-31FFF110A2F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16CC5F45-10A8-4811-B1C4-31FFF110A2F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

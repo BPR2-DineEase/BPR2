@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "tGk9dZhwtD7tXtLdMJhIbdDj2L9rmWZ69Hdrv94oXTA=",
+  "Source": "ImageHandlerWebApi",
+  "BasePath": "_content/ImageHandlerWebApi",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
