@@ -3,16 +3,12 @@
 *.sln.iml
 
 # Build results
-[Dd]ebug/
+[D]ebug/
 [Rr]elease/
 x64/
 x86/
 bin/
 obj/
-
-# Rider workspace files
-.idea/
-*.sln.iml
 
 # User-specific files
 *.user
