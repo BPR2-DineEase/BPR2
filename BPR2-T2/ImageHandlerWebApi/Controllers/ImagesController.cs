@@ -13,18 +13,20 @@ public class ImagesController : ControllerBase
     {
         this.service = service;
     }
-    
+
     [HttpGet("list")]
     public async Task<ActionResult> ListAllImages()
     {
-        var result = await service.ListBlobContainersAsync();
-        return Ok(result);
+        var images = await service.ListBlobContainersAsync();
+
+        var imageUrls = images.Select(img => img.Uri).ToList();
+        return Ok(imageUrls);
     }
 
     [HttpPost("upload")]
-    public async Task<ActionResult> UploadImage(IFormFile filename)
+    public async Task<ActionResult> UploadImage(IFormFile file)
     {
-        var result = await service.UploadBlobAsync(filename);
+        await service.UploadImageAsync(file);
         return Ok();
     }
 
