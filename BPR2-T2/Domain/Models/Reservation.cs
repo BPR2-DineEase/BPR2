@@ -1,9 +1,10 @@
-using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace BPR2_T2.Models;
+namespace Domain.Models;
 
 public class Reservation
 {
+    [Key]
     public int Id { get; set; }
     public string GuestName { get; set; }
     public string PhoneNumber { get; set; }
@@ -13,4 +14,10 @@ public class Reservation
     public DateTime Date { get; set; }
     public string Time { get; set; }
     public int NumOfPeople { get; set; }
+
+
+    public Reservation()
+    {
+        
+    }
 }

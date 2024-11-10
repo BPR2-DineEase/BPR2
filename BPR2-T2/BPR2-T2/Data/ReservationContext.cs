@@ -1,4 +1,4 @@
-using BPR2_T2.Models;
+using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BPR2_T2.Data;

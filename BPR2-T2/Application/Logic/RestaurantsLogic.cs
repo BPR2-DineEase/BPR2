@@ -1,6 +1,8 @@
+using Application.LogicInterfaces;
+
 namespace Application.Logic;
 
-public class RestaurantsLogic
+public class RestaurantsLogic : IRestaurantsLogic
 {
     
 }
