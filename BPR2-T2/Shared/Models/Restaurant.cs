@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Shared.Models;
 
 public class Restaurant 
@@ -11,4 +13,6 @@ public class Restaurant
     public string Cuisine { get; set; }
     public string Info { get; set; }
     public ICollection<Review> Reviews { get; set; }
+    
+    public ICollection<Image> Images { get; set; }
 }

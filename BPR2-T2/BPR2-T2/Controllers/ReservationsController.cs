@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using BPR2_T2.Data;
 using BPR2_T2.Models;
 using Microsoft.AspNetCore.Mvc;

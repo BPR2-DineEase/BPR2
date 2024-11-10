@@ -1,6 +1,10 @@
+using System;
 using BPR2_T2.Data;
 using BPR2_T2.Services;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +20,8 @@ builder.Services.AddDbContext<ReservationContext>(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBPR2-T1", policy =>
-        policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+        policy.SetIsOriginAllowed(origin => new 
+                Uri(origin).Host == "localhost")
             .AllowAnyMethod()
             .AllowAnyHeader());
 });
@@ -24,8 +29,6 @@ builder.Services.AddCors(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-
 
 
 var app = builder.Build();

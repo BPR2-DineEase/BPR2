@@ -21,7 +21,5 @@ obj/
 docker-compose.override.yml
 docker-compose.*
 
-TestResults/
-
 Shared/bin/
 Shared/obj/

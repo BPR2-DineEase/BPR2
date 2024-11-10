@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ImageHandlerWebApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+405b5a96bcdf38b5b0a1ada41625ed07feaef93b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dfff972860637afddb328377048469ccbcb80ea5")]
 [assembly: System.Reflection.AssemblyProductAttribute("ImageHandlerWebApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ImageHandlerWebApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
