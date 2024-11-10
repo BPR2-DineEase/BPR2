@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Shared.Dtos.ImageHandlerDtos;
+namespace Domain.Dtos.ImageHandlerDtos;
 
 public class BlobDto
 {

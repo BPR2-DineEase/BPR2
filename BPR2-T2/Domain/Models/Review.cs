@@ -1,6 +1,6 @@
 using System;
 
-namespace Shared.Models;
+namespace Domain.Models;
 
 public class Review
 {

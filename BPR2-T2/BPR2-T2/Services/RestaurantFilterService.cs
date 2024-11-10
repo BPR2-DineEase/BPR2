@@ -6,8 +6,8 @@ using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http;
-using Shared.Dtos;
-using Shared.Models;
+using Domain.Dtos;
+using Domain.Models;
 
 namespace BPR2_T2.Services;
 

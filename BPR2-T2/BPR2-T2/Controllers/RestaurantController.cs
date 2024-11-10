@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using BPR2_T2.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Dtos;
-using Shared.Models;
+using Domain.Dtos;
+using Domain.Models;
 
 namespace BPR2_T2.Controllers;
 

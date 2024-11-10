@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Shared.Dtos;
-using Shared.Models;
+using Domain.Dtos;
+using Domain.Models;
 
 namespace BPR2_T2.Services;
 
