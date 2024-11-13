@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using Microsoft.AspNetCore.Http;
 using Domain.Dtos;
 using Domain.Models;
 
@@ -19,8 +18,6 @@ public class RestaurantFilterService : IRestaurantFilterService
 
     public RestaurantFilterService()
     {
-        // _storageAccount = Environment.GetEnvironmentVariable("AZURE_STORAGE_ACCOUNT");
-        // _accessKey = Environment.GetEnvironmentVariable("AZURE_STORAGE_ACCESS_KEY");
 
         _storageAccount = "";
         _accessKey = "";
@@ -103,12 +100,10 @@ public class RestaurantFilterService : IRestaurantFilterService
             }
         }
     };
-
-
+    
     public Task<List<Restaurant>> RestaurantFilterByCuisine(string cuisine)
     {
         var cuisines = restaurants.Where(r => r.Cuisine == cuisine).ToList();
-
 
         return Task.FromResult(cuisines);
     }
@@ -152,7 +147,7 @@ public class RestaurantFilterService : IRestaurantFilterService
         return Task.FromResult(filteredRestaurants.ToList());
     }
 
-    public Restaurant? GetRestaurantById(int restaurantId)
+    public async Task<Restaurant?> GetRestaurantById(int restaurantId)
     {
         var restaurant = restaurants.FirstOrDefault(r => r.Id == restaurantId);
 
@@ -188,8 +183,6 @@ public class RestaurantFilterService : IRestaurantFilterService
 
         return images;
     }
-
-
 
 
     public async Task<Image> UploadImageAsync(IFormFile file, int restaurantId)

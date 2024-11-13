@@ -65,7 +65,8 @@ public class RestaurantController : ControllerBase
             return BadRequest(e.Message);
         }
     }
-    
+
+    /*
     [HttpPost("upload")]
     public async Task<ActionResult<Image>> UploadImage(IFormFile file, int restaurantId)
     {
@@ -84,7 +85,7 @@ public class RestaurantController : ControllerBase
                 return NotFound($"Restaurant with ID {restaurantId} not found.");
             }
 
-            
+
             if (restaurant.Images == null)
             {
                 restaurant.Images = new List<Image>();
@@ -99,29 +100,22 @@ public class RestaurantController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
-
-
-
     
+*/
+
     [HttpGet("list")]
     public async Task<ActionResult> ListAllImagesByRestaurantId(int restaurantId)
     {
         Console.WriteLine($"Fetching images for restaurantId: {restaurantId}");
 
         var images = await restaurantFilterService.ListImagesAsyncByRestaurantId(restaurantId);
-    
+
         if (!images.Any())
         {
             return Ok(new { Message = "No images found for this restaurant." });
         }
-    
+
         var imageUrls = images.Select(img => img.Uri).ToList();
         return Ok(imageUrls);
     }
-
-
-    
-    
-
-
 }

@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Domain.Dtos;
 using Domain.Models;
 
@@ -11,7 +8,7 @@ public interface IRestaurantFilterService
     Task<List<Restaurant>> RestaurantFilterByCuisine(string cuisine);
     Task<List<Restaurant>> SearchByCity(string city);
     Task<List<Restaurant>> FilterRestaurants(RestaurantFilterDto filter);
-    Restaurant? GetRestaurantById(int restaurantId);
+    Task<Restaurant>? GetRestaurantById(int restaurantId);
 
     Task<Image> UploadImageAsync(IFormFile file, int restaurantId);
 

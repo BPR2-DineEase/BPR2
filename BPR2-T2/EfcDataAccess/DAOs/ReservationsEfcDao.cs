@@ -32,8 +32,10 @@ public class ReservationsEfcDao : IReservationsDao
         return reservation;
     }
 
-    public Task<IEnumerable<Reservation>> GetReservations()
+    public async Task<IEnumerable<Reservation>> GetReservations()
     {
-        throw new NotImplementedException();
+        var reservations = await _context.Reservations.ToListAsync();
+        await _context.SaveChangesAsync();
+        return reservations;
     }
 }

@@ -15,9 +15,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IReservationsLogic, ReservationLogic>();
 builder.Services.AddScoped<IRestaurantsLogic, RestaurantsLogic>();
 
-
 builder.Services.AddScoped<IReservationsDao, ReservationsEfcDao>();
-// builder.Services.AddScoped<IRestaurantsDao, RestaurantsDao>();
+builder.Services.AddScoped<IRestaurantsDao, RestaurantEfcDao>();
 
 builder.Services.AddDbContext<ReservationContext>();
 
