@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34902.65
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BPR2-T2", "BPR2-T2\BPR2-T2.csproj", "{2A86A203-89EA-489A-9DFF-FFEF34324A37}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{3B13788B-39ED-4FEC-8360-1752025E7926}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EfcDataAccess", "EfcDataAccess\EfcDataAccess.csproj", "{EA1B6E34-1AA5-4104-AAEB-AE16665A988A}"
@@ -19,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2A86A203-89EA-489A-9DFF-FFEF34324A37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2A86A203-89EA-489A-9DFF-FFEF34324A37}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2A86A203-89EA-489A-9DFF-FFEF34324A37}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2A86A203-89EA-489A-9DFF-FFEF34324A37}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3B13788B-39ED-4FEC-8360-1752025E7926}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3B13788B-39ED-4FEC-8360-1752025E7926}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B13788B-39ED-4FEC-8360-1752025E7926}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -32,4 +32,9 @@ RUN dotnet publish "./WebAPI.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Copy the SQLite database file into the container
+COPY ["EfcDataAccess/Reservation.db", "/app/"]
+RUN chmod 666 /app/Reservation.db
+
 ENTRYPOINT ["dotnet", "WebAPI.dll"]

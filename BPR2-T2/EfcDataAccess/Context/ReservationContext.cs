@@ -11,9 +11,7 @@ public class ReservationContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite("Data Source = ../EfcDataAccess/Reservation.db")
-            .EnableSensitiveDataLogging() 
-            .LogTo(Console.WriteLine);
+        optionsBuilder.UseSqlite("Data Source =/app/Reservation.db");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
