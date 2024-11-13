@@ -27,7 +27,7 @@ packages/
 *.mdb
 
 # Test results
-TestResults/
+WebAPI/appsettings.json
 *.trx
 
 # Logs
