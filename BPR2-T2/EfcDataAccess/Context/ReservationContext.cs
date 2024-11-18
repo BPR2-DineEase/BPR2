@@ -18,9 +18,11 @@ public class ReservationContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        
-        var connectionString = _configuration.GetConnectionString("DefaultConnection");
-        optionsBuilder.UseSqlite(connectionString);
+        if (!optionsBuilder.IsConfigured)
+        {
+            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+            optionsBuilder.UseSqlite(connectionString);
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
