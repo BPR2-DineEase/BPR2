@@ -1,12 +1,14 @@
-# Base image for running the application - use Linux-compatible image
+# Base image for running the application
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-# Build image with Linux-compatible SDK image
+# Build image with SDK image
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
+ARG AZURE_STORAGE_ACCOUNT
+ARG AZURE_STORAGE_ACCESS_KEY
 WORKDIR /src
 
 # Copy project files
@@ -36,5 +38,10 @@ COPY --from=publish /app/publish .
 # Copy the SQLite database file into the container
 COPY ["EfcDataAccess/Reservation.db", "/app/"]
 RUN chmod 666 /app/Reservation.db
+
+# Set environment variables for Azure Storage Account and Access Key
+ENV AZURE_STORAGE_ACCOUNT=${AZURE_STORAGE_ACCOUNT}
+ENV AZURE_STORAGE_ACCESS_KEY=${AZURE_STORAGE_ACCESS_KEY}
+
 
 ENTRYPOINT ["dotnet", "WebAPI.dll"]

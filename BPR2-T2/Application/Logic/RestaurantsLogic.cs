@@ -19,15 +19,21 @@ public class RestaurantsLogic : IRestaurantsLogic
 
     public RestaurantsLogic(IRestaurantsDao restaurantsDao, IConfiguration configuration)
     {
-        _storageAccount = configuration["AzureStorage:StorageAccount"];
-        _accessKey = configuration["AzureStorage:AccessKey"];
+        
+       _storageAccount = Environment.GetEnvironmentVariable("AZURE_STORAGE_ACCOUNT");
+       _accessKey = Environment.GetEnvironmentVariable("AZURE_STORAGE_ACCESS_KEY");
+       
+       if (string.IsNullOrEmpty(_storageAccount) || string.IsNullOrEmpty(_accessKey))
+       {
+           throw new Exception("Azure Storage account and/or access key are not set.");
+       }
 
-        var credential = new StorageSharedKeyCredential(_storageAccount, _accessKey);
-        var blobUri = $"https://{_storageAccount}.blob.core.windows.net";
-        var blobServiceClient = new BlobServiceClient(new Uri(blobUri), credential);
-        _imagesContainer = blobServiceClient.GetBlobContainerClient("bpr2imagecontainer");
+       var credential = new StorageSharedKeyCredential(_storageAccount, _accessKey);
+       var blobUri = $"https://{_storageAccount}.blob.core.windows.net";
+       var blobServiceClient = new BlobServiceClient(new Uri(blobUri), credential);
+       _imagesContainer = blobServiceClient.GetBlobContainerClient("bpr2imagecontainer");
 
-        _restaurantsDao = restaurantsDao;
+       _restaurantsDao = restaurantsDao;
     }
 
     public async Task<IEnumerable<Restaurant>> RestaurantFilterByCuisine(string cuisine)
