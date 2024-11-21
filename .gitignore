@@ -499,5 +499,6 @@ FodyWeavers.xsd
 
 *.db-shm
 *.db-wal
+*.db
 
 # End of https://www.toptal.com/developers/gitignore/api/rider,visualstudio,visualstudiocode
