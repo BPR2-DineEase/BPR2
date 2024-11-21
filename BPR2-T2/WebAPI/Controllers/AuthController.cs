@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -13,23 +14,29 @@ namespace WebAPI.Controllers;
 
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly IConfiguration config;
     private readonly IAuthLogic _authLogic;
 
-    public AuthController(IConfiguration config, IAuthLogic authLogic)
+    public AuthController(IAuthLogic authLogic)
     {
-        this.config = config;
-        this._authLogic = authLogic;
+        _authLogic = authLogic;
     }
 
     [HttpPost, Route("register")]
     public async Task<ActionResult> Register([FromBody] User user)
     {
-        await _authLogic.RegisterUser(user);
-        return Ok();
+        try
+        {
+            await _authLogic.RegisterUser(user);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
     }
 
     [HttpPost, Route("login")]
@@ -37,51 +44,13 @@ public class AuthController : ControllerBase
     {
         try
         {
-            User user = await _authLogic.ValidateUser(userLoginDto.Email, userLoginDto.Password);
-            string token = GenerateJwt(user);
-        
+            string token = await _authLogic.LoginUser(userLoginDto.Email, userLoginDto.Password);
             return Ok(token);
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
         }
-    }
-
-    private string GenerateJwt(User user)
-    {
-        List<Claim> claims = GenerateClaims(user);
-        
-        SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
-        SigningCredentials signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
-        
-        JwtHeader header = new JwtHeader(signIn);
-        
-        JwtPayload payload = new JwtPayload(
-            config["Jwt:Issuer"],
-            config["Jwt:Audience"],
-            claims, 
-            null,
-            DateTime.UtcNow.AddMinutes(60));
-        
-        JwtSecurityToken token = new JwtSecurityToken(header, payload);
-        
-        string serializedToken = new JwtSecurityTokenHandler().WriteToken(token);
-        return serializedToken;
-    }
-
-    private List<Claim> GenerateClaims(User user)
-    {
-        var claims = new[]
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, config["Jwt:Subject"]),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
-            new Claim(ClaimTypes.Name, user.LastName),
-            new Claim(ClaimTypes.Role, user.Role),
-            new Claim("Email", user.Email),
-          
-        };
-        return claims.ToList();
     }
 }

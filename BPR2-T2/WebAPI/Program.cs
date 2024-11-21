@@ -38,9 +38,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        ValidAudience =Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
+        ValidIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY")))
     };
 });
 

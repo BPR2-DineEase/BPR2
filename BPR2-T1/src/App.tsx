@@ -1,23 +1,47 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import TableReservation from "./components/TableReservation";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import RestaurantSearch from "./components/RestaurantSearch";
-import StartPage from "./components/StartPage";
+import TableReservation from "./components/TableReservation";
+import ProtectedRoute from "./routes/ProtectedRoute";
+
 
 const App: React.FC = () => {
     return (
         <Router>
-            <div className="h-full w-full">
-                <Routes>
-                    {process.env.NODE_ENV === 'development' ? (
-                        <Route path="/" element={<StartPage />} />
-                    ) : (
-                        <Route path="/" element={<Navigate to="/search" />} />
-                    )}
-                    <Route path="/search" element={<RestaurantSearch />} />
-                    <Route path="/reservations" element={<TableReservation />} />
-                </Routes>
-            </div>
+            <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                
+                <Route
+                    path="/"
+                    element={
+                        <ProtectedRoute>
+                            <Home />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/search"
+                    element={
+                        <ProtectedRoute roles={["Customer", "RestaurantOwner"]}>
+                            <RestaurantSearch />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/reservations"
+                    element={
+                        <ProtectedRoute roles={["Customer"]}>
+                            <TableReservation />
+                        </ProtectedRoute>
+                    }
+                />
+                
+                <Route path="/unauthorized" element={<div>You are not authorized to view this page.</div>} />
+            </Routes>
         </Router>
     );
 };
