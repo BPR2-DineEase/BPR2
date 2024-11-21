@@ -52,7 +52,7 @@ jobs:
         with: 
           app-name: "${{ env.AZURE_WEBAPP_NAME }}"
           publish-profile: '${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FC8BB2154CF54278AB9AEFD16105903C }}'
-          images: "${{ env.AZURE_CONTAINER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME_BACKEND }}:${{ env.DOCKER_TAG }}"
+          images: "${{ env.AZURE_CONTAINER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME_BACKEND }}:${{ env.DOCKER_TAG }}" 
         
                                                                                             
       
