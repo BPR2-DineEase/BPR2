@@ -28,7 +28,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Log in to Azure Container Registry
-        uses: azure/docker-login@v1 
+        uses: azure/docker-login@v1
         with:
           login-server: ${{ env.AZURE_CONTAINER_REGISTRY }}
           username: ${{ secrets.ACR_USERNAME }}
@@ -37,17 +37,18 @@ jobs:
       - name: Build and push Docker image
         run: |
           docker build \
+            --build-arg AZURE_STORAGE_ACCOUNT=${{ secrets.AZURE_STORAGE_ACCOUNT }} \
+            --build-arg AZURE_STORAGE_ACCESS_KEY=${{ secrets.AZURE_STORAGE_ACCESS_KEY }} \
+            --build-arg JWT_KEY=${{ secrets.JWT_KEY }} \
+            --build-arg JWT_ISSUER=${{ secrets.JWT_ISSUER }} \
+            --build-arg JWT_AUDIENCE=${{ secrets.JWT_AUDIENCE }} \
+            --build-arg JWT_SUBJECT=${{ secrets.JWT_SUBJECT }} \
             -t ${{ env.AZURE_CONTAINER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME_BACKEND }}:${{ env.DOCKER_TAG }} \
             -f ./BPR2-T2/Dockerfile ./BPR2-T2
           docker push ${{ env.AZURE_CONTAINER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME_BACKEND }}:${{ env.DOCKER_TAG }}
-
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2 
         with: 
           app-name: "${{ env.AZURE_WEBAPP_NAME }}"
           publish-profile: '${{ secrets.AZURE_PUBLISH_PROFILE }}'
-          images: "${{ env.AZURE_CONTAINER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME_BACKEND }}:${{ env.DOCKER_TAG }}" 
-        
-                                                                                            
-      
-          
+          images: "${{ env.AZURE_CONTAINER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME_BACKEND }}:${{ env.DOCKER_TAG }}"
