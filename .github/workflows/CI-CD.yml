@@ -11,7 +11,7 @@ on:
 
 env:
   AZURE_WEBAPP_NAME: DineEaseApp
-  AZURE_CONTAINER_REGISTRY: dineeaseregistry.azurecr.io
+  AZURE_CONTAINER_REGISTRY: dineaseregistry.azurecr.io
   DOCKER_IMAGE_NAME_BACKEND: dineeasebackend
   DOCKER_TAG: latest 
 
