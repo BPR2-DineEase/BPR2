@@ -10,8 +10,8 @@ on:
       - main  
 
 env:
-  AZURE_WEBAPP_NAME: DineEaseApp
-  AZURE_CONTAINER_REGISTRY: dineaseregistry.azurecr.io
+  AZURE_WEBAPP_NAME: DineEase
+  AZURE_CONTAINER_REGISTRY: dineease.azurecr.io
   DOCKER_IMAGE_NAME_BACKEND: dineeasebackend
   DOCKER_TAG: latest 
 
