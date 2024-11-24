@@ -19,16 +19,21 @@ public class RestaurantCreationController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Restaurant>> CreateRestaurant([FromBody] CreateRestaurantDto dto)
+    public async Task<IActionResult> CreateRestaurant([FromForm] CreateRestaurantDto dto, [FromForm] List<IFormFile> files)
     {
         if (dto == null)
         {
             return BadRequest("Restaurant data is required.");
         }
 
+        if (files == null || !files.Any())
+        {
+            return BadRequest("At least one image file must be uploaded.");
+        }
+
         try
         {
-            var createdRestaurant = await _restaurantCreationLogic.AddRestaurantAsync(dto);
+            var createdRestaurant = await _restaurantCreationLogic.AddRestaurantAsync(dto, files);
             return CreatedAtAction(nameof(GetRestaurantById), new { id = createdRestaurant.Id }, createdRestaurant);
         }
         catch (Exception e)

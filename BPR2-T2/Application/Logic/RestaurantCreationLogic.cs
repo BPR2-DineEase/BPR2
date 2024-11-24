@@ -2,6 +2,7 @@ using Application.DaoInterfaces;
 using Application.LogicInterfaces;
 using Domain.Dtos;
 using Domain.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Logic;
 
@@ -9,16 +10,17 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
 {
     private readonly IRestaurantsDao _restaurantsDao;
     private readonly IImageDao _imageDao;
+    private readonly IRestaurantsLogic _restaurantsLogic;
 
-    public RestaurantCreationLogic(IRestaurantsDao restaurantsDao, IImageDao imageDao)
+    public RestaurantCreationLogic(IRestaurantsDao restaurantsDao, IImageDao imageDao, IRestaurantsLogic restaurantsLogic)
     {
         _restaurantsDao = restaurantsDao;
         _imageDao = imageDao;
+        _restaurantsLogic = restaurantsLogic;
     }
 
-    public async Task<Restaurant> AddRestaurantAsync(CreateRestaurantDto createRestaurantDto)
+    public async Task<Restaurant> AddRestaurantAsync(CreateRestaurantDto createRestaurantDto, List<IFormFile>? images)
     {
-        // Create the restaurant entity
         var restaurant = new Restaurant
         {
             Name = createRestaurantDto.Name,
@@ -28,24 +30,26 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
             Cuisine = createRestaurantDto.Cuisine,
             Info = createRestaurantDto.Info,
         };
-
-        // Save the restaurant to the database
+        
         var restaurantId = await _restaurantsDao.AddRestaurantAsync(restaurant);
 
-        // Process and save associated images
-        if (createRestaurantDto.ImageUris != null && createRestaurantDto.ImageUris.Any())
+        if (images != null && images.Any())
         {
-            var images = createRestaurantDto.ImageUris.Select(uri => new Image
-            {
-                Uri = uri,
-                Name = Path.GetFileName(uri) ?? "DefaultImageName", // Extract name from Uri or set a default name
-                ContentType = "image/jpeg" // Default content type, or infer dynamically
-            }).ToList();
+            var uploadedImages = new List<Image>();
 
-            await _imageDao.AddImagesAsync(images);
+            foreach (var formFile in images)
+            {
+                if (formFile.Length > 0)
+                {
+                    var uploadedImage = await _restaurantsLogic.UploadImageAsync(formFile, restaurantId);
+                    uploadedImage.RestaurantId = restaurantId;
+                    uploadedImages.Add(uploadedImage);
+                }
+            }
+            
+            await _imageDao.AddImagesAsync(uploadedImages);
         }
 
-        // Return the created restaurant with details
         return await _restaurantsDao.GetRestaurantByIdAsync(restaurantId);
     }
 
@@ -68,11 +72,15 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
 
         if (updateRestaurantDto.ImageUris != null && updateRestaurantDto.ImageUris.Any())
         {
-            var images = updateRestaurantDto.ImageUris.Select(uri => new Image { Uri = uri }).ToList();
+            var images = updateRestaurantDto.ImageUris.Select(uri => new Image
+            {
+                Uri = uri,
+                RestaurantId = restaurant.Id 
+            }).ToList();
+
             await _imageDao.AddImagesAsync(images);
         }
     }
-
     public async Task<Restaurant?> GetRestaurantByIdAsync(int id)
     {
         return await _restaurantsDao.GetRestaurantByIdAsync(id);

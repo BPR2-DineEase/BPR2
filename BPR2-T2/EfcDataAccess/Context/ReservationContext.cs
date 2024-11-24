@@ -30,7 +30,11 @@ public class ReservationContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Reservation>().HasKey(x => x.Id);
-        modelBuilder.Entity<Restaurant>().HasKey(x => x.Id);
+        modelBuilder.Entity<Restaurant>()
+            .HasMany(r => r.Images)
+            .WithOne(i => i.Restaurant)
+            .HasForeignKey(i => i.RestaurantId)
+            .OnDelete(DeleteBehavior.Cascade); 
         modelBuilder.Entity<User>().HasKey(x => x.Id);
         modelBuilder.Entity<Image>().HasKey(x => x.Id);
     }
