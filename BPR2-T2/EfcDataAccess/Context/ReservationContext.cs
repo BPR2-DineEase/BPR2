@@ -16,6 +16,7 @@ public class ReservationContext : DbContext
     public DbSet<Reservation> Reservations { get; set; }
     public DbSet<Restaurant> Restaurants { get; set; }
     public DbSet<User> Users { get; set; }
+    public DbSet<Image> Images { get; set; } 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -31,5 +32,6 @@ public class ReservationContext : DbContext
         modelBuilder.Entity<Reservation>().HasKey(x => x.Id);
         modelBuilder.Entity<Restaurant>().HasKey(x => x.Id);
         modelBuilder.Entity<User>().HasKey(x => x.Id);
+        modelBuilder.Entity<Image>().HasKey(x => x.Id);
     }
 }

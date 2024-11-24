@@ -67,4 +67,31 @@ public class RestaurantEfcDao : IRestaurantsDao
         await _context.SaveChangesAsync();
         return await Task.FromResult(restaurant);
     }
+    
+    public async Task<int> AddRestaurantAsync(Restaurant restaurant)
+    {
+        _context.Restaurants.Add(restaurant);
+        await _context.SaveChangesAsync();
+        return restaurant.Id;
+    }
+
+    public async Task UpdateRestaurantAsync(Restaurant restaurant)
+    {
+        _context.Restaurants.Update(restaurant);
+        await _context.SaveChangesAsync();
+    }
+    
+    public async Task<IEnumerable<Restaurant>> GetAllRestaurantsAsync()
+    {
+        return await _context.Restaurants
+            .Include(r => r.Images)
+            .ToListAsync();
+    }
+    
+    public async Task<Restaurant?> GetRestaurantByIdAsync(int restaurantId)
+    {
+        return await _context.Restaurants
+            .Include(r => r.Images) 
+            .FirstOrDefaultAsync(r => r.Id == restaurantId);
+    }
 }

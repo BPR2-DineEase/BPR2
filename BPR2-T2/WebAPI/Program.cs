@@ -23,10 +23,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IReservationsLogic, ReservationLogic>();
 builder.Services.AddScoped<IRestaurantsLogic, RestaurantsLogic>();
 builder.Services.AddScoped<IAuthLogic, AuthLogic>();
+builder.Services.AddScoped<IRestaurantCreationLogic, RestaurantCreationLogic>();
 
 builder.Services.AddScoped<IReservationsDao, ReservationsEfcDao>();
 builder.Services.AddScoped<IRestaurantsDao, RestaurantEfcDao>();
 builder.Services.AddScoped<IAuthDao, AuthEfcDao>();
+builder.Services.AddScoped<IImageDao, ImageDao>();
 
 builder.Services.AddDbContext<ReservationContext>();
 
