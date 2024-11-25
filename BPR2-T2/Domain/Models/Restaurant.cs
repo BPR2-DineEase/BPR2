@@ -22,4 +22,6 @@ public class Restaurant
     {
         Images = new List<Image>();
     }
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
 }

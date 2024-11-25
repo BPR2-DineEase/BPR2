@@ -2,6 +2,7 @@ using System.Text;
 using Application.DaoInterfaces;
 using Application.Logic;
 using Application.LogicInterfaces;
+using Application.Services;
 using Domain.Auth;
 using EfcDataAccess.Context;
 using EfcDataAccess.DAOs;
@@ -31,6 +32,9 @@ builder.Services.AddScoped<IAuthDao, AuthEfcDao>();
 builder.Services.AddScoped<IImageDao, ImageDao>();
 
 builder.Services.AddDbContext<ReservationContext>();
+
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IGoogleMapsService, GoogleMapsService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
