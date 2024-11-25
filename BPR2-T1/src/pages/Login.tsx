@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../api/authAPI";
+import { AuthService } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -12,52 +16,56 @@ const Login: React.FC = () => {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            console.log("Sending login request with credentials:", { email, password });
+            const token = await AuthService.login(email, password);
 
-           
-            const token = await loginUser({ email, password });
-            console.log("Login API response (token):", token); 
-
-            if (!token) {
-                throw new Error("No token received from server.");
-            }
-
-            
             localStorage.setItem("jwt", token);
-            console.log("Token saved to localStorage:", localStorage.getItem("jwt")); 
-
-           
             setAuth(true);
-            console.log("Auth state updated to true"); 
-
-            
             navigate("/");
-            console.log("Navigating to home page"); 
         } catch (error: any) {
-            console.error("Login failed:", error?.response || error.message || error);
-            alert("Login failed. Please check your credentials.");
+            alert(error.message);
         }
     };
 
     return (
-        <form onSubmit={handleLogin}>
-            <h1>Login</h1>
-            <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                required
-            />
-            <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                required
-            />
-            <button type="submit">Login</button>
-        </form>
+        <div className="flex justify-center items-center min-h-screen bg-gray-100">
+            <Card className="w-96 shadow-lg">
+                <CardHeader>
+                    <CardTitle>Login</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleLogin} className="space-y-4">
+                        <div>
+                            <Label htmlFor="email">Email</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Enter your email"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor="password">Password</Label>
+                            <Input
+                                id="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Enter your password"
+                                required
+                            />
+                        </div>
+                        <Button type="submit" className="w-full">
+                            Login
+                        </Button>
+                    </form>
+                </CardContent>
+                <CardFooter className="text-center text-sm text-gray-500">
+                    Don’t have an account? <a href="/register" className="text-blue-500">Register</a>
+                </CardFooter>
+            </Card>
+        </div>
     );
 };
 
