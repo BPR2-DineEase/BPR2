@@ -5,6 +5,8 @@ export type Restaurant = {
     name: string;
     city: string;
     cuisine: string;
+    latitude: number;
+    longitude: number;
 };
 
 export type FilterOptions = {

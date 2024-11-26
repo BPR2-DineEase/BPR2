@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Restaurant } from "../api/restaurantApi";
 import CitySearch from "./CitySearch";
 import FilterOptionsComponent from "./FilterOptionsComponent";
+import MapView from "@/components/MapView.tsx";
 
 const RestaurantSearch: React.FC = () => {
     const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
@@ -27,8 +28,8 @@ const RestaurantSearch: React.FC = () => {
         <div className="flex flex-col items-center space-y-4 p-4">
             <h2 className="text-xl font-semibold">Search and Filter Restaurants</h2>
 
-            <CitySearch onSearch={handleSearchResults} />
-            <FilterOptionsComponent onFilter={handleFilterResults} city={city} />
+            <CitySearch onSearch={handleSearchResults}/>
+            <FilterOptionsComponent onFilter={handleFilterResults} city={city}/>
 
             {restaurants.length > 0 ? (
                 <ul className="mt-4 space-y-2 w-full max-w-md">
@@ -40,10 +41,14 @@ const RestaurantSearch: React.FC = () => {
                     ))}
                 </ul>
             ) : (
-                hasSearched && ( 
+                hasSearched && (
                     <p className="text-gray-500 mt-4">No restaurants found.</p>
                 )
             )}
+            <div className="w-full md:w-1/2">
+                <h3 className="text-lg font-medium">Map View</h3>
+                <MapView restaurants={restaurants}/>
+            </div>
         </div>
     );
 };
