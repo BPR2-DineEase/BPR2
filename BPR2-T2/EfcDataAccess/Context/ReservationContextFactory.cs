@@ -1,10 +1,8 @@
-using EfcDataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
-
-namespace EfcDataAccess;
+namespace EfcDataAccess.Context;
 
 public class ReservationContextFactory : IDesignTimeDbContextFactory<ReservationContext>
 {
@@ -19,7 +17,7 @@ public class ReservationContextFactory : IDesignTimeDbContextFactory<Reservation
             .Build();
         
         var optionsBuilder = new DbContextOptionsBuilder<ReservationContext>();
-        optionsBuilder.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
+        optionsBuilder.UseSqlite(Environment.GetEnvironmentVariable("DB_CONNECTION"));
 
         return new ReservationContext(configuration);
     }

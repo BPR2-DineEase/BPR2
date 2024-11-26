@@ -21,8 +21,7 @@ public class ReservationContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            var connectionString = _configuration.GetConnectionString("DefaultConnection");
-            optionsBuilder.UseSqlite(connectionString);
+            optionsBuilder.UseSqlite(Environment.GetEnvironmentVariable("DB_CONNECTION"));
         }
     }
 
