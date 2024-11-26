@@ -11,8 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.WebHost.UseUrls("https://*:80");
+builder.WebHost.UseUrls("http://0.0.0.0:80");
 
 Env.Load();
 
@@ -60,7 +59,7 @@ app.UseCors(x => x
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
