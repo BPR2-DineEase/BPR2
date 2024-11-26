@@ -12,6 +12,8 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.UseUrls("https://*:80");
+
 Env.Load();
 
 // Add services to the container.
