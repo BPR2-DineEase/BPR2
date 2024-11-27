@@ -59,9 +59,8 @@ public class RestaurantsLogic : IRestaurantsLogic
 
     public async Task<Restaurant?> GetRestaurantById(int restaurantId)
     {
-        var filteredRestaurants = await _restaurantsDao.GetRestaurantById(restaurantId);
-
-        return await Task.FromResult(filteredRestaurants);
+        var restaurant = await _restaurantsDao.GetRestaurantByIdAsync(restaurantId);
+        return restaurant; 
     }
 
     public async Task<Image> UploadImageAsync(IFormFile file, int restaurantId)

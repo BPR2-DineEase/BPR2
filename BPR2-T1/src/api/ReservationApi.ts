@@ -1,6 +1,5 @@
-import axios from "axios";
+import axiosInstance from "@/api/axiosInstance.ts";
 
-const API_BASE_URL = "http://localhost:5232";
 
 export type ReservationData = {
   date: Date;
@@ -15,7 +14,7 @@ export type ReservationData = {
 
 export const postReservation = async (data: ReservationData): Promise<void> => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/api/reservations`, data);
+    const response = await axiosInstance.post(`/reservations`, data);
     console.log("Response: ", response.data);
   } catch (err: any) {
     if (err.isAxiosError(err)) console.error("Axios error", err.response?.data);

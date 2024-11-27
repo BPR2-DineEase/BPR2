@@ -3,9 +3,10 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import RestaurantSearch from "./components/RestaurantSearch";
 import TableReservation from "./components/TableReservation";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import SearchComponent from "@/components/SearchComponent.tsx";
+import ResultsComponent from "@/components/ResultsComponent.tsx";
 
 
 const App: React.FC = () => {
@@ -27,7 +28,15 @@ const App: React.FC = () => {
                     path="/search"
                     element={
                         <ProtectedRoute roles={["Customer", "RestaurantOwner"]}>
-                            <RestaurantSearch />
+                            <SearchComponent />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/results"
+                    element={
+                        <ProtectedRoute roles={["Customer", "RestaurantOwner"]}>
+                            <ResultsComponent />
                         </ProtectedRoute>
                     }
                 />

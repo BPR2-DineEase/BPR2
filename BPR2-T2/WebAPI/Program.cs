@@ -2,6 +2,7 @@ using System.Text;
 using Application.DaoInterfaces;
 using Application.Logic;
 using Application.LogicInterfaces;
+using Application.Services;
 using Domain.Auth;
 using EfcDataAccess.Context;
 using EfcDataAccess.DAOs;
@@ -24,12 +25,17 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IReservationsLogic, ReservationLogic>();
 builder.Services.AddScoped<IRestaurantsLogic, RestaurantsLogic>();
 builder.Services.AddScoped<IAuthLogic, AuthLogic>();
+builder.Services.AddScoped<IRestaurantCreationLogic, RestaurantCreationLogic>();
 
 builder.Services.AddScoped<IReservationsDao, ReservationsEfcDao>();
 builder.Services.AddScoped<IRestaurantsDao, RestaurantEfcDao>();
 builder.Services.AddScoped<IAuthDao, AuthEfcDao>();
+builder.Services.AddScoped<IImageDao, ImageDao>();
 
 builder.Services.AddDbContext<ReservationContext>();
+
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IGoogleMapsService, GoogleMapsService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
@@ -45,6 +51,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     };
 });
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+        options.JsonSerializerOptions.WriteIndented = true;
+    });
 AuthorizationPolicies.AddPolicies(builder.Services);
 
 var app = builder.Build();
