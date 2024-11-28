@@ -16,6 +16,7 @@ ARG JWT_KEY
 ARG JWT_ISSUER
 ARG JWT_AUDIENCE
 ARG JWT_SUBJECT
+ARG DB_CONNECTION
 WORKDIR /src
 
 # Copy project files
@@ -42,10 +43,6 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-# Copy the SQLite database file into the container
-COPY ["EfcDataAccess/Reservation.db", "/app/"]
-RUN chmod 666 /app/Reservation.db
-
 # Set environment variables for Azure Storage Account and Access Key
 ENV AZURE_STORAGE_ACCOUNT=$AZURE_STORAGE_ACCOUNT
 ENV AZURE_STORAGE_ACCESS_KEY=$AZURE_STORAGE_ACCESS_KEY
@@ -53,5 +50,6 @@ ENV JWT_KEY=$JWT_KEY
 ENV JWT_ISSUER=$JWT_ISSUER
 ENV JWT_AUDIENCE=$JWT_AUDIENCE
 ENV JWT_SUBJECT=$JWT_SUBJECT
+ENV DB_CONNECTION=$DB_CONNECTION
 
 ENTRYPOINT ["dotnet", "WebAPI.dll"]

@@ -1,4 +1,5 @@
 using Domain.Models;
+using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -6,11 +7,10 @@ namespace EfcDataAccess.Context;
 
 public class ReservationContext : DbContext
 {
-    private readonly IConfiguration _configuration;
 
-    public ReservationContext(IConfiguration configuration)
+    public ReservationContext()
     {
-        _configuration = configuration;
+        Env.Load("../../WebAPI/.env");
     }
 
     public DbSet<Reservation> Reservations { get; set; }
@@ -35,6 +35,11 @@ public class ReservationContext : DbContext
             .HasForeignKey(i => i.RestaurantId)
             .OnDelete(DeleteBehavior.Cascade); 
         modelBuilder.Entity<User>().HasKey(x => x.Id);
-        modelBuilder.Entity<Image>().HasKey(x => x.Id);
+        modelBuilder.Entity<Image>(entity =>
+        {
+            entity.Property(i => i.Id)
+                .HasDefaultValueSql("NEWID()")
+                .HasColumnType("UNIQUEIDENTIFIER"); 
+        });
     }
 }

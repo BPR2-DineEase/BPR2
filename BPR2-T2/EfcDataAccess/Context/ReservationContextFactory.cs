@@ -1,3 +1,4 @@
+using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +9,7 @@ public class ReservationContextFactory : IDesignTimeDbContextFactory<Reservation
 {
     public ReservationContext CreateDbContext(string[] args)
     {
+        Env.Load("../../WebAPI/.env");
         
         var configurationPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "WebAPI");
         
@@ -19,6 +21,6 @@ public class ReservationContextFactory : IDesignTimeDbContextFactory<Reservation
         var optionsBuilder = new DbContextOptionsBuilder<ReservationContext>();
         optionsBuilder.UseSqlite(Environment.GetEnvironmentVariable("DB_CONNECTION"));
 
-        return new ReservationContext(configuration);
+        return new ReservationContext();
     }
 }
