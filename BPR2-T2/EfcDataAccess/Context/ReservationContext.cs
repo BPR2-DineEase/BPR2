@@ -22,7 +22,7 @@ public class ReservationContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlite(Environment.GetEnvironmentVariable("DB_CONNECTION"));
+            optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("DB_CONNECTION")));
         }
     }
 

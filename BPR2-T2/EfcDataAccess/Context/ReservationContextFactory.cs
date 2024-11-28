@@ -19,7 +19,7 @@ public class ReservationContextFactory : IDesignTimeDbContextFactory<Reservation
             .Build();
         
         var optionsBuilder = new DbContextOptionsBuilder<ReservationContext>();
-        optionsBuilder.UseSqlite(Environment.GetEnvironmentVariable("DB_CONNECTION"));
+        optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("DB_CONNECTION"));
 
         return new ReservationContext();
     }
