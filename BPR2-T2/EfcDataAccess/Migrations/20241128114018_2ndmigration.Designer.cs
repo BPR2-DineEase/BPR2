@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EfcDataAccess.Migrations
 {
     [DbContext(typeof(ReservationContext))]
-    [Migration("20241128094428_1stmigration")]
-    partial class _1stmigration
+    [Migration("20241128114018_2ndmigration")]
+    partial class _2ndmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
