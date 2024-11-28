@@ -4,8 +4,8 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-# Set the environment variable to listen on port 80
-ENV ASPNETCORE_URLS=http://+:80
+# Set the environment variable to listen on Azure's dynamic port
+ENV ASPNETCORE_URLS=http://+:${WEBSITES_PORT}
 
 # Build image with SDK image
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
@@ -44,14 +44,5 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-# Set environment variables for Azure Storage Account and Access Key
-ENV AZURE_STORAGE_ACCOUNT=$AZURE_STORAGE_ACCOUNT
-ENV AZURE_STORAGE_ACCESS_KEY=$AZURE_STORAGE_ACCESS_KEY
-ENV JWT_KEY=$JWT_KEY
-ENV JWT_ISSUER=$JWT_ISSUER
-ENV JWT_AUDIENCE=$JWT_AUDIENCE
-ENV JWT_SUBJECT=$JWT_SUBJECT
-ENV DB_CONNECTION=$DB_CONNECTION
-ENV GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY
-
+# Entry point for the application
 ENTRYPOINT ["dotnet", "WebAPI.dll"]
