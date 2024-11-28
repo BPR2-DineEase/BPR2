@@ -9,7 +9,7 @@ public class ReservationContextFactory : IDesignTimeDbContextFactory<Reservation
 {
     public ReservationContext CreateDbContext(string[] args)
     {
-        Env.Load("../../WebAPI/.env");
+        Env.Load("../WebAPI/.env");
         
         var configurationPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "WebAPI");
         
@@ -19,7 +19,9 @@ public class ReservationContextFactory : IDesignTimeDbContextFactory<Reservation
             .Build();
         
         var optionsBuilder = new DbContextOptionsBuilder<ReservationContext>();
-        optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("DB_CONNECTION"));
+        var conn = Environment.GetEnvironmentVariable("DB_CONNECTION");
+
+        optionsBuilder.UseSqlServer(conn);
 
         return new ReservationContext();
     }

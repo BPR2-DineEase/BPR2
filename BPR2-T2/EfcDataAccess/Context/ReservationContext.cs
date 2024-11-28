@@ -10,7 +10,7 @@ public class ReservationContext : DbContext
 
     public ReservationContext()
     {
-        Env.Load("../../WebAPI/.env");
+        Env.Load("../WebAPI/.env");
     }
 
     public DbSet<Reservation> Reservations { get; set; }
@@ -20,9 +20,10 @@ public class ReservationContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        var conn = Environment.GetEnvironmentVariable("DB_CONNECTION");
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("DB_CONNECTION"));
+            optionsBuilder.UseSqlServer(conn);
         }
     }
 
