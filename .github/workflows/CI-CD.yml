@@ -13,7 +13,7 @@ env:
   AZURE_WEBAPP_NAME: DineEase
   AZURE_CONTAINER_REGISTRY: dineease.azurecr.io
   DOCKER_IMAGE_NAME_BACKEND: dineeasebackend
-  DOCKER_TAG: ${{ github.sha }} # Unique tag for every build
+  DOCKER_TAG: latest 
 
 jobs:
   build: 
@@ -56,12 +56,3 @@ jobs:
           app-name: "${{ env.AZURE_WEBAPP_NAME }}"
           publish-profile: '${{ secrets.AZURE_PUBLISH_PROFILE }}'
           images: "${{ env.AZURE_CONTAINER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME_BACKEND }}:${{ env.DOCKER_TAG }}"
-        env: 
-          AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
-          AZURE_STORAGE_ACCESS_KEY: ${{ secrets.AZURE_STORAGE_ACCESS_KEY }}
-          JWT_KEY: ${{ secrets.JWT_KEY }}
-          JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
-          JWT_AUDIENCE: ${{ secrets.JWT_AUDIENCE }}
-          JWT_SUBJECT: ${{ secrets.JWT_SUBJECT }}
-          DB_CONNECTION: ${{ secrets.DB_CONNECTION }}
-          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
