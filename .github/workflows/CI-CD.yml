@@ -44,7 +44,7 @@ jobs:
             --build-arg JWT_AUDIENCE=${{ secrets.JWT_AUDIENCE }} \
             --build-arg JWT_SUBJECT=${{ secrets.JWT_SUBJECT }} \
             --build-arg DB_CONNECTION="${{ secrets.DB_CONNECTION }}" \
-            --build-arg GOOGLE_MAPS_API_KEY="${{ secrets.GOOGLE_MAPS_API_KEY }}" \
+            --build-arg GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }} \
             -t ${{ env.AZURE_CONTAINER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME_BACKEND }}:${{ env.DOCKER_TAG }} \
             -f ./BPR2-T2/Dockerfile \
             ./BPR2-T2
