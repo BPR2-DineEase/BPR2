@@ -61,7 +61,6 @@ jobs:
         uses: azure/webapps-deploy@v2
         with: 
           app-name: "${{ env.AZURE_WEBAPP_NAME }}"
-          publish-profile: '${{ secrets.AZURE_PUBLISH_PROFILE }}'
           images: |
             "${{ env.AZURE_CONTAINER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME_BACKEND }}:${{ env.DOCKER_TAG }}"
             "${{ env.AZURE_CONTAINER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME_FRONTEND }}:${{ env.DOCKER_TAG }}"
