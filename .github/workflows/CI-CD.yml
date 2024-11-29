@@ -64,4 +64,4 @@ jobs:
           images: |
             "${{ env.AZURE_CONTAINER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME_BACKEND }}:${{ env.DOCKER_TAG }}"
             "${{ env.AZURE_CONTAINER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME_FRONTEND }}:${{ env.DOCKER_TAG }}"
-          configuration-file: ./docker-compose.yml 
+          configuration-file: .github/workflows/docker-compose.yml
