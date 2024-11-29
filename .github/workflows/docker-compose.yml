@@ -1,11 +1,10 @@
-version: '3.9'
-
+version: '3'
 services:
   backend:
     image: "${AZURE_CONTAINER_REGISTRY}/${DOCKER_IMAGE_NAME_BACKEND}:${DOCKER_TAG}"
     container_name: backend
     ports:
-      - "5000:5000" # Map container's backend port
+      - "8080:80" 
     environment:
       - DB_CONNECTION=${DB_CONNECTION}
       - JWT_KEY=${JWT_KEY}
@@ -18,4 +17,4 @@ services:
     image: "${AZURE_CONTAINER_REGISTRY}/${DOCKER_IMAGE_NAME_FRONTEND}:${DOCKER_TAG}"
     container_name: frontend
     ports:
-      - "3000:3000" # Map container's frontend port
+      - "8081:80" 
