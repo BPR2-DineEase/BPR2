@@ -1,4 +1,4 @@
-import {Restaurant, FilterOptions, filterRestaurants, searchRestaurants} from "../api/restaurantApi";
+import {Restaurant, FilterOptions, filterRestaurants, searchRestaurants, restaurantCreate} from "../api/restaurantApi";
 
 export const searchRestaurantsByCity = async (city: string): Promise<Restaurant[]> => {
     if (!city) {
@@ -19,5 +19,13 @@ export const filterRestaurantsByOptions = async (options: FilterOptions): Promis
         return data;
     } catch (error: any) {
         throw new Error(error.message || "Failed to filter restaurants.");
+    }
+};
+
+export const createRestaurant = async (data: FormData): Promise<any> => {
+    try {
+        return await restaurantCreate(data);
+    } catch (error: any) {
+        throw new Error(error.message || "Failed to create restaurant.");
     }
 };

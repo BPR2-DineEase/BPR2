@@ -18,18 +18,22 @@ const Home: React.FC = () => {
             <p className="mb-4 text-lg text-gray-600">Choose a feature to test:</p>
             <div className="space-y-3">
                 <Link to="/search">
-                    <Button variant="default" className="w-full max-w-xs">
+                    <Button variant="default" className="w-full max">
                         Go to Search Page
                     </Button>
                 </Link>
                 <Link to="/reservations">
-                    <Button variant="secondary" className="w-full max-w-xs">
+                    <Button variant="secondary" className="w-full max">
                         Go to Reservation Page
+                    </Button>
+                </Link>
+                <Link to="/create-restaurant">
+                    <Button variant="secondary" className="w-full max">
+                        Go to Restaurant Creation Page
                     </Button>
                 </Link>
             </div>
             <div className="mt-6">
-                {/* Logout Button */}
                 <Button
                     variant="destructive"
                     className="w-full max-w-xs"

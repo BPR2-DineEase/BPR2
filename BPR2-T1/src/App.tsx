@@ -7,6 +7,7 @@ import TableReservation from "./components/TableReservation";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import SearchComponent from "@/components/SearchComponent.tsx";
 import ResultsComponent from "@/components/ResultsComponent.tsx";
+import CreateRestaurant from "@/pages/CreateRestaurant.tsx";
 
 
 const App: React.FC = () => {
@@ -15,7 +16,7 @@ const App: React.FC = () => {
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                
+                <Route path="/create-restaurant" element={<CreateRestaurant />} />
                 <Route
                     path="/"
                     element={
