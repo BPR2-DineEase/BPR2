@@ -17,6 +17,17 @@ export type FilterOptions = {
     stars?: number;
 };
 
+export interface CreateRestaurantDto {
+    name: string;
+    address: string;
+    city: string;
+    openHours: string;
+    cuisine: string;
+    info: string;
+    latitude?: number;
+    longitude?: number;
+}
+
 export const searchRestaurants = async (city: string): Promise<Restaurant[]> => {
     try {
         const response = await axiosInstance.get(`/Restaurants/search`, {
@@ -41,5 +52,17 @@ export const filterRestaurants = async (options: FilterOptions): Promise<Restaur
     } catch (err) {
         console.error("API Error:", err);
         throw err;
+    }
+};
+
+export const restaurantCreate = async (data: FormData): Promise<any> => {
+    try {
+        const response = await axiosInstance.post(`/RestaurantCreation`, data, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("API Error:", error);
+        throw error;
     }
 };

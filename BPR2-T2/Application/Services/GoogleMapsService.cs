@@ -21,18 +21,17 @@ public class GoogleMapsService : IGoogleMapsService
 
         var encodedAddress = Uri.EscapeDataString($"{address}, {city}");
         var response = await _httpClient.GetStringAsync(
-            $"https://maps.googleapis.com/maps/api/geocode/json?address={encodedAddress}&key={apiKey}");
-        
+            $"https://api.mapbox.com/geocoding/v5/mapbox.places/{encodedAddress}.json?access_token={apiKey}");
         var json = JObject.Parse(response);
-        var location = json["results"]?[0]?["geometry"]?["location"];
-        if (location == null)
+        var location = json["features"]?[0]?["geometry"]?["coordinates"];
+        if (location == null || location.Count() < 2)
         {
             throw new Exception("Failed to retrieve coordinates from Google Maps.");
         }
 
         return (
-            Latitude: location.Value<double>("lat"),
-            Longitude: location.Value<double>("lng")
+            Latitude: location[1].Value<double>(),
+            Longitude: location[0].Value<double>()
         );
     }
 }
