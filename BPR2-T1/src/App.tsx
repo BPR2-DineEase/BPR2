@@ -7,52 +7,63 @@ import TableReservation from "./components/TableReservation";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import SearchComponent from "@/components/SearchComponent.tsx";
 import ResultsComponent from "@/components/ResultsComponent.tsx";
-
+import OwnerDashboard from "./pages/OwnerDashboard";
 
 const App: React.FC = () => {
-    return (
-        <Router>
-            <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                
-                <Route
-                    path="/"
-                    element={
-                        <ProtectedRoute>
-                            <Home />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/search"
-                    element={
-                        <ProtectedRoute roles={["Customer", "RestaurantOwner"]}>
-                            <SearchComponent />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/results"
-                    element={
-                        <ProtectedRoute roles={["Customer", "RestaurantOwner"]}>
-                            <ResultsComponent />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/reservations"
-                    element={
-                        <ProtectedRoute roles={["Customer"]}>
-                            <TableReservation />
-                        </ProtectedRoute>
-                    }
-                />
-                
-                <Route path="/unauthorized" element={<div>You are not authorized to view this page.</div>} />
-            </Routes>
-        </Router>
-    );
+  return (
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <ProtectedRoute roles={["Customer", "RestaurantOwner"]}>
+              <SearchComponent />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/results"
+          element={
+            <ProtectedRoute roles={["Customer", "RestaurantOwner"]}>
+              <ResultsComponent />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reservations"
+          element={
+            <ProtectedRoute roles={["Customer"]}>
+              <TableReservation />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute roles={["RestaurantOwner"]}>
+              <OwnerDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/unauthorized"
+          element={<div>You are not authorized to view this page.</div>}
+        />
+      </Routes>
+    </Router>
+  );
 };
 
 export default App;
