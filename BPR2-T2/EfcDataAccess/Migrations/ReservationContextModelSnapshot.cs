@@ -184,8 +184,14 @@ namespace EfcDataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("OtpExpiry")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Password")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResetOtp")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")

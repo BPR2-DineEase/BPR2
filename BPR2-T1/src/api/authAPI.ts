@@ -42,3 +42,24 @@ export const registerUser = async (details: {
         throw error;
     }
 };
+
+
+export const generateResetOtp = async (email: string) => {
+    try {
+        const response = await axiosInstance.post("/Auth/generate-reset-otp", email);
+        return response.data;
+    } catch (error: any) {
+        console.error("Generate Reset Otp Error Response:", error.response);
+        throw new Error(error.response?.data?.message || "Failed to generate reset Otp");
+    }
+};
+
+export const resetPassword = async (resetDetails: { email: string; otp: string; newPassword: string }) => {
+    try {
+        const response = await axiosInstance.post("/Auth/reset-password", resetDetails);
+        return response.data;
+    } catch (error: any) {
+        console.error("Reset Password Error:", error.response?.data || error.message);
+        throw new Error(error.response?.data?.message || "Failed to reset password");
+    }
+};

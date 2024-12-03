@@ -27,4 +27,10 @@ public class AuthEfcDao : IAuthDao
             .FirstOrDefaultAsync(u => EF.Functions.Like(u.Email, email));
         return user;
     }
+    
+    public async Task UpdateUserAsync(User user)
+    {
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
+    }
 }

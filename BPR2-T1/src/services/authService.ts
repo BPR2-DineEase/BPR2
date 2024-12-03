@@ -1,4 +1,4 @@
-import { loginUser, registerUser } from "../api/authAPI";
+import {loginUser, registerUser, generateResetOtp, resetPassword } from "../api/authAPI";
 
 export class AuthService {
     static async login(email: string, password: string): Promise<string> {
@@ -14,5 +14,13 @@ export class AuthService {
         role: string;
     }): Promise<any> {
         return await registerUser(details);
+    }
+
+    static async generateResetOtp(email: string): Promise<any> {
+        return await generateResetOtp(email);
+    }
+
+    static async resetPassword(resetDetails: { email: string; otp: string; newPassword: string }): Promise<any> {
+        return await resetPassword(resetDetails);
     }
 }

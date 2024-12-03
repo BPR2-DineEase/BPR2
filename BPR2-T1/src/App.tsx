@@ -8,6 +8,8 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import SearchComponent from "@/components/SearchComponent.tsx";
 import ResultsComponent from "@/components/ResultsComponent.tsx";
 import CreateRestaurant from "@/pages/CreateRestaurant.tsx";
+import ResetPassword from "@/pages/ResetPassword";
+import RequestResetOtp from "@/pages/ResetOtp";
 
 
 const App: React.FC = () => {
@@ -17,6 +19,8 @@ const App: React.FC = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/create-restaurant" element={<CreateRestaurant />} />
+                <Route path="/request-reset-otp" element={<RequestResetOtp />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route
                     path="/"
                     element={

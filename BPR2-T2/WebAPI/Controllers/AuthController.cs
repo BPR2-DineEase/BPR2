@@ -53,4 +53,38 @@ public class AuthController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+    
+    
+    [HttpPost, Route("generate-reset-otp")]
+    public async Task<ActionResult> GenerateResetOtp([FromBody] string email)
+    {
+        try
+        {
+            var otp = await _authLogic.GeneratePasswordResetOtp(email);
+            
+            Console.WriteLine($"Reset otp for {email}: {otp}");
+
+            return Ok(new { Otp = otp });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error: {e.Message}");
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpPost, Route("reset-password")]
+    public async Task<ActionResult> ResetPassword([FromBody] PasswordResetDto resetDto)
+    {
+        try
+        {
+            await _authLogic.ResetPassword(resetDto);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
 }

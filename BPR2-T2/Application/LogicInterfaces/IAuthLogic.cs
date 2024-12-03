@@ -1,3 +1,4 @@
+using Domain.Dtos;
 using Domain.Models;
 
 namespace Application.LogicInterfaces;
@@ -8,4 +9,6 @@ public interface IAuthLogic
     Task RegisterUser(User user);
     
     Task<string> LoginUser(string email, string password);
+    Task<string> GeneratePasswordResetOtp(string email);
+    Task ResetPassword(PasswordResetDto resetDto);
 }

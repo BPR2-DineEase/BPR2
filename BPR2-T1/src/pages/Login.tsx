@@ -26,6 +26,10 @@ const Login: React.FC = () => {
         }
     };
 
+    const handleForgotPassword = () => {
+        navigate("/request-reset-otp");
+    };
+
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
             <Card className="w-96 shadow-lg">
@@ -60,6 +64,15 @@ const Login: React.FC = () => {
                             Login
                         </Button>
                     </form>
+                    <div className="text-right mt-4">
+                        <button
+                            type="button"
+                            onClick={handleForgotPassword}
+                            className="text-blue-500 hover:underline text-sm"
+                        >
+                            Forgot Password?
+                        </button>
+                    </div>
                 </CardContent>
                 <CardFooter className="text-center text-sm text-gray-500">
                     Don’t have an account? <a href="/register" className="text-blue-500">Register</a>
