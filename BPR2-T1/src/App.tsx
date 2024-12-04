@@ -53,6 +53,14 @@ const App: React.FC = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute roles={["RestaurantOwner"]}>
+              <OwnerDashboard />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/unauthorized"

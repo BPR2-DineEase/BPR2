@@ -1,6 +1,7 @@
 import axiosInstance from "@/api/axiosInstance";
 
 export type Restaurant = {
+    reservations: any;
     id: number;
     name: string;
     city: string;
@@ -66,3 +67,18 @@ export const restaurantCreate = async (data: FormData): Promise<any> => {
         throw error;
     }
 };
+
+export const getRestaurantById = async (id: number): Promise<Restaurant> => {
+  try {
+    
+    const response = await axiosInstance.get(`/RestaurantCreation/${id}`);
+    console.log("API Response:", response.data);
+    return response.data;
+  } catch (err) {
+    console.error("API Error:", err);
+    throw err;
+  }
+};
+
+
+

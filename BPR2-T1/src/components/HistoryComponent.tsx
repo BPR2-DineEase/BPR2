@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -8,46 +8,30 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getRestaurantById } from "@/api/restaurantApi";
 
-// Mock data based on ReservationData
-const mockReservations = [
-  {
-    date: new Date("2024-12-03"),
-    time: "7:00 PM",
-    numOfPeople: 4,
-    guestName: "John Doe",
-    phoneNumber: "123-456-7890",
-    comments: "Celebrating a birthday",
-    company: "ABC Corp.",
-    email: "johndoe@example.com",
-  },
-  {
-    date: new Date("2024-12-04"),
-    time: "6:30 PM",
-    numOfPeople: 2,
-    guestName: "Jane Smith",
-    phoneNumber: "987-654-3210",
-    comments: "Prefers a quiet table",
-    company: "XYZ Ltd.",
-    email: "janesmith@example.com",
-  },
-  {
-    date: new Date("2024-12-05"),
-    time: "8:00 PM",
-    numOfPeople: 6,
-    guestName: "Alice Johnson",
-    phoneNumber: "456-789-0123",
-    comments: "Anniversary celebration",
-    company: "Johnson & Co.",
-    email: "alicej@example.com",
-  },
-];
-
-const HistoryComponent: React.FC = () => {
+const HistoryComponent: React.FC<{ restaurantId: number }> = ({
+  restaurantId,
+}) => {
+  const [reservations, setReservations] = useState<any[]>([]);
   const [searchName, setSearchName] = useState("");
   const [searchEmail, setSearchEmail] = useState("");
 
-  const filteredReservations = mockReservations.filter((reservation) => {
+  // Fetch reservations for the restaurant
+  useEffect(() => {
+    const fetchRestaurantData = async () => {
+      try {
+        const restaurantData = await getRestaurantById(restaurantId);
+        setReservations(restaurantData.reservations?.$values || []);
+      } catch (error) {
+        console.error("Failed to fetch reservations:", error);
+      }
+    };
+
+    fetchRestaurantData();
+  }, [restaurantId]);
+
+  const filteredReservations = reservations.filter((reservation) => {
     return (
       reservation.guestName.toLowerCase().includes(searchName.toLowerCase()) &&
       reservation.email.toLowerCase().includes(searchEmail.toLowerCase())
@@ -92,7 +76,9 @@ const HistoryComponent: React.FC = () => {
             {filteredReservations.length > 0 ? (
               filteredReservations.map((reservation, index) => (
                 <TableRow key={index}>
-                  <TableCell>{reservation.date.toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    {new Date(reservation.date).toLocaleDateString()}
+                  </TableCell>
                   <TableCell>{reservation.time}</TableCell>
                   <TableCell>{reservation.guestName}</TableCell>
                   <TableCell>{reservation.numOfPeople}</TableCell>

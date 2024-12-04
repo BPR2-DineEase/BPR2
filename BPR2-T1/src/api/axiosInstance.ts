@@ -4,7 +4,7 @@ const primaryBaseURL = "https://dineease.azurewebsites.net/api";
 const secondaryBaseURL = "https://localhost:7203/api";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5232/api",
+  baseURL: secondaryBaseURL,
   headers: {
     "Content-Type": "application/json",
   },

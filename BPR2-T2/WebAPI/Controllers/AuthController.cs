@@ -97,4 +97,57 @@ public class AuthController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
+    [HttpGet, Route("{id:Guid}")]
+    public async Task<ActionResult<User>> GetUserById([FromRoute] Guid id)
+    {
+        try
+        {
+           var user = await _authLogic.GetUserById(id);
+            return Ok(user);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+    
+    [HttpGet("user-email/{email}")]
+    public async Task<ActionResult<User>> GetUserByEmail(string email)
+    {
+        try
+        {
+            var decodedEmail = Uri.UnescapeDataString(email); 
+            var user = await _authLogic.GetUserByEmail(decodedEmail);
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found" });
+            }
+            return Ok(user);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+
+
+    [HttpGet, Route("user-credentials")]
+    public async Task<ActionResult<User>> GetUserByCredentials([FromQuery]UserCredentialsDto dto)
+    {
+        try
+        {
+            var user = await _authLogic.GetUserCredentials(dto);
+            return Ok(user);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+    
+    
 }
