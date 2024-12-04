@@ -215,7 +215,7 @@ namespace EfcDataAccess.Migrations
                     b.Property<string>("ResetOtp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RestaurantId")
+                    b.Property<int?>("RestaurantId")
                         .HasColumnType("int");
 
                     b.Property<string>("Role")
@@ -262,9 +262,7 @@ namespace EfcDataAccess.Migrations
                 {
                     b.HasOne("Domain.Models.Restaurant", "Restaurant")
                         .WithMany()
-                        .HasForeignKey("RestaurantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RestaurantId");
 
                     b.Navigation("Restaurant");
                 });
