@@ -35,8 +35,11 @@ namespace EfcDataAccess.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RestaurantId")
+                    b.Property<int?>("RestaurantId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Uri")
                         .IsRequired()
@@ -83,11 +86,21 @@ namespace EfcDataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("RestaurantId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Time")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("RestaurantId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Reservations");
                 });
@@ -103,6 +116,9 @@ namespace EfcDataAccess.Migrations
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
 
                     b.Property<string>("City")
                         .IsRequired()
@@ -159,9 +175,14 @@ namespace EfcDataAccess.Migrations
                     b.Property<int>("Stars")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("RestaurantId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Review");
                 });
@@ -194,24 +215,36 @@ namespace EfcDataAccess.Migrations
                     b.Property<string>("ResetOtp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("RestaurantId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("RestaurantId");
+
                     b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Domain.Models.Image", b =>
                 {
-                    b.HasOne("Domain.Models.Restaurant", "Restaurant")
+                    b.HasOne("Domain.Models.Restaurant", null)
                         .WithMany("Images")
-                        .HasForeignKey("RestaurantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RestaurantId");
+                });
 
-                    b.Navigation("Restaurant");
+            modelBuilder.Entity("Domain.Models.Reservation", b =>
+                {
+                    b.HasOne("Domain.Models.Restaurant", null)
+                        .WithMany("Reservations")
+                        .HasForeignKey("RestaurantId");
+
+                    b.HasOne("Domain.Models.User", null)
+                        .WithMany("Reservations")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Domain.Models.Review", b =>
@@ -219,11 +252,35 @@ namespace EfcDataAccess.Migrations
                     b.HasOne("Domain.Models.Restaurant", null)
                         .WithMany("Reviews")
                         .HasForeignKey("RestaurantId");
+
+                    b.HasOne("Domain.Models.User", null)
+                        .WithMany("Reviews")
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("Domain.Models.User", b =>
+                {
+                    b.HasOne("Domain.Models.Restaurant", "Restaurant")
+                        .WithMany()
+                        .HasForeignKey("RestaurantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Restaurant");
                 });
 
             modelBuilder.Entity("Domain.Models.Restaurant", b =>
                 {
                     b.Navigation("Images");
+
+                    b.Navigation("Reservations");
+
+                    b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("Domain.Models.User", b =>
+                {
+                    b.Navigation("Reservations");
 
                     b.Navigation("Reviews");
                 });

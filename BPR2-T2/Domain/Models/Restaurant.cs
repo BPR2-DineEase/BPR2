@@ -14,14 +14,17 @@ public class Restaurant
     public string OpenHours { get; set; }
     public string Cuisine { get; set; }
     public string Info { get; set; }
-    [JsonIgnore]
+    public int Capacity { get; set; } 
     public ICollection<Review> Reviews { get; set; }
     public ICollection<Image> Images { get; set; }
-    
+    public ICollection<Reservation> Reservations { get; set; }
     public Restaurant()
     {
-        Images = new List<Image>();
+        //Images = new List<Image>();
+        //Reservations = new List<Reservation>();
     }
     public double Latitude { get; set; }
     public double Longitude { get; set; }
+    
+    
 }

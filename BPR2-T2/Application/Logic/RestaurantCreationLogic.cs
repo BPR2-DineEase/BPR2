@@ -84,7 +84,7 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
             var images = updateRestaurantDto.ImageUris.Select(uri => new Image
             {
                 Uri = uri,
-                RestaurantId = restaurant.Id
+             //   RestaurantId = restaurant.Id
             }).ToList();
 
             await _imageDao.AddImagesAsync(images);
@@ -110,7 +110,7 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
             if (formFile.Length > 0)
             {
                 var uploadedImage = await _restaurantsLogic.UploadImageAsync(formFile, restaurantId);
-                uploadedImage.RestaurantId = restaurantId;
+               // uploadedImage.RestaurantId = restaurantId;
                 uploadedImages.Add(uploadedImage);
             }
         }
