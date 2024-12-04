@@ -56,7 +56,7 @@ const TableReservation = () => {
       });
       alert("Reservation created successfully");
     } catch (err) {
-      console.error("Failed to create Reservation. ");
+      console.error("Failed to create Reservation. " , err);
     }
 
     setDate(undefined);
