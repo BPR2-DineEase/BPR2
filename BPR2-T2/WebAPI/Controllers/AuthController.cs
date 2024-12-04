@@ -23,13 +23,23 @@ public class AuthController : ControllerBase
     {
         _authLogic = authLogic;
     }
-
+    
     [HttpPost, Route("register")]
-    public async Task<ActionResult> Register([FromBody] User user)
+    public async Task<ActionResult> Register([FromBody] UserRegisterDto userRegisterDto)
     {
         try
         {
-            await _authLogic.RegisterUser(user);
+            var user = new User
+            {
+                Id = userRegisterDto.Id,
+                Email = userRegisterDto.Email,
+                Password = userRegisterDto.Password,
+                FirstName = userRegisterDto.FirstName,
+                LastName = userRegisterDto.LastName,
+                Role = userRegisterDto.Role
+            };
+
+            await _authLogic.RegisterUser(userRegisterDto);
             return Ok();
         }
         catch (Exception e)

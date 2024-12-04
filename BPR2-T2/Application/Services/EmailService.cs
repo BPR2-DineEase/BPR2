@@ -17,7 +17,7 @@ public class EmailService
     {
         using (var smtpClient = new SmtpClient(_smtpServer, _smtpPort))
         {
-            smtpClient.EnableSsl = true; 
+            smtpClient.EnableSsl = false; 
 
             var mailMessage = new MailMessage
             {

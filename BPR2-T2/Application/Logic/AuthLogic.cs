@@ -44,18 +44,24 @@ public class AuthLogic : IAuthLogic
         return existingUser;
     }
 
-    public async Task RegisterUser(User user)
+    public async Task RegisterUser(UserRegisterDto userRegisterDto)
     {
-        if (string.IsNullOrEmpty(user.Email))
+       
+        var existingUser = await authDao.GetUserByEmail(userRegisterDto.Email);
+        if (existingUser != null)
         {
-            throw new ValidationException("Email cannot be null");
+            throw new ValidationException($"User with email {userRegisterDto.Email} already exists.");
         }
-
-        if (string.IsNullOrEmpty(user.Password))
+        
+        var user = new User
         {
-            throw new ValidationException("Password cannot be null");
-        }
-
+            Id = userRegisterDto.Id,
+            Email = userRegisterDto.Email,
+            Password = userRegisterDto.Password,
+            FirstName = userRegisterDto.FirstName,
+            LastName = userRegisterDto.LastName,
+            Role = userRegisterDto.Role
+        };
         await authDao.AddUser(user);
     }
 
