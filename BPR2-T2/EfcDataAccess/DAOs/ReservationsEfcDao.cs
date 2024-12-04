@@ -31,11 +31,19 @@ public class ReservationsEfcDao : IReservationsDao
         await _context.SaveChangesAsync();
         return reservation;
     }
-
+    
     public async Task<IEnumerable<Reservation>> GetReservations()
     {
-        var reservations = await _context.Reservations.ToListAsync();
-        await _context.SaveChangesAsync();
-        return reservations;
+        return await _context.Reservations
+            .Include(r => r.Restaurant) 
+            .Include(r => r.User)     
+            .ToListAsync();
+    }
+    
+    public async Task<IEnumerable<Reservation>> GetReservationsByUserId(Guid userId)
+    {
+        return await _context.Reservations
+            .Where(r => r.UserId == userId)
+            .ToListAsync();
     }
 }

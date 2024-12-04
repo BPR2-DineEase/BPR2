@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Application.LogicInterfaces;
 using Domain.Dtos.ReservationDtos;
 using Domain.Models;
@@ -16,13 +17,13 @@ public class ReservationsController : ControllerBase
         _reservationsLogic = reservationsLogic;
     }
 
-    [HttpPost]
-    public async Task<ActionResult<Reservation>> PostReservation(Reservation dto)
+    [HttpPost, Route("create")]
+    public async Task<ActionResult> CreateReservation([FromBody] ReservationDto reservationDto)
     {
         try
         {
-            var reservation = await _reservationsLogic.AddReservationAsync(dto);
-            return Created($"$/reservations/{reservation.Id}", reservation);
+            var reservation = await _reservationsLogic.AddReservationAsync(reservationDto);
+            return Ok(reservation);
         }
         catch (Exception e)
         {
@@ -58,6 +59,25 @@ public class ReservationsController : ControllerBase
         {
             Console.WriteLine(e);
             return StatusCode(500, e.Message);
+        }
+    }
+    
+    [HttpGet, Route("{userId}/reservations")]
+    public async Task<ActionResult<IEnumerable<ReservationDto>>> GetReservationsByUserId(Guid userId)
+    {
+        try
+        {
+            var reservations = await _reservationsLogic.GetReservationsByUserIdAsync(userId);
+            return Ok(reservations);
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return StatusCode(500, new { Message = ex.Message });
         }
     }
 }

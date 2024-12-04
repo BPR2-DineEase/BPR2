@@ -49,7 +49,7 @@ namespace EfcDataAccess.Migrations
 
                     b.HasIndex("RestaurantId");
 
-                    b.ToTable("Images");
+                    b.ToTable("Images", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Reservation", b =>
@@ -102,7 +102,7 @@ namespace EfcDataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reservations");
+                    b.ToTable("Reservations", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Restaurant", b =>
@@ -148,7 +148,7 @@ namespace EfcDataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Restaurants");
+                    b.ToTable("Restaurants", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Review", b =>
@@ -184,7 +184,7 @@ namespace EfcDataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Review");
+                    b.ToTable("Review", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.User", b =>
@@ -226,7 +226,7 @@ namespace EfcDataAccess.Migrations
 
                     b.HasIndex("RestaurantId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Image", b =>

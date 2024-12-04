@@ -1,4 +1,5 @@
 using System.Collections;
+using System.ComponentModel.DataAnnotations;
 using Application.DaoInterfaces;
 using Application.LogicInterfaces;
 using Domain.Dtos.ReservationDtos;
@@ -15,12 +16,24 @@ public class ReservationLogic : IReservationsLogic
         this.reservationsDao = reservationsDao;
     }
 
-    public async Task<Reservation> AddReservationAsync(Reservation addReservation)
+    public async Task<Reservation> AddReservationAsync(ReservationDto reservationDto)
     {
-        
-        var reservation = await reservationsDao.CreateReservation(addReservation);
+      
+        var reservation = new Reservation
+        {
+            GuestName = reservationDto.GuestName,
+            PhoneNumber = reservationDto.PhoneNumber,
+            Email = reservationDto.Email,
+            Company = reservationDto.Company,
+            Comments = reservationDto.Comments,
+            Date = reservationDto.Date,
+            Time = reservationDto.Time,
+            NumOfPeople = reservationDto.NumOfPeople,
+            UserId = reservationDto.UserId,
+            RestaurantId = reservationDto.RestaurantId
+        };
 
-        return reservation;
+        return await reservationsDao.CreateReservation(reservation);
     }
 
     public async Task<IEnumerable<Reservation>> GetAllReservationsAsync()
@@ -36,5 +49,26 @@ public class ReservationLogic : IReservationsLogic
 
         return reservation;
     }
+    
+    public async Task<IEnumerable<ReservationDto>> GetReservationsByUserIdAsync(Guid userId)
+    {
+        if (userId == Guid.Empty)
+        {
+            throw new ValidationException("UserId cannot be empty.");
+        }
 
+        var reservations = await reservationsDao.GetReservationsByUserId(userId);
+        return reservations.Select(r => new ReservationDto
+        {
+            Id = r.Id,
+            GuestName = r.GuestName,
+            PhoneNumber = r.PhoneNumber,
+            Email = r.Email,
+            Date = r.Date,
+            Time = r.Time,
+            NumOfPeople = r.NumOfPeople,
+            Comments = r.Comments
+        });
+    }
 }
+
