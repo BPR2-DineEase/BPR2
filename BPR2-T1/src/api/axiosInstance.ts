@@ -4,11 +4,10 @@ const primaryBaseURL = "https://dineease.azurewebsites.net/api";
 const secondaryBaseURL = "https://localhost:7203/api";
 
 const axiosInstance = axios.create({
-    baseURL: primaryBaseURL,
-    headers: {
-        "Content-Type": "application/json",
-    },
-    timeout: 10000,
+  baseURL: "http://localhost:5232/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 axiosInstance.interceptors.response.use(
@@ -29,4 +28,3 @@ axiosInstance.interceptors.response.use(
     }
 );
 export default axiosInstance;
-    
