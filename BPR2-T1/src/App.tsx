@@ -21,6 +21,7 @@ const App: React.FC = () => {
         <Route path="/create-restaurant" element={<CreateRestaurant />} />
         <Route path="/request-reset-otp" element={<RequestResetOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/dashboard" element={<OwnerDashboard />} />
         <Route
           path="/"
           element={

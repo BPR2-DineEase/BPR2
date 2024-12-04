@@ -31,7 +31,10 @@ public class ReservationContext : DbContext
     {
         modelBuilder.Entity<Reservation>().HasKey(x => x.Id);
         modelBuilder.Entity<Restaurant>()
-            .HasKey(r => r.Id);
+            .HasMany(r => r.Images)
+            .WithOne(i => i.Restaurant)
+            .HasForeignKey(i => i.RestaurantId)
+            .OnDelete(DeleteBehavior.Cascade); 
         modelBuilder.Entity<User>()
             .HasOne(u => u.Restaurant)
             .WithMany()

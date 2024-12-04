@@ -1,4 +1,4 @@
-import {Restaurant, FilterOptions, filterRestaurants, searchRestaurants, restaurantCreate} from "../api/restaurantApi";
+import {Restaurant, FilterOptions, filterRestaurants, searchRestaurants, restaurantCreate, CreateRestaurantDto} from "../api/restaurantApi";
 
 export const searchRestaurantsByCity = async (city: string): Promise<Restaurant[]> => {
     if (!city) {
@@ -22,9 +22,18 @@ export const filterRestaurantsByOptions = async (options: FilterOptions): Promis
     }
 };
 
-export const createRestaurant = async (data: FormData): Promise<any> => {
+export const createRestaurant = async (dto: CreateRestaurantDto, files: File[], imageTypes: string[]): Promise<any> => {
+  
+    const formData = new FormData();
+    Object.entries(dto).forEach(([key, value]) => {
+        formData.append(key, value.toString());
+    });
+    
+    files.forEach((file) => formData.append("files", file));
+    imageTypes.forEach((type) => formData.append("imageTypes", type));
+
     try {
-        return await restaurantCreate(data);
+        return await restaurantCreate(formData);
     } catch (error: any) {
         throw new Error(error.message || "Failed to create restaurant.");
     }

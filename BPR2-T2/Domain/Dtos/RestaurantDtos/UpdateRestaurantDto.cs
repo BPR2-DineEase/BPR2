@@ -9,7 +9,7 @@ public class UpdateRestaurantDto
     public string OpenHours { get; set; }
     public string Cuisine { get; set; }
     public string Info { get; set; }
-    
     public int Capacity { get; set; }
     public List<string> ImageUris { get; set; }
+    public List<string>? ImageTypes { get; set; }
 }

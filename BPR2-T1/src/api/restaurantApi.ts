@@ -24,6 +24,7 @@ export interface CreateRestaurantDto {
     openHours: string;
     cuisine: string;
     info: string;
+    capacity: number;
     latitude?: number;
     longitude?: number;
 }

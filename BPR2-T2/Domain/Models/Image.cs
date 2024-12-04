@@ -15,4 +15,6 @@ public class Image
     public string? ContentType { get; set; }
     public string? Type { get; set; }
     public Image() { }
+    public int RestaurantId { get; set; }
+    public Restaurant Restaurant { get; set; }
 }
