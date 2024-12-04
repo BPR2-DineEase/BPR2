@@ -4,7 +4,11 @@ import history from "../../public/history.png";
 import dashboard from "../../public/dashboard.png";
 import restaurantLogo from "../../public/restaurantLogo.png";
 
-const SideBar: React.FC = () => {
+interface SideBarProps {
+  onNavigate: (view: "RESERVATION SCHEDULE" | "HISTORY" | "SETTINGS" | "LOGOUT") => void;
+}
+
+const SideBar: React.FC<SideBarProps> = ({ onNavigate }) => {
   return (
     <div className="flex h-full">
       <div className="flex flex-col">
@@ -14,38 +18,53 @@ const SideBar: React.FC = () => {
 
         <div className="flex flex-col h-full mr-12 w-60">
           <div className="flex flex-col mt-44 ml-14">
-            <div className="flex items-center space-x-6 rounded-xl p-2 cursor-pointer hover:bg-blue-200 transform transition duration-300">
+            <div
+              onClick={() => onNavigate("RESERVATION SCHEDULE")}
+              className="flex items-center space-x-6 rounded-xl p-2 cursor-pointer hover:bg-blue-200 transform transition duration-300"
+            >
               <img
                 src={dashboard}
-                alt="dashboard logo"
+                alt="Dashboard Logo"
                 className="max-h-6 ml-1 my-[5px]"
               />
-              <h1 className="text-xl text-blue-400 font-semibold mr-1 ">
+              <h1 className="text-xl text-blue-400 font-semibold mr-1">
                 Dashboard
               </h1>
             </div>
-            <div className="flex mt-4 items-center space-x-6 rounded-xl p-2 cursor-pointer hover:bg-blue-200 transform transition duration-300">
+
+            <div
+              onClick={() => onNavigate("HISTORY")}
+              className="flex mt-4 items-center space-x-6 rounded-xl p-2 cursor-pointer hover:bg-blue-200 transform transition duration-300"
+            >
               <img
                 src={history}
-                alt="History logo"
+                alt="History Logo"
                 className="max-h-6 ml-1 my-[5px]"
               />
               <h1 className="text-xl text-blue-400 font-semibold mr-1">
                 History
               </h1>
             </div>
-            <div className="flex mt-4 items-center space-x-6 rounded-xl p-2 cursor-pointer hover:bg-blue-200 transform transition duration-300">
+
+            <div
+              onClick={() => onNavigate("SETTINGS")}
+              className="flex mt-4 items-center space-x-6 rounded-xl p-2 cursor-pointer hover:bg-blue-200 transform transition duration-300"
+            >
               <img
                 src={settings}
-                alt="settings logo"
+                alt="Settings Logo"
                 className="max-h-6 ml-1 my-[5px]"
               />
               <h1 className="text-xl text-blue-400 font-semibold">Settings</h1>
             </div>
-            <div className="flex mt-4 items-center space-x-6 rounded-xl p-2 cursor-pointer hover:bg-blue-200 transform transition duration-300">
+
+            <div
+              onClick={() => onNavigate("LOGOUT")}
+              className="flex mt-4 items-center space-x-6 rounded-xl p-2 cursor-pointer hover:bg-blue-200 transform transition duration-300"
+            >
               <img
                 src={logout}
-                alt="logout logo"
+                alt="Logout Logo"
                 className="max-h-6 ml-1 my-[5px]"
               />
               <h1 className="text-xl text-blue-400 font-semibold mr-1">

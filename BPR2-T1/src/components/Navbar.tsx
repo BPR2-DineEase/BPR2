@@ -1,10 +1,14 @@
 import bell from "../../public/bell.png";
 
-const Navbar: React.FC = () => {
+interface Props  {
+  title: string
+}
+
+const Navbar: React.FC<Props> = (props) => {
   return (
     <div className="sticky top-0 z-10 bg-white shadow-md flex w-full p-4 items-center">
       <h1 className="text-3xl text-blue-500 font-semibold">
-        RESERVATION SCHEDULE
+        {props.title}
       </h1>
 
       <div className="flex flex-1 justify-end items-center mr-10">
