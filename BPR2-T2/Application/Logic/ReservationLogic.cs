@@ -17,24 +17,24 @@ public class ReservationLogic : IReservationsLogic
 
     public async Task<Reservation> AddReservationAsync(Reservation addReservation)
     {
-
         
-        var reserve = await reservationsDao.CreateReservation(addReservation);
+        var reservation = await reservationsDao.CreateReservation(addReservation);
 
-        return reserve;
+        return reservation;
     }
 
-    public Task<IEnumerable<Reservation>> GetAllReservationsAsync()
-    { 
-        var reservations = reservationsDao.GetReservations();
-        
+    public async Task<IEnumerable<Reservation>> GetAllReservationsAsync()
+    {
+        var reservations = await reservationsDao.GetReservations();
+
         return reservations;
     }
 
     public async Task<Reservation?> GetReservationByIdAsync(int id)
     {
         var reservation = await reservationsDao.GetReservationById(id);
-        
+
         return reservation;
     }
+
 }

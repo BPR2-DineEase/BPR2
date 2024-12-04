@@ -1,5 +1,6 @@
 using Application.LogicInterfaces;
 using Domain.Dtos;
+using Domain.Dtos.RestaurantDtos;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 

@@ -2,6 +2,7 @@ using Application.DaoInterfaces;
 using Application.LogicInterfaces;
 using Application.Services;
 using Domain.Dtos;
+using Domain.Dtos.RestaurantDtos;
 using Domain.Models;
 using Microsoft.AspNetCore.Http;
 
@@ -14,7 +15,8 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
     private readonly IRestaurantsLogic _restaurantsLogic;
     private readonly IGoogleMapsService _googleMapsService;
 
-    public RestaurantCreationLogic(IRestaurantsDao restaurantsDao, IImageDao imageDao, IRestaurantsLogic restaurantsLogic, IGoogleMapsService googleMapsService)
+    public RestaurantCreationLogic(IRestaurantsDao restaurantsDao, IImageDao imageDao,
+        IRestaurantsLogic restaurantsLogic, IGoogleMapsService googleMapsService)
     {
         _restaurantsDao = restaurantsDao;
         _imageDao = imageDao;
@@ -24,22 +26,10 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
 
     public async Task<Restaurant> AddRestaurantAsync(CreateRestaurantDto createRestaurantDto, List<IFormFile>? images)
     {
-        
-        if (!createRestaurantDto.Latitude.HasValue || !createRestaurantDto.Longitude.HasValue)
-        {
-            try
-            {
-                var coordinates = await _googleMapsService.GetCoordinatesAsync(createRestaurantDto.Address, createRestaurantDto.City);
-                createRestaurantDto.Latitude = coordinates.Latitude;
-                createRestaurantDto.Longitude = coordinates.Longitude;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Failed to retrieve coordinates from Google Maps.", ex);
-            }
-        }
+        var coordinates =
+            await _googleMapsService.GetCoordinatesAsync(createRestaurantDto.Address, createRestaurantDto.City);
 
-        
+
         var restaurant = new Restaurant
         {
             Name = createRestaurantDto.Name,
@@ -47,13 +37,14 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
             City = createRestaurantDto.City,
             OpenHours = createRestaurantDto.OpenHours,
             Cuisine = createRestaurantDto.Cuisine,
+            Capacity = createRestaurantDto.Capacity,
             Info = createRestaurantDto.Info,
-            Latitude = createRestaurantDto.Latitude.Value, 
-            Longitude = createRestaurantDto.Longitude.Value,
+            Latitude = coordinates.Latitude,
+            Longitude = coordinates.Longitude,
         };
-        
+
         var restaurantId = await _restaurantsDao.AddRestaurantAsync(restaurant);
-        
+
         if (images != null && images.Any())
         {
             await HandleImagesAsync(images, restaurantId);
@@ -69,22 +60,23 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
         {
             throw new Exception("Restaurant not found.");
         }
-        
+
         restaurant.Name = updateRestaurantDto.Name;
         restaurant.Address = updateRestaurantDto.Address;
         restaurant.City = updateRestaurantDto.City;
+        restaurant.Capacity = updateRestaurantDto.Capacity;
         restaurant.OpenHours = updateRestaurantDto.OpenHours;
         restaurant.Cuisine = updateRestaurantDto.Cuisine;
         restaurant.Info = updateRestaurantDto.Info;
-        
+
         await _restaurantsDao.UpdateRestaurantAsync(restaurant);
-        
+
         if (updateRestaurantDto.ImageUris != null && updateRestaurantDto.ImageUris.Any())
         {
             var images = updateRestaurantDto.ImageUris.Select(uri => new Image
             {
                 Uri = uri,
-             //   RestaurantId = restaurant.Id
+                Type = "restaurant"
             }).ToList();
 
             await _imageDao.AddImagesAsync(images);
@@ -104,13 +96,15 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
     private async Task HandleImagesAsync(List<IFormFile> images, int restaurantId)
     {
         var uploadedImages = new List<Image>();
+        
+        var restaurant = await _restaurantsDao.GetRestaurantByIdAsync(restaurantId);
 
         foreach (var formFile in images)
         {
             if (formFile.Length > 0)
             {
                 var uploadedImage = await _restaurantsLogic.UploadImageAsync(formFile, restaurantId);
-               // uploadedImage.RestaurantId = restaurantId;
+                if (restaurant != null) restaurant.Id = restaurantId;
                 uploadedImages.Add(uploadedImage);
             }
         }

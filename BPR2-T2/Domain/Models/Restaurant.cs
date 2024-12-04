@@ -20,8 +20,7 @@ public class Restaurant
     public ICollection<Reservation> Reservations { get; set; }
     public Restaurant()
     {
-        //Images = new List<Image>();
-        //Reservations = new List<Reservation>();
+
     }
     public double Latitude { get; set; }
     public double Longitude { get; set; }

@@ -11,4 +11,5 @@ public class AddReservationDto
     public DateTime Date { get; set; }
     public string Time { get; set; }
     public int NumOfPeople { get; set; }
+    
 }

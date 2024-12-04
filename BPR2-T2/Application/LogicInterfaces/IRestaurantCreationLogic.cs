@@ -1,4 +1,5 @@
 using Domain.Dtos;
+using Domain.Dtos.RestaurantDtos;
 using Domain.Models;
 using Microsoft.AspNetCore.Http;
 
