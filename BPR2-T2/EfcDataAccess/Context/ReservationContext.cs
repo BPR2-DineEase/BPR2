@@ -32,7 +32,10 @@ public class ReservationContext : DbContext
         modelBuilder.Entity<Reservation>().HasKey(x => x.Id);
         modelBuilder.Entity<Restaurant>()
             .HasKey(r => r.Id);
-        modelBuilder.Entity<User>().HasKey(x => x.Id);
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.Restaurant)
+            .WithMany()
+            .IsRequired(false);
         modelBuilder.Entity<Image>(entity =>
         {
             entity.Property(i => i.Id)

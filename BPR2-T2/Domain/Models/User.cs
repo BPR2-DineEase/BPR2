@@ -10,7 +10,7 @@ public class User
     public string Role { get; set; }
     public string? ResetOtp { get; set; }
     public DateTime? OtpExpiry { get; set; }
-    public Restaurant Restaurant { get; set; }
+    public Restaurant? Restaurant { get; set; }
     public ICollection<Review> Reviews { get; set; }
     public ICollection<Reservation> Reservations { get; set; }
 
