@@ -17,7 +17,6 @@ const HistoryComponent: React.FC<{ restaurantId: number }> = ({
   const [searchName, setSearchName] = useState("");
   const [searchEmail, setSearchEmail] = useState("");
 
-  // Fetch reservations for the restaurant
   useEffect(() => {
     const fetchRestaurantData = async () => {
       try {
