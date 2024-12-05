@@ -23,34 +23,22 @@ public class ReservationsController : ControllerBase
     }
 
     [HttpPost, Route("create")]
-    public async Task<ActionResult> CreateReservation([FromBody] ReservationDto reservationDto, [FromQuery] string token)
+    public async Task<ActionResult> CreateReservation([FromBody] ReservationDto reservationDto)
     {
         try
         {
-            if (string.IsNullOrEmpty(token))
-            {
-                return Unauthorized("Token not provided.");
-            }
-
-            var handler = new JwtSecurityTokenHandler();
-            if (!handler.CanReadToken(token))
-            {
-                return Unauthorized("Invalid token.");
-            }
-            
-            
-            var userIdClaim = User.FindFirst("id")?.Value; 
+            var userIdClaim = User.FindFirst("id")?.Value;
             if (string.IsNullOrEmpty(userIdClaim))
             {
                 return Unauthorized("User ID not found in token.");
             }
-
+            
             if (!Guid.TryParse(userIdClaim, out var userId))
             {
                 Console.WriteLine($"Invalid userId format: {userIdClaim}");
                 return BadRequest("Invalid userId format in token.");
             }
-
+            
             reservationDto.UserId = userId;
             var reservation = await _reservationsLogic.AddReservationAsync(reservationDto);
             return Ok(reservation);

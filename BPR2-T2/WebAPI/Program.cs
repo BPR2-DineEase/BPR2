@@ -54,8 +54,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     {
         OnMessageReceived = context =>
         {
-            var token = context.Request.Headers["X-Custom-Token"].FirstOrDefault() ??
-                        context.Request.Query["token"];
+            var token = context.Request.Headers["X-Custom-Token"].FirstOrDefault();
 
             if (!string.IsNullOrWhiteSpace(token))
             {
