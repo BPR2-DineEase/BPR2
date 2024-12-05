@@ -1,8 +1,13 @@
 using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Application.LogicInterfaces;
 using Domain.Dtos.ReservationDtos;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace WebAPI.Controllers;
 
@@ -18,10 +23,35 @@ public class ReservationsController : ControllerBase
     }
 
     [HttpPost, Route("create")]
-    public async Task<ActionResult> CreateReservation([FromBody] ReservationDto reservationDto)
+    public async Task<ActionResult> CreateReservation([FromBody] ReservationDto reservationDto, [FromQuery] string token)
     {
         try
         {
+            if (string.IsNullOrEmpty(token))
+            {
+                return Unauthorized("Token not provided.");
+            }
+
+            var handler = new JwtSecurityTokenHandler();
+            if (!handler.CanReadToken(token))
+            {
+                return Unauthorized("Invalid token.");
+            }
+            
+            
+            var userIdClaim = User.FindFirst("id")?.Value; 
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("User ID not found in token.");
+            }
+
+            if (!Guid.TryParse(userIdClaim, out var userId))
+            {
+                Console.WriteLine($"Invalid userId format: {userIdClaim}");
+                return BadRequest("Invalid userId format in token.");
+            }
+
+            reservationDto.UserId = userId;
             var reservation = await _reservationsLogic.AddReservationAsync(reservationDto);
             return Ok(reservation);
         }

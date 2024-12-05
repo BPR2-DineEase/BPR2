@@ -98,15 +98,14 @@ public class AuthLogic : IAuthLogic
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, _jwtSubject ?? "DefaultSubject"),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
             new Claim(ClaimTypes.Name, user.LastName),
             new Claim(ClaimTypes.Role, user.Role),
             new Claim(ClaimTypes.Email, user.Email),
+            new Claim("id", user.Id.ToString())               
         };
         return claims.ToList();
     }
-    
+   
     public async Task<string> GeneratePasswordResetOtp(string email)
     {
         var user = await authDao.GetUserByEmail(email);
