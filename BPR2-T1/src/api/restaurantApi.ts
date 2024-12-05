@@ -1,6 +1,7 @@
 import axiosInstance from "@/api/axiosInstance";
 
 export type Restaurant = {
+    openHours(openHours: any): unknown;
     reservations: any;
     id: number;
     name: string;

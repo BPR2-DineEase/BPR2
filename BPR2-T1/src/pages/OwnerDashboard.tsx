@@ -45,7 +45,6 @@ const OwnerDashboard: React.FC = () => {
 
     try {
       const user = await getUserByEmail(email);
-      console.log("Fetched User Details:", user);
       setUserDetails(user);
       setActiveRestaurant(user.restaurant);
     } catch (error) {
@@ -78,7 +77,9 @@ const OwnerDashboard: React.FC = () => {
         <Navbar title={activeView} />
 
         <div className="flex-1 p-8">
-          {activeView === "RESERVATION SCHEDULE" && <Scheduler />}
+          {activeView === "RESERVATION SCHEDULE" && (
+            <Scheduler restaurantId={activeRestaurant.id} />
+          )}
           {activeView === "HISTORY" && (
             <HistoryComponent restaurantId={activeRestaurant.id} />
           )}
