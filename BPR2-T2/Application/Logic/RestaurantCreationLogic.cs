@@ -76,7 +76,8 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
             var images = updateRestaurantDto.ImageUris.Select(uri => new Image
             {
                 Uri = uri,
-                Type = "restaurant"
+                Type = "restaurant",
+                RestaurantId = updateRestaurantDto.Id
             }).ToList();
 
             await _imageDao.AddImagesAsync(images);

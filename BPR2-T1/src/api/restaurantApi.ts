@@ -1,16 +1,19 @@
 import axiosInstance from "@/api/axiosInstance";
 
 export type Restaurant = {
-    openHours(openHours: any): unknown;
-    reservations: any;
-    id: number;
-    name: string;
-    city: string;
-    cuisine: string;
-    rating?: number;
-    latitude: number;
-    longitude: number;
+  id: number;
+  name: string;
+  city: string;
+  cuisine: string;
+  rating: number;
+  latitude: number;
+  longitude: number;
+  capacity: number;
+  openHours: string;
+  imageUris: [];
+  reservations: any;
 };
+
 
 export type FilterOptions = {
     name?: string;
@@ -80,6 +83,20 @@ export const getRestaurantById = async (id: number): Promise<Restaurant> => {
     throw err;
   }
 };
+
+export const updateRestaurant = async (data: Restaurant): Promise<any> => {
+  try {
+    const response = await axiosInstance.put(
+      `/RestaurantCreation/${data.id}`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
 
 
 

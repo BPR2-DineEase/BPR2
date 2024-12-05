@@ -2,7 +2,7 @@ import { getDecodedToken, getUserByEmail } from "@/api/authAPI";
 import HistoryComponent from "@/components/HistoryComponent";
 import Navbar from "@/components/Navbar";
 import Scheduler from "@/components/Scheduler";
-import SettingsComponent from "@/components/SettingsComponent";
+import { SettingsComponent } from "@/components/SettingsComponent";
 import SideBar from "@/components/SideBar";
 import { useAuth } from "@/context/AuthContext";
 import { removeToken } from "@/services/jwtService";
@@ -83,7 +83,9 @@ const OwnerDashboard: React.FC = () => {
           {activeView === "HISTORY" && (
             <HistoryComponent restaurantId={activeRestaurant.id} />
           )}
-          {activeView === "SETTINGS" && <SettingsComponent />}
+          {activeView === "SETTINGS" && (
+            <SettingsComponent restaurantId={activeRestaurant.id} />
+          )}
         </div>
       </div>
     </div>
