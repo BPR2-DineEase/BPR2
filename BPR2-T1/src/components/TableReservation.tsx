@@ -1,28 +1,16 @@
 import React from "react";
 import { format, isBefore, startOfDay } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
+import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover";
+import {Card, CardContent, CardFooter, CardHeader, CardTitle,} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import ReservationProccess from "./ReservationProccess";
 import { postReservation } from "@/api/ReservationApi";
+import {useAuth} from "@/context/AuthContext.tsx";
+import {cn} from "@/lib/utils.ts";
 
 const TableReservation = () => {
   const [comments, setComment] = React.useState<string>("");
@@ -36,12 +24,20 @@ const TableReservation = () => {
   const [numOfPeople, setNumOfPeople] = React.useState<number>();
   const [isPopoverOpen, setIsPopoverOpen] = React.useState<boolean>(false);
   const today = startOfDay(new Date());
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!date) return;
-    if (!numOfPeople) return;
+    if (!date || !numOfPeople) return;
+
+    if (!user) {
+      alert("You must be logged in to make a reservation.");
+      return;
+    }
+
+    const restaurantId = 1; 
+    const userId = user.userId;
 
     try {
       await postReservation({
@@ -53,7 +49,10 @@ const TableReservation = () => {
         comments,
         company,
         email,
+        userId,
+        restaurantId,
       });
+
       alert("Reservation created successfully");
     } catch (err) {
       console.error("Failed to create Reservation. " , err);
