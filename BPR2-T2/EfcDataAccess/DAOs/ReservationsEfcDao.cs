@@ -74,4 +74,16 @@ public class ReservationsEfcDao : IReservationsDao
             })
             .ToListAsync();
     }
+    
+    public async Task UpdateReservationAsync(Reservation reservation)
+    {
+        _context.Reservations.Update(reservation);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteReservationAsync(Reservation reservation)
+    {
+        _context.Reservations.Remove(reservation);
+        await _context.SaveChangesAsync();
+    }
 }

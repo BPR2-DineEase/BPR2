@@ -60,5 +60,35 @@ public class ReservationLogic : IReservationsLogic
 
         return  await reservationsDao.GetUserReservationsAsync(userId);
     }
+
+    public async Task UpdateReservationAsync(UpdateReservationDto updateReservationDto)
+    {
+        
+        var reservation = await reservationsDao.GetReservationById(updateReservationDto.Id);
+        if (reservation == null)
+        {
+            throw new Exception("Reservation not found.");
+        }
+        
+        reservation.GuestName = updateReservationDto.GuestName;
+        reservation.Comments = updateReservationDto.Comments;
+        reservation.Date = updateReservationDto.Date;
+        reservation.Time = updateReservationDto.Time;
+        reservation.NumOfPeople = updateReservationDto.NumOfPeople;
+
+     
+        await reservationsDao.UpdateReservationAsync(reservation);
+    }
+
+    public async Task DeleteReservationAsync(int id)
+    {
+        var reservation = await reservationsDao.GetReservationById(id);
+        if (reservation == null)
+        {
+            throw new Exception("Reservation not found.");
+        }
+
+        await reservationsDao.DeleteReservationAsync(reservation);
+    }
 }
 

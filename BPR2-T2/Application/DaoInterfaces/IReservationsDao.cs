@@ -10,4 +10,6 @@ public interface IReservationsDao
     Task<Reservation?> GetReservationById(int id);
     Task<IEnumerable<Reservation>> GetReservations();
     Task<IEnumerable<ReservationWithRestaurantDto>> GetUserReservationsAsync(Guid userId);
+    Task UpdateReservationAsync(Reservation reservation);
+    Task DeleteReservationAsync(Reservation reservation);
 }

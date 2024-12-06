@@ -94,4 +94,38 @@ public class ReservationsController : ControllerBase
             return StatusCode(500, new { Message = ex.Message });
         }
     }
+    
+    
+    [HttpPut("{id}/update")]
+    public async Task<ActionResult> UpdateReservation(int id, [FromBody] UpdateReservationDto updateReservationDto)
+    {
+        if (id != updateReservationDto.Id)
+        {
+            return BadRequest("Reservation ID mismatch.");
+        }
+
+        try
+        {
+            await _reservationsLogic.UpdateReservationAsync(updateReservationDto);
+            return NoContent();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpDelete("{id}/cancel")]
+    public async Task<ActionResult> DeleteReservation(int id)
+    {
+        try
+        {
+            await _reservationsLogic.DeleteReservationAsync(id);
+            return NoContent();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
 }
