@@ -65,7 +65,7 @@ public class RestaurantCreationController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Restaurant>> GetRestaurantById(int id)
+    public async Task<ActionResult<RestaurantPreviewDto>> GetRestaurantById(int id)
     {
         try
         {
@@ -73,7 +73,7 @@ public class RestaurantCreationController : ControllerBase
 
             if (restaurant == null)
             {
-                return NotFound($"Restaurant with ID {id} not found.");
+                return NotFound("Restaurant not found.");
             }
 
             return Ok(restaurant);

@@ -13,6 +13,7 @@ import RequestResetOtp from "@/pages/ResetOtpPage";
 import OwnerDashboard from "./pages/OwnerDashboardPage";
 import UserReservations from "@/pages/UserReservationsPage";
 import {Toaster} from "@/components/ui/toaster.tsx";
+import RestaurantProfile from "@/pages/RestaurantProfilePage";
 
 const App: React.FC = () => {
   return  ( <>
@@ -26,6 +27,7 @@ const App: React.FC = () => {
         <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/dashboard" element={<OwnerDashboard />} />
           <Route path="/user-reservations" element={<UserReservations />} />
+          <Route path="/restaurants/:id" element={<RestaurantProfile />} />
         <Route
           path="/"
           element={

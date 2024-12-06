@@ -8,12 +8,15 @@ export type RestaurantData = {
     info: string;
     capacity: number;
     images: {
-        id: string;
-        uri: string;
-        name: string | null;
-        contentType: string | null;
-        type: string | null;
-    }[];
+        $id: string;
+        $values: {
+            id: string;
+            uri: string;
+            name: string | null;
+            contentType: string | null;
+            type: string | null;
+        }[];
+    };
 };
 
 export type ReservationData = {

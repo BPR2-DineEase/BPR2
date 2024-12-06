@@ -1,5 +1,5 @@
-import {CreateRestaurantDto, FilterOptions, Restaurant} from "@/types/types.ts";
-import {filterRestaurants, restaurantCreate, searchRestaurants} from "@/api/restaurantApi.ts";
+import {CreateRestaurantDto, FilterOptions, Restaurant, RestaurantData} from "@/types/types.ts";
+import {fetchRestaurant, filterRestaurants, restaurantCreate, searchRestaurants} from "@/api/restaurantApi.ts";
 
 
 export const searchRestaurantsByCity = async (city: string): Promise<Restaurant[]> => {
@@ -38,5 +38,18 @@ export const createRestaurant = async (dto: CreateRestaurantDto, files: File[], 
         return await restaurantCreate(formData);
     } catch (error: any) {
         throw new Error(error.message || "Failed to create restaurant.");
+    }
+};
+
+export const fetchRestaurantById = async (id: number): Promise<RestaurantData> => {
+    if (!id) {
+        throw new Error("Restaurant ID is required to fetch the restaurant.");
+    }
+
+    try {
+        const data = await fetchRestaurant(id);
+        return data;
+    } catch (error: any) {
+        throw new Error(error.message || "Failed to fetch restaurant details.");
     }
 };

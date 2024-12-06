@@ -83,9 +83,32 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
         }
     }
 
-    public async Task<Restaurant?> GetRestaurantByIdAsync(int id)
+    public async Task<RestaurantPreviewDto?> GetRestaurantByIdAsync(int restaurantId)
     {
-        return await _restaurantsDao.GetRestaurantByIdAsync(id);
+        var restaurant = await _restaurantsDao.GetRestaurantByIdAsync(restaurantId);
+
+        if (restaurant == null)
+        {
+            return null;
+        }
+        
+        return new RestaurantPreviewDto
+        {
+            Id = restaurant.Id,
+            Name = restaurant.Name,
+            Address = restaurant.Address,
+            City = restaurant.City,
+            OpenHours = restaurant.OpenHours,
+            Cuisine = restaurant.Cuisine,
+            Info = restaurant.Info,
+            Capacity = restaurant.Capacity,
+            Images = restaurant.Images?.Select(img => new ImageDto
+            {
+                Id = img.Id,
+                Uri = img.Uri,
+                Type = img.Type
+            }).ToList()
+        };
     }
 
     public async Task<IEnumerable<Restaurant>> GetAllRestaurantsAsync()

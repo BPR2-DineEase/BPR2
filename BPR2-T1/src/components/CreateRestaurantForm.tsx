@@ -58,7 +58,7 @@ const CreateRestaurantForm: React.FC = () => {
             const filesArray = Array.from(images);
             const createdRestaurant = await createRestaurant(formData, filesArray, imageTypes);
             setMessage(`Restaurant created successfully with ID: ${createdRestaurant.id}`);
-            navigate("/");
+            navigate(`/restaurants/${createdRestaurant.id}`);
         } catch (error: unknown) {
             if (error instanceof Error) {
                 setMessage(error.message);

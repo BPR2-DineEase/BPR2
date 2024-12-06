@@ -1,5 +1,5 @@
 import axiosInstance from "@/api/axiosInstance";
-import {FilterOptions, Restaurant } from "@/types/types";
+import {FilterOptions, Restaurant, RestaurantData } from "@/types/types";
 
 
 export const searchRestaurants = async (city: string): Promise<Restaurant[]> => {
@@ -33,5 +33,16 @@ export const restaurantCreate = async (data: FormData): Promise<any> => {
     } catch (error) {
         console.error("API Error in restaurantCreate:", error);
         throw error;
+    }
+};
+
+export const fetchRestaurant = async (id: number): Promise<RestaurantData> => {
+    try {
+        const { data } = await axiosInstance.get(`/RestaurantCreation/${id}`);
+        console.log("API Response:", data);
+        return data || {};
+    } catch (err) {
+        console.error("API Error in fetchRestaurant:", err);
+        throw err;
     }
 };
