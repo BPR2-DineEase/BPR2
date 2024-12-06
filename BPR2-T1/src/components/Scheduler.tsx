@@ -91,13 +91,13 @@ const Scheduler: React.FC<SchedulerProps> = ({ restaurantId }) => {
     const parseTime = (time: string) => {
       const [timePart, period] = time.split(" ");
       const [hours, minutes] = timePart.split(":").map(Number);
-      const adjustedHours =
-        period === "PM" && hours !== 12
-          ? hours + 12
-          : period === "AM" && hours === 12
-          ? 0
-          : hours;
-      return new Date(0, 0, 0, adjustedHours, minutes); 
+      return new Date(
+        0,
+        0,
+        0,
+        period === "PM" && hours !== 12 ? hours + 12 : hours === 12 && period === "AM" ? 0 : hours,
+        minutes
+      );
     };
 
     const updatedSchedules = staticTimeSlots.map((timeSlot) => {
@@ -125,7 +125,7 @@ const Scheduler: React.FC<SchedulerProps> = ({ restaurantId }) => {
             hour: "2-digit",
             minute: "2-digit",
             hour12: true,
-          }), 
+          }),
         })),
       };
     });

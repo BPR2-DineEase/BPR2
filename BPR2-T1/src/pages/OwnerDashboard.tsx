@@ -1,13 +1,27 @@
 import { getDecodedToken, getUserByEmail } from "@/api/authAPI";
+import {
+  CustomCardComponent,
+} from "@/components/CustomCardComponent";
 import HistoryComponent from "@/components/HistoryComponent";
 import Navbar from "@/components/Navbar";
-import Scheduler from "@/components/Scheduler";
 import { SettingsComponent } from "@/components/SettingsComponent";
 import SideBar from "@/components/SideBar";
 import { useAuth } from "@/context/AuthContext";
 import { removeToken } from "@/services/jwtService";
+import { format } from "date-fns";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import Scheduler from "@/components/Scheduler";
+import { ReserveDialogComponent } from "@/components/ReserveDialogComponent";
 
 const OwnerDashboard: React.FC = () => {
   const [activeView, setActiveView] = useState<
@@ -16,8 +30,16 @@ const OwnerDashboard: React.FC = () => {
   const [userDetails, setUserDetails] = useState<any>(null);
   const [activeRestaurant, setActiveRestaurant] = useState<any>(null);
 
+  const [date, setDate] = useState<Date>();
+  const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+
+  // const today = startOfDay(new Date());
+
   const { setAuth } = useAuth();
   const navigate = useNavigate();
+
+  console.log(isDialogOpen);
 
   const handleLogout = () => {
     removeToken();
@@ -52,6 +74,32 @@ const OwnerDashboard: React.FC = () => {
       handleLogout();
     }
   };
+  /*
+  const filteredReservations = activeRestaurant?.reservations?.$values.filter(
+    (reservation: any) => {
+      if (!date) {
+        console.log("Date is undefined");
+        return false;
+      }
+
+      const reservationDate = new Date(reservation.date); 
+      if (isNaN(reservationDate.getTime())) {
+        console.log("Invalid reservation date:", reservation.date);
+        return false; 
+      }
+
+      
+      console.log(
+        "Reservation Date:",
+        reservationDate.toDateString(),
+        "Selected Date:",
+        date.toDateString()
+      );
+
+      return reservationDate.toDateString() === date.toDateString();
+    }
+  );
+  */
 
   useEffect(() => {
     checkUserLoggedIn();
@@ -77,6 +125,60 @@ const OwnerDashboard: React.FC = () => {
         <Navbar title={activeView} />
 
         <div className="flex-1 p-8">
+          {activeView === "RESERVATION SCHEDULE" && (
+            <div className="h-16 flex justify-center space-x-12 mb-12">
+              <CustomCardComponent
+                text={
+                  <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full text-left font-normal h-8 ",
+                          !date && "text-muted-foreground"
+                        )}
+                        onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+                      >
+                        <CalendarIcon />
+                        {date ? format(date, "PPP") : <span>Pick a date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        initialFocus
+                        className="w-full"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                }
+                bgColor="bg-blue-300"
+                width="w-52"
+              />
+              <CustomCardComponent
+                text={`Available Seats: ${activeRestaurant.capacity}`}
+                bgColor="bg-purple-300"
+                width="w-58"
+              />
+
+              <div className="cursor-pointer">
+                <CustomCardComponent
+                  text="Create Reservation"
+                  bgColor="bg-blue-300"
+                  width="w-58"
+                  onClick={() => setIsDialogOpen(true)}
+                />
+                {isDialogOpen && (
+                  <ReserveDialogComponent
+                    isOpen={isDialogOpen}
+                    onClose={() => setIsDialogOpen(false)}
+                  />
+                )}
+              </div>
+            </div>
+          )}
           {activeView === "RESERVATION SCHEDULE" && (
             <Scheduler restaurantId={activeRestaurant.id} />
           )}

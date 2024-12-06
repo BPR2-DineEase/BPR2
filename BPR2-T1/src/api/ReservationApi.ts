@@ -9,7 +9,7 @@ export type ReservationData = {
   phoneNumber: string;
   comments: string;
   company: string;
-  email: string;
+  email?: string;
 };
 
 export const postReservation = async (data: ReservationData): Promise<void> => {
