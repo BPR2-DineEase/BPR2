@@ -1,5 +1,5 @@
 import axiosInstance from "@/api/axiosInstance.ts";
-import {ReservationData} from "@/types/types.ts";
+import {ReservationData, ReservationPayload} from "@/types/types.ts";
 
 
 export const postReservation = async (data: ReservationData): Promise<void> => {
@@ -27,5 +27,33 @@ export const fetchUserReservations = async (userId: string): Promise<Reservation
   } catch (err: any) {
     console.error("Failed to fetch reservations:", err);
     return [];
+  }
+};
+
+export const updateReservation = async (reservationId: string, data: ReservationPayload): Promise<void> => {
+  try {
+    const response = await axiosInstance.put(`/reservations/${reservationId}/update`, data);
+    console.log("Update Response:", response.data);
+  } catch (err: any) {
+    if (err.isAxiosError) {
+      console.error("Axios error during update:", err.response?.data);
+    } else {
+      console.error("Unexpected error during update:", err);
+    }
+    throw err;
+  }
+};
+
+export const cancelReservation = async (reservationId: string): Promise<void> => {
+  try {
+    const response = await axiosInstance.delete(`/reservations/${reservationId}/cancel`);
+    console.log("Cancel Response:", response.data);
+  } catch (err: any) {
+    if (err.isAxiosError) {
+      console.error("Axios error during cancel:", err.response?.data);
+    } else {
+      console.error("Unexpected error during cancel:", err);
+    }
+    throw err;
   }
 };

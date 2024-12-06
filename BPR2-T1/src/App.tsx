@@ -12,9 +12,11 @@ import ResetPassword from "@/pages/ResetPasswordPage";
 import RequestResetOtp from "@/pages/ResetOtpPage";
 import OwnerDashboard from "./pages/OwnerDashboardPage";
 import UserReservations from "@/pages/UserReservationsPage";
+import {Toaster} from "@/components/ui/toaster.tsx";
 
 const App: React.FC = () => {
-  return (
+  return  ( <>
+   <Toaster />
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -63,6 +65,7 @@ const App: React.FC = () => {
         />
       </Routes>
     </Router>
+   </>
   );
 };
 

@@ -30,6 +30,7 @@ export type ReservationData = {
     restaurantId:number;
     restaurant?: RestaurantData;
 };
+export type ReservationPayload = Omit<ReservationData, "date"> & { date: string };
 
 export enum UserRole {
     Customer = "Customer",
