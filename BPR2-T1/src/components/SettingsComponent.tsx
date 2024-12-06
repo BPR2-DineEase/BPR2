@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import restaurantLogo from "../../public/restaurantLogo.png";
 import {
   Card,
   CardContent,
@@ -32,9 +33,22 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
     reservations: [],
   });
 
-  const [availablePeople, setAvailablePeople] = useState<number>(0); 
+  const [availablePeople, setAvailablePeople] = useState<number>(0);
   const [openingHour, setOpeningHour] = useState("");
   const [closingHour, setClosingHour] = useState("");
+
+  const [editRestaurant, setEditRestaurant] = useState<boolean>(true);
+  const [editImages, setEditImages] = useState<boolean>(false);
+
+  const handleEditRestaurant = () => {
+    setEditRestaurant(true);
+    setEditImages(false);
+  };
+
+  const handleEditImages = () => {
+    setEditRestaurant(false);
+    setEditImages(true);
+  };
 
   useEffect(() => {
     const fetchRestaurantData = async () => {
@@ -63,7 +77,7 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
     if (restaurant) {
       setRestaurant((prev) => ({
         ...prev,
-        [name]: name === "rating" ? parseFloat(value) || 0 : value || "", 
+        [name]: name === "rating" ? parseFloat(value) || 0 : value || "",
       }));
     }
   };
@@ -71,7 +85,7 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
   const handleAvailablePeopleChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setAvailablePeople(parseInt(e.target.value, 10) || 0); 
+    setAvailablePeople(parseInt(e.target.value, 10) || 0);
   };
 
   const handleOpeningHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,15 +106,14 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
         ...restaurant,
         capacity: availablePeople,
         openHours: `${openingHour} - ${closingHour}`,
-        reservations: restaurant.reservations || [], 
-        imageUris: restaurant.imageUris || [], 
+        reservations: restaurant.reservations || [],
+        imageUris: restaurant.imageUris || [],
       };
 
-
       try {
-        await updateRestaurant(updatedRestaurant); 
+        await updateRestaurant(updatedRestaurant);
         alert("Restaurant updated successfully!");
-      } catch (error:any) {
+      } catch (error: any) {
         console.error(
           "Failed to update restaurant:",
           error.response?.data || error.message
@@ -110,83 +123,169 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
     }
   };
 
-
   if (!restaurant) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className="p-6">
-      <Card className="max-w-md mx-auto">
-        <CardHeader>
-          <CardTitle>Edit Restaurant Info</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
+    <div>
+      <div className="mb-20 w-full flex justify-center items-center space-x-12">
+        <Button
+          onClick={handleEditRestaurant}
+          className="bg-blue-400 hover:bg-blue-300 w-50 text-lg h-14 text-black "
+        >
+          <h1>Edit Restaurant Info </h1>
+        </Button>
+        <Button
+          onClick={handleEditImages}
+          className="bg-blue-400 hover:bg-blue-300 w-50 text-lg h-14 text-black "
+        >
+          <h1>Edit Restaurant Images</h1>
+        </Button>
+      </div>
+      {editRestaurant && (
+        <div className="p-6">
+          <Card className="max-w-md mx-auto">
+            <CardHeader>
+              <CardTitle>Edit Restaurant Info</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    name="name"
+                    value={restaurant?.name || ""}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="city">City</Label>
+                  <Input
+                    id="city"
+                    name="city"
+                    value={restaurant.city}
+                    onChange={handleInputChange}
+                    placeholder="City"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="cuisine">Cuisine</Label>
+                  <Input
+                    id="cuisine"
+                    name="cuisine"
+                    value={restaurant.cuisine}
+                    onChange={handleInputChange}
+                    placeholder="Cuisine"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="availablePeople">Available People</Label>
+                  <Input
+                    id="availablePeople"
+                    type="number"
+                    value={availablePeople}
+                    onChange={handleAvailablePeopleChange}
+                    placeholder="Available People"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="openingHour">Opening Hour</Label>
+                  <Input
+                    id="openingHour"
+                    type="text"
+                    value={openingHour}
+                    onChange={handleOpeningHourChange}
+                    placeholder="E.g. 10.00"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="closingHour">Closing Hour</Label>
+                  <Input
+                    id="closingHour"
+                    type="text"
+                    value={closingHour}
+                    onChange={handleClosingHourChange}
+                    placeholder="E.g. 21.00"
+                  />
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button onClick={handleSubmit}>Save</Button>
+            </CardFooter>
+          </Card>
+        </div>
+      )}
+      {editImages && (
+        <div className="w-full">
+          <div className="flex justify-center items-center space-x-12">
             <div>
-              <Label htmlFor="name">Name</Label>
-              <Input
-                name="name"
-                value={restaurant?.name || ""}
-                onChange={handleInputChange}
-              />
+              <Card className="max-w-md mx-auto bg-blue-200 w-80 h-80">
+                <CardHeader>
+                  <CardTitle>Edit Logo</CardTitle>
+                </CardHeader>
+                <CardContent className="flex justify-center items-center mt-6">
+                  <div>
+                    <img src={restaurantLogo} />
+                  </div>
+                </CardContent>
+                <CardFooter></CardFooter>
+              </Card>
             </div>
             <div>
-              <Label htmlFor="city">City</Label>
-              <Input
-                id="city"
-                name="city"
-                value={restaurant.city}
-                onChange={handleInputChange}
-                placeholder="City"
-              />
-            </div>
-            <div>
-              <Label htmlFor="cuisine">Cuisine</Label>
-              <Input
-                id="cuisine"
-                name="cuisine"
-                value={restaurant.cuisine}
-                onChange={handleInputChange}
-                placeholder="Cuisine"
-              />
-            </div>
-            <div>
-              <Label htmlFor="availablePeople">Available People</Label>
-              <Input
-                id="availablePeople"
-                type="number"
-                value={availablePeople}
-                onChange={handleAvailablePeopleChange}
-                placeholder="Available People"
-              />
-            </div>
-            <div>
-              <Label htmlFor="openingHour">Opening Hour</Label>
-              <Input
-                id="openingHour"
-                type="text"
-                value={openingHour}
-                onChange={handleOpeningHourChange}
-                placeholder="E.g. 10.00"
-              />
-            </div>
-            <div>
-              <Label htmlFor="closingHour">Closing Hour</Label>
-              <Input
-                id="closingHour"
-                type="text"
-                value={closingHour}
-                onChange={handleClosingHourChange}
-                placeholder="E.g. 21.00"
-              />
+              <Card className="max-w-md mx-auto bg-blue-200 w-80 h-80">
+                <CardHeader>
+                  <CardTitle>Edit Background Image</CardTitle>
+                </CardHeader>
+                <CardContent className="flex justify-center items-center mt-6">
+                  <div>
+                    <img src={restaurantLogo} />
+                  </div>
+                </CardContent>
+                <CardFooter></CardFooter>
+              </Card>
             </div>
           </div>
-        </CardContent>
-        <CardFooter>
-          <Button onClick={handleSubmit}>Save</Button>
-        </CardFooter>
-      </Card>
+          <div className="flex justify-center w-full mt-12">
+            <div className="w-full">
+              <Card className="max-w-4xl w-full mx-auto bg-blue-200 h-[640px] ">
+                <CardHeader>
+                  <CardTitle>Edit Restaurant Images</CardTitle>
+                </CardHeader>
+                <div className="flex-row flex flex-wrap h-140 w-140 gap-2 ">
+                  <CardContent>
+                    <div>
+                      <img src={restaurantLogo} alt="Restaurant Logo" />
+                    </div>
+                  </CardContent>
+                  <CardContent>
+                    <div>
+                      <img src={restaurantLogo} alt="Restaurant Logo" />
+                    </div>
+                  </CardContent>
+                  <CardContent>
+                    <div>
+                      <img src={restaurantLogo} alt="Restaurant Logo" />
+                    </div>
+                  </CardContent>
+                  <CardContent>
+                    <div>
+                      <img src={restaurantLogo} alt="Restaurant Logo" />
+                    </div>
+                  </CardContent>
+                  <CardContent>
+                    <div>
+                      <img src={restaurantLogo} alt="Restaurant Logo" />
+                    </div>
+                  </CardContent>
+                </div>
+                <CardFooter></CardFooter>
+              </Card>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
