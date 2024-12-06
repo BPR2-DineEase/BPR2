@@ -1,13 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Application.LogicInterfaces;
+using Domain.Dtos;
 using Domain.Dtos.ReservationDtos;
 using Domain.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace WebAPI.Controllers;
 
@@ -81,11 +77,11 @@ public class ReservationsController : ControllerBase
     }
     
     [HttpGet, Route("{userId}/reservations")]
-    public async Task<ActionResult<IEnumerable<ReservationDto>>> GetReservationsByUserId(Guid userId)
+    public async Task<ActionResult<IEnumerable<ReservationWithRestaurantDto>>> GetUserReservationsAsync([FromRoute] Guid userId)
     {
         try
         {
-            var reservations = await _reservationsLogic.GetReservationsByUserIdAsync(userId);
+            var reservations = await _reservationsLogic.GetUserReservationsAsync(userId);
             return Ok(reservations);
         }
         catch (ValidationException ex)

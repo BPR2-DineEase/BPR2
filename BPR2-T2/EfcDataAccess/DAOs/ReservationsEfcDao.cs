@@ -1,9 +1,8 @@
 using Application.DaoInterfaces;
-using Domain.Dtos.ReservationDtos;
+using Domain.Dtos;
 using Domain.Models;
 using EfcDataAccess.Context;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace EfcDataAccess.DAOs;
 
@@ -40,10 +39,39 @@ public class ReservationsEfcDao : IReservationsDao
             .ToListAsync();
     }
     
-    public async Task<IEnumerable<Reservation>> GetReservationsByUserId(Guid userId)
+    public async Task<IEnumerable<ReservationWithRestaurantDto>> GetUserReservationsAsync(Guid userId)
     {
         return await _context.Reservations
             .Where(r => r.UserId == userId)
+            .Select(r => new ReservationWithRestaurantDto
+            {
+                Id = r.Id,
+                GuestName = r.GuestName,
+                PhoneNumber = r.PhoneNumber,
+                Email = r.Email,
+                Date = r.Date,
+                Time = r.Time,
+                NumOfPeople = r.NumOfPeople,
+                Comments = r.Comments,
+                Restaurant = new RestaurantPreviewDto
+                {
+                    Name = r.Restaurant.Name,
+                    Address = r.Restaurant.Address,
+                    City = r.Restaurant.City,
+                    OpenHours = r.Restaurant.OpenHours,
+                    Cuisine = r.Restaurant.Cuisine,
+                    Info = r.Restaurant.Info,
+                    Capacity = r.Restaurant.Capacity,
+                    Images = r.Restaurant.Images.Select(img => new ImageDto
+                    {
+                        Id = img.Id,
+                        Uri = img.Uri,
+                        Name = img.Name,
+                        ContentType = img.ContentType,
+                        Type = img.Type
+                    }).ToList()
+                }
+            })
             .ToListAsync();
     }
 }

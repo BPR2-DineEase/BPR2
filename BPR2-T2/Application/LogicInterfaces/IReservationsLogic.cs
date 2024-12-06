@@ -1,3 +1,4 @@
+using Domain.Dtos;
 using Domain.Dtos.ReservationDtos;
 using Domain.Models;
 
@@ -8,5 +9,5 @@ public interface IReservationsLogic
     Task<Reservation> AddReservationAsync(ReservationDto reservationDto);
     Task<IEnumerable<Reservation>> GetAllReservationsAsync();
     Task<Reservation?> GetReservationByIdAsync(int id);
-    Task<IEnumerable<ReservationDto>> GetReservationsByUserIdAsync(Guid userId);
+    Task<IEnumerable<ReservationWithRestaurantDto>> GetUserReservationsAsync(Guid userId);
 }

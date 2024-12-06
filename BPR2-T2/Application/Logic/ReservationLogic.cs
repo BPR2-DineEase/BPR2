@@ -2,6 +2,7 @@ using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using Application.DaoInterfaces;
 using Application.LogicInterfaces;
+using Domain.Dtos;
 using Domain.Dtos.ReservationDtos;
 using Domain.Models;
 
@@ -50,25 +51,14 @@ public class ReservationLogic : IReservationsLogic
         return reservation;
     }
     
-    public async Task<IEnumerable<ReservationDto>> GetReservationsByUserIdAsync(Guid userId)
+    public async Task<IEnumerable<ReservationWithRestaurantDto>> GetUserReservationsAsync(Guid userId)
     {
         if (userId == Guid.Empty)
         {
             throw new ValidationException("UserId cannot be empty.");
         }
 
-        var reservations = await reservationsDao.GetReservationsByUserId(userId);
-        return reservations.Select(r => new ReservationDto
-        {
-            Id = r.Id,
-            GuestName = r.GuestName,
-            PhoneNumber = r.PhoneNumber,
-            Email = r.Email,
-            Date = r.Date,
-            Time = r.Time,
-            NumOfPeople = r.NumOfPeople,
-            Comments = r.Comments
-        });
+        return  await reservationsDao.GetUserReservationsAsync(userId);
     }
 }
 
