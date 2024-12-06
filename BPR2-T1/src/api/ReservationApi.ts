@@ -1,18 +1,6 @@
 import axiosInstance from "@/api/axiosInstance.ts";
+import {ReservationData} from "@/types/types.ts";
 
-
-export type ReservationData = {
-  date: Date;
-  time: string;
-  numOfPeople: number;
-  guestName: string;
-  phoneNumber: string;
-  comments: string;
-  company: string;
-  email: string;
-  userId: string;
-  restaurantId: number;
-};
 
 export const postReservation = async (data: ReservationData): Promise<void> => {
   try {
@@ -22,5 +10,22 @@ export const postReservation = async (data: ReservationData): Promise<void> => {
     if (err.isAxiosError(err)) console.error("Axios error", err.response?.data);
     else console.error("Unexpected error: ", err);
     throw err;
+  }
+};
+
+export const fetchUserReservations = async (userId: string): Promise<ReservationData[]> => {
+  try {
+    const response = await axiosInstance.get(`/reservations/${userId}/reservations`);
+    console.log("API Response:", response.data); 
+
+    if (response.data?.$values) {
+      return response.data.$values;
+    }
+
+    console.error("Unexpected API response structure:", response.data);
+    return [];
+  } catch (err: any) {
+    console.error("Failed to fetch reservations:", err);
+    return [];
   }
 };

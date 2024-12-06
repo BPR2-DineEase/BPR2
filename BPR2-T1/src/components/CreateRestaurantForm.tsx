@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import {CreateRestaurantDto} from "@/api/restaurantApi.ts";
+import {CreateRestaurantDto} from "@/types/types.ts";
+
 
 const CreateRestaurantForm: React.FC = () => {
     const [formData, setFormData] = useState<CreateRestaurantDto>({

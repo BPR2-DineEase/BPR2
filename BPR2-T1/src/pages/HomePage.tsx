@@ -41,7 +41,6 @@ const Home: React.FC = () => {
           </Link>
         </div>
         <div className="mt-6">
-          {/* Logout Button */}
           <Button
             variant="destructive"
             className="w-full max-w-xs"

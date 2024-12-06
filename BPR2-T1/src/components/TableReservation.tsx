@@ -11,6 +11,7 @@ import ReservationProccess from "./ReservationProccess";
 import { postReservation } from "@/api/ReservationApi";
 import {useAuth} from "@/context/AuthContext.tsx";
 import {cn} from "@/lib/utils.ts";
+import {useNavigate, useSearchParams} from "react-router-dom";
 
 const TableReservation = () => {
   const [comments, setComment] = React.useState<string>("");
@@ -26,6 +27,11 @@ const TableReservation = () => {
   const today = startOfDay(new Date());
   const { user } = useAuth();
 
+  const [searchParams] = useSearchParams();
+  const restaurantId = Number(searchParams.get("restaurantId"));
+  const navigate = useNavigate();
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -36,26 +42,28 @@ const TableReservation = () => {
       return;
     }
 
-    const restaurantId = 1; 
     const userId = user.userId;
 
     try {
       await postReservation({
-        date,
-        time,
-        numOfPeople,
+        
         guestName,
         phoneNumber,
-        comments,
-        company,
         email,
+        company,
+        comments, 
+        date, 
+        time, 
+        numOfPeople, 
         userId,
         restaurantId,
       });
 
       alert("Reservation created successfully");
+      
+      navigate("/user-reservations", { state: { userId } });
     } catch (err) {
-      console.error("Failed to create Reservation. " , err);
+      console.error("Failed to create Reservation.", err);
     }
 
     setDate(undefined);
@@ -65,10 +73,10 @@ const TableReservation = () => {
     setComment("");
     setEmail("");
     setName("");
-    setComment("");
     setPhoneNumber("");
   };
 
+  
   const handleDateChange = (selectedDate: Date | undefined) => {
     if (selectedDate && !isBefore(selectedDate, today)) {
       setDate(selectedDate);

@@ -1,4 +1,6 @@
-import {Restaurant, FilterOptions, filterRestaurants, searchRestaurants, restaurantCreate, CreateRestaurantDto} from "../api/restaurantApi";
+import {CreateRestaurantDto, FilterOptions, Restaurant} from "@/types/types.ts";
+import {filterRestaurants, restaurantCreate, searchRestaurants} from "@/api/restaurantApi.ts";
+
 
 export const searchRestaurantsByCity = async (city: string): Promise<Restaurant[]> => {
     if (!city) {
