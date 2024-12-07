@@ -1,300 +1,205 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getRestaurantById } from "@/api/restaurantApi";
+import { Button } from "@/components/ui/button";
 
-const Scheduler = () => {
+interface Reservation {
+  guestName: string;
+  numOfPeople: number;
+  date: string;
+}
+
+interface Restaurant {
+  id: number;
+  name: string;
+  reservations: { $values: Reservation[] };
+}
+
+interface SchedulerProps {
+  restaurantId: number;
+  selectedDate: Date | null;
+}
+
+interface Slot {
+  name: string;
+  people: number;
+  time: string;
+}
+
+const Scheduler: React.FC<SchedulerProps> = ({
+  restaurantId,
+  selectedDate,
+}) => {
   const staticTimeSlots = [
-    "9:00 - 9:30 AM",
-    "9:30 - 10:00 AM",
-    "10:00 - 10:30 AM",
-    "10:30 - 11:00 AM",
-    "11:00 - 11:30 AM",
-    "11:30 - 12:00 PM",
-    "12:00 - 12:30 PM",
-    "12:30 - 1:00 PM",
-    "1:00 - 1:30 PM",
-    "1:30 - 2:00 PM",
-    "2:00 - 2:30 PM",
-    "3:00 - 3:30 PM",
-    "3:30 - 4:00 PM",
-    "4:00 - 4:30 PM",
-    "4:30 - 5:00 PM",
-    "5:00 - 5:30 PM",
-    "5:30 - 6:00 PM",
-    "6:00 - 6:30 PM",
-    "6:30 - 7:00 PM",
-    "7:00 - 7:30 PM",
-    "7:30 - 8:00 PM",
-    "8:00 - 8:30 PM",
-    "8:30 - 9:00 PM",
-    "9:00 - 9:30 PM",
-    "9:30 - 10:00 PM",
-    "11:00 - 11:30 PM",
-    "11:30 - 12:00 AM",
+    "09:00 AM - 09:30 AM",
+    "09:30 AM - 10:00 AM",
+    "10:00 AM - 10:30 AM",
+    "10:30 AM - 11:00 AM",
+    "11:00 AM - 11:30 AM",
+    "11:30 AM - 12:00 PM",
+    "12:00 PM - 12:30 PM",
+    "12:30 PM - 01:00 PM",
+    "01:00 PM - 01:30 PM",
+    "01:30 PM - 02:00 PM",
+    "02:00 PM - 02:30 PM",
+    "02:30 PM - 03:00 PM",
+    "03:00 PM - 03:30 PM",
+    "03:30 PM - 04:00 PM",
+    "04:00 PM - 04:30 PM",
+    "04:30 PM - 05:00 PM",
+    "05:00 PM - 05:30 PM",
+    "05:30 PM - 06:00 PM",
+    "06:00 PM - 06:30 PM",
+    "06:30 PM - 07:00 PM",
+    "07:00 PM - 07:30 PM",
+    "07:30 PM - 08:00 PM",
+    "08:00 PM - 08:30 PM",
+    "08:30 PM - 09:00 PM",
+    "09:00 PM - 09:30 PM",
+    "09:30 PM - 10:00 PM",
+    "10:00 PM - 10:30 PM",
+    "10:30 PM - 11:00 PM",
+    "11:00 PM - 11:30 PM",
+    "11:30 PM - 12:00 AM",
   ];
 
- const allSchedules = [
-   {
-     time: "9:00 - 9:30 AM",
-     slots: [
-       { name: "Alice", people: 2, status: "Confirmed" },
-       { name: "Tom", people: 5, status: "Confirmed" },
-     ],
-   },
-   {
-     time: "9:30 - 10:00 AM",
-     slots: [
-       { name: "Bella", people: 4, status: "Cancelled" },
-       { name: "Emma", people: 6, status: "Confirmed" },
-     ],
-   },
-   {
-     time: "10:00 - 10:30 AM",
-     slots: [
-       { name: "Anna", people: 2, status: "Pending" },
-       { name: "Mary", people: 3, status: "Cancelled" },
-       { name: "John", people: 10, status: "Confirmed" },
-     ],
-   },
-   {
-     time: "10:30 - 11:00 AM",
-     slots: [
-       { name: "Corbin", people: 2, status: "Confirmed" },
-       { name: "Sophie", people: 8, status: "Pending" },
-     ],
-   },
-   {
-     time: "11:00 - 11:30 AM",
-     slots: [
-       { name: "Elias", people: 3, status: "Confirmed" },
-       { name: "Jake", people: 7, status: "Confirmed" },
-     ],
-   },
-   {
-     time: "11:30 - 12:00 PM",
-     slots: [
-       { name: "Rory", people: 2, status: "Confirmed" },
-       { name: "Olivia", people: 4, status: "Cancelled" },
-     ],
-   },
-   {
-     time: "12:00 - 12:30 PM",
-     slots: [
-       { name: "Edsel", people: 4, status: "Confirmed" },
-       { name: "Liam", people: 8, status: "Pending" },
-     ],
-   },
-   {
-     time: "12:30 - 1:00 PM",
-     slots: [{ name: "Sophia", people: 2, status: "Confirmed" }],
-   },
-   {
-     time: "1:00 - 1:30 PM",
-     slots: [
-       { name: "Michael", people: 5, status: "Cancelled" },
-       { name: "Chloe", people: 6, status: "Confirmed" },
-     ],
-   },
-   {
-     time: "1:30 - 2:00 PM",
-     slots: [
-       { name: "Lucas", people: 3, status: "Confirmed" },
-       { name: "Sarah", people: 9, status: "Confirmed" },
-     ],
-   },
-   {
-     time: "2:00 - 2:30 PM",
-     slots: [{ name: "Mia", people: 7, status: "Pending" }],
-   },
-   {
-     time: "3:00 - 3:30 PM",
-     slots: [
-       { name: "Noah", people: 4, status: "Pending" },
-       { name: "Ava", people: 3, status: "Confirmed" },
-     ],
-   },
-   {
-     time: "3:30 - 4:00 PM",
-     slots: [
-       { name: "Ella", people: 6, status: "Confirmed" },
-       { name: "James", people: 10, status: "Cancelled" },
-     ],
-   },
-   {
-     time: "4:00 - 4:30 PM",
-     slots: [
-       { name: "Logan", people: 8, status: "Pending" },
-       { name: "Isabella", people: 2, status: "Confirmed" },
-     ],
-   },
-   {
-     time: "4:30 - 5:00 PM",
-     slots: [{ name: "Ethan", people: 4, status: "Confirmed" }],
-   },
-   {
-     time: "5:00 - 5:30 PM",
-     slots: [
-       { name: "Sophia", people: 3, status: "Pending" },
-       { name: "Mason", people: 6, status: "Confirmed" },
-     ],
-   },
-   {
-     time: "5:30 - 6:00 PM",
-     slots: [
-       { name: "Aiden", people: 7, status: "Confirmed" },
-       { name: "Lily", people: 4, status: "Pending" },
-     ],
-   },
-   {
-     time: "6:00 - 6:30 PM",
-     slots: [
-       { name: "Olivia", people: 8, status: "Confirmed" },
-       { name: "Ella", people: 5, status: "Cancelled" },
-     ],
-   },
-   {
-     time: "6:30 - 7:00 PM",
-     slots: [{ name: "Zoe", people: 2, status: "Confirmed" }],
-   },
-   {
-     time: "7:00 - 7:30 PM",
-     slots: [
-       { name: "Jack", people: 9, status: "Confirmed" },
-       { name: "Luna", people: 3, status: "Confirmed" },
-     ],
-   },
-   {
-     time: "7:30 - 8:00 PM",
-     slots: [
-       { name: "Benjamin", people: 10, status: "Pending" },
-       { name: "Grace", people: 6, status: "Confirmed" },
-     ],
-   },
-   {
-     time: "8:00 - 8:30 PM",
-     slots: [{ name: "Aria", people: 4, status: "Confirmed" }],
-   },
-   {
-     time: "8:30 - 9:00 PM",
-     slots: [
-       { name: "Henry", people: 7, status: "Confirmed" },
-       { name: "Mila", people: 5, status: "Cancelled" },
-     ],
-   },
-   {
-     time: "9:00 - 9:30 PM",
-     slots: [{ name: "Elijah", people: 3, status: "Pending" }],
-   },
- ];
+  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
+  const [allSchedules, setAllSchedules] = useState<
+    { time: string; slots: Slot[] }[]
+  >([]);
+  const [currentPage, setCurrentPage] = useState(0);
 
+  const slotsPerPage = 6;
 
+  useEffect(() => {
+    const fetchRestaurantData = async () => {
+      try {
+        const restaurantData = await getRestaurantById(restaurantId);
+        setRestaurant(restaurantData);
+      } catch (error) {
+        console.error("Failed to fetch restaurant data:", error);
+      }
+    };
 
-  const [currentStartIndex, setCurrentStartIndex] = useState(0);
-  const visibleSlots = staticTimeSlots.slice(
-    currentStartIndex,
-    currentStartIndex + 6
+    fetchRestaurantData();
+  }, [restaurantId]);
+
+  useEffect(() => {
+    if (!restaurant || !selectedDate) {
+      setAllSchedules([]);
+      return;
+    }
+
+    const dateString = selectedDate.toISOString().split("T")[0];
+    const filteredReservations = restaurant.reservations.$values.filter(
+      (reservation) => reservation.date.startsWith(dateString)
+    );
+
+    const parseTime = (time: string) => {
+      const [timePart, period] = time.split(" ");
+      const [hours, minutes] = timePart.split(":").map(Number);
+      return new Date(
+        0,
+        0,
+        0,
+        period === "PM" && hours !== 12
+          ? hours + 12
+          : hours === 12 && period === "AM"
+          ? 0
+          : hours,
+        minutes
+      );
+    };
+
+    const updatedSchedules = staticTimeSlots.map((timeSlot) => {
+      const [start, end] = timeSlot.split(" - ").map(parseTime);
+
+      const matchingReservations = filteredReservations.filter(
+        (reservation) => {
+          const reservationTime = parseTime(
+            new Date(reservation.date).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            })
+          );
+          return reservationTime >= start && reservationTime < end;
+        }
+      );
+
+      return {
+        time: timeSlot,
+        slots: matchingReservations.map((reservation) => ({
+          name: reservation.guestName,
+          people: reservation.numOfPeople,
+          time: new Date(reservation.date).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          }),
+        })),
+      };
+    });
+
+    setAllSchedules(updatedSchedules);
+  }, [restaurant, selectedDate]);
+
+  const displayedSchedules = allSchedules.slice(
+    currentPage * slotsPerPage,
+    (currentPage + 1) * slotsPerPage
   );
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Pending":
-        return "bg-orange-300";
-      case "Confirmed":
-        return "bg-green-300";
-      case "Cancelled":
-        return "bg-red-300";
-      default:
-        return "bg-gray-200";
+  const handleNext = () => {
+    if ((currentPage + 1) * slotsPerPage < allSchedules.length) {
+      setCurrentPage(currentPage + 1);
     }
   };
 
-  const canGoBack = currentStartIndex > 0;
-  const canGoForward = currentStartIndex + 4 < staticTimeSlots.length;
+  const handlePrevious = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   return (
-    <div className="p-4">
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse border border-gray-300">
-          <thead>
-            <tr>
-              {visibleSlots.map((time, index) => (
-                <th
-                  key={index}
-                  className="border border-gray-300 p-2 text-center"
-                >
-                  {time}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              {visibleSlots.map((time, index) => {
-                const matchingSlot = allSchedules.find(
-                  (slot) => slot.time === time
-                );
-
-                return (
-                  <td key={index} className="border border-gray-300 p-2">
-                    {matchingSlot?.slots.map((entry, idx) => (
-                      <div
-                        key={idx}
-                        className={`p-2 m-2 rounded ${getStatusColor(
-                          entry.status
-                        )}`}
-                      >
-                        <div className="font-bold">{entry.name}</div>
-                        <div>People: {entry.people}</div>
-                      </div>
-                    )) || (
-                      <div className="text-gray-500 text-center">
-                        No Reservations
-                      </div>
-                    )}
-                  </td>
-                );
-              })}
-            </tr>
-          </tbody>
-        </table>
+    <div>
+      <h2 className="text-xl font-bold mb-4 xl:justify-center xl:flex ">
+        Schedule for {selectedDate?.toLocaleDateString()}
+      </h2>
+      <div className="flex gap-2 flex-wrap xl:justify-center items-center ">
+        {displayedSchedules.map((schedule, index) => (
+          <div key={index} className="p-4 border rounded shadow-lg ">
+            <h3 className="text-lg font-semibold">{schedule.time}</h3>
+            <div>
+              {schedule.slots.length > 0 ? (
+                schedule.slots.map((slot, idx) => (
+                  <div key={idx}>
+                    <div className="font-semibold mt-2">{slot.name}</div>
+                    <div>People: {slot.people}</div>
+                    <div>Time: {slot.time}</div>
+                  </div>
+                ))
+              ) : (
+                <span className="text-gray-500">No Reservations </span>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
-
       <div className="flex justify-between mt-4">
-        <button
-          className={`p-2 px-4 bg-gray-200 rounded ${
-            canGoBack ? "hover:bg-gray-300" : "opacity-50"
-          }`}
-          disabled={!canGoBack}
-          onClick={() => setCurrentStartIndex(currentStartIndex - 6)}
+        <Button
+          onClick={handlePrevious}
+          disabled={currentPage === 0}
+          variant="outline"
         >
           Previous
-        </button>
-        <button
-          className={`p-2 px-4 bg-gray-200 rounded ${
-            canGoForward ? "hover:bg-gray-300" : "opacity-50"
-          }`}
-          disabled={!canGoForward}
-          onClick={() => setCurrentStartIndex(currentStartIndex + 6)}
+        </Button>
+        <Button
+          onClick={handleNext}
+          disabled={(currentPage + 1) * slotsPerPage >= allSchedules.length}
+          variant="outline"
         >
           Next
-        </button>
-      </div>
-
-      <div className="mt-[20px] flex justify-center">
-        <div className="flex gap-4">
-          <div className="flex items-center">
-            <span className="bg-orange-400 h-5 w-5 rounded-full mr-2"></span>
-            <span>Pending</span>
-          </div>
-
-          <div className="flex items-center">
-            <span className="bg-green-400 h-5 w-5 rounded-full mr-2"></span>
-            <span>Confirmed</span>
-          </div>
-
-          <div className="flex items-center">
-            <span className="bg-red-400 h-5 w-5 rounded-full mr-2"></span>
-            <span>Cancelled</span>
-          </div>
-        </div>
+        </Button>
       </div>
     </div>
   );

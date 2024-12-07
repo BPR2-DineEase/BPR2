@@ -10,4 +10,7 @@ public interface IAuthLogic
     Task<string> LoginUser(string email, string password);
     Task<string> GeneratePasswordResetOtp(string email);
     Task ResetPassword(PasswordResetDto resetDto);
+    Task<User> GetUserByEmail(string email);
+    Task<User?> GetUserById(Guid userId);
+    Task<User?> GetUserCredentials(UserCredentialsDto userCredentialsDto);
 }
