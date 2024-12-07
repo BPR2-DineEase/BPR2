@@ -8,7 +8,7 @@ import { SettingsComponent } from "@/components/SettingsComponent";
 import SideBar from "@/components/SideBar";
 import { useAuth } from "@/context/AuthContext";
 import { removeToken } from "@/services/jwtService";
-import { format } from "date-fns";
+import { format, startOfDay } from "date-fns";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -34,12 +34,11 @@ const OwnerDashboard: React.FC = () => {
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
-  // const today = startOfDay(new Date());
+   const today = startOfDay(new Date());
 
   const { setAuth } = useAuth();
   const navigate = useNavigate();
 
-  console.log(isDialogOpen);
 
   const handleLogout = () => {
     removeToken();
@@ -74,32 +73,6 @@ const OwnerDashboard: React.FC = () => {
       handleLogout();
     }
   };
-  /*
-  const filteredReservations = activeRestaurant?.reservations?.$values.filter(
-    (reservation: any) => {
-      if (!date) {
-        console.log("Date is undefined");
-        return false;
-      }
-
-      const reservationDate = new Date(reservation.date); 
-      if (isNaN(reservationDate.getTime())) {
-        console.log("Invalid reservation date:", reservation.date);
-        return false; 
-      }
-
-      
-      console.log(
-        "Reservation Date:",
-        reservationDate.toDateString(),
-        "Selected Date:",
-        date.toDateString()
-      );
-
-      return reservationDate.toDateString() === date.toDateString();
-    }
-  );
-  */
 
   useEffect(() => {
     checkUserLoggedIn();
@@ -180,7 +153,7 @@ const OwnerDashboard: React.FC = () => {
             </div>
           )}
           {activeView === "RESERVATION SCHEDULE" && (
-            <Scheduler restaurantId={activeRestaurant.id} />
+            <Scheduler restaurantId={activeRestaurant.id} selectedDate={date ?? today} />
           )}
           {activeView === "HISTORY" && (
             <HistoryComponent restaurantId={activeRestaurant.id} />

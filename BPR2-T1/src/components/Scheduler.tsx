@@ -1,5 +1,6 @@
-import { getRestaurantById } from "@/api/restaurantApi";
 import { useState, useEffect } from "react";
+import { getRestaurantById } from "@/api/restaurantApi";
+import { Button } from "@/components/ui/button";
 
 interface Reservation {
   guestName: string;
@@ -15,16 +16,19 @@ interface Restaurant {
 
 interface SchedulerProps {
   restaurantId: number;
+  selectedDate: Date | null;
 }
 
 interface Slot {
   name: string;
   people: number;
-  time: string; 
+  time: string;
 }
 
-const Scheduler: React.FC<SchedulerProps> = ({ restaurantId }) => {
-  
+const Scheduler: React.FC<SchedulerProps> = ({
+  restaurantId,
+  selectedDate,
+}) => {
   const staticTimeSlots = [
     "09:00 AM - 09:30 AM",
     "09:30 AM - 10:00 AM",
@@ -58,19 +62,13 @@ const Scheduler: React.FC<SchedulerProps> = ({ restaurantId }) => {
     "11:30 PM - 12:00 AM",
   ];
 
+  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [allSchedules, setAllSchedules] = useState<
     { time: string; slots: Slot[] }[]
   >([]);
-  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
-  const [currentStartIndex, setCurrentStartIndex] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
 
-  const visibleSlots = staticTimeSlots.slice(
-    currentStartIndex,
-    currentStartIndex + 6
-  );
-
-  const canGoBack = currentStartIndex > 0;
-  const canGoForward = currentStartIndex + 6 < staticTimeSlots.length;
+  const slotsPerPage = 6;
 
   useEffect(() => {
     const fetchRestaurantData = async () => {
@@ -86,7 +84,15 @@ const Scheduler: React.FC<SchedulerProps> = ({ restaurantId }) => {
   }, [restaurantId]);
 
   useEffect(() => {
-    if (!restaurant || !restaurant.reservations?.$values) return;
+    if (!restaurant || !selectedDate) {
+      setAllSchedules([]);
+      return;
+    }
+
+    const dateString = selectedDate.toISOString().split("T")[0];
+    const filteredReservations = restaurant.reservations.$values.filter(
+      (reservation) => reservation.date.startsWith(dateString)
+    );
 
     const parseTime = (time: string) => {
       const [timePart, period] = time.split(" ");
@@ -95,7 +101,11 @@ const Scheduler: React.FC<SchedulerProps> = ({ restaurantId }) => {
         0,
         0,
         0,
-        period === "PM" && hours !== 12 ? hours + 12 : hours === 12 && period === "AM" ? 0 : hours,
+        period === "PM" && hours !== 12
+          ? hours + 12
+          : hours === 12 && period === "AM"
+          ? 0
+          : hours,
         minutes
       );
     };
@@ -103,7 +113,7 @@ const Scheduler: React.FC<SchedulerProps> = ({ restaurantId }) => {
     const updatedSchedules = staticTimeSlots.map((timeSlot) => {
       const [start, end] = timeSlot.split(" - ").map(parseTime);
 
-      const matchingReservations = restaurant.reservations.$values.filter(
+      const matchingReservations = filteredReservations.filter(
         (reservation) => {
           const reservationTime = parseTime(
             new Date(reservation.date).toLocaleTimeString([], {
@@ -131,73 +141,65 @@ const Scheduler: React.FC<SchedulerProps> = ({ restaurantId }) => {
     });
 
     setAllSchedules(updatedSchedules);
-  }, [restaurant]);
+  }, [restaurant, selectedDate]);
+
+  const displayedSchedules = allSchedules.slice(
+    currentPage * slotsPerPage,
+    (currentPage + 1) * slotsPerPage
+  );
+
+  const handleNext = () => {
+    if ((currentPage + 1) * slotsPerPage < allSchedules.length) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   return (
-    <div className="p-4">
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse border border-gray-300">
-          <thead>
-            <tr>
-              {visibleSlots.map((time, index) => (
-                <th
-                  key={index}
-                  className="border border-gray-300 p-2 text-center text-sm" 
-                >
-                  {time}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              {visibleSlots.map((time, index) => {
-                const matchingSlot = allSchedules.find(
-                  (slot) => slot.time === time
-                );
-
-                return (
-                  <td key={index} className="border border-gray-300 p-2">
-                    {matchingSlot?.slots.length ? (
-                      matchingSlot.slots.map((entry, idx) => (
-                        <div key={idx} className="p-2 m-2 rounded">
-                          <div className="font-bold">{entry.name}</div>
-                          <div>People: {entry.people}</div>
-                          <div>Time: {entry.time}</div>{" "}
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-gray-500 text-center">
-                        No Reservations
-                      </div>
-                    )}
-                  </td>
-                );
-              })}
-            </tr>
-          </tbody>
-        </table>
+    <div>
+      <h2 className="text-xl font-bold mb-4 xl:justify-center xl:flex ">
+        Schedule for {selectedDate?.toLocaleDateString()}
+      </h2>
+      <div className="flex gap-2 flex-wrap xl:justify-center items-center ">
+        {displayedSchedules.map((schedule, index) => (
+          <div key={index} className="p-4 border rounded shadow-lg ">
+            <h3 className="text-lg font-semibold">{schedule.time}</h3>
+            <div>
+              {schedule.slots.length > 0 ? (
+                schedule.slots.map((slot, idx) => (
+                  <div key={idx}>
+                    <div className="font-semibold mt-2">{slot.name}</div>
+                    <div>People: {slot.people}</div>
+                    <div>Time: {slot.time}</div>
+                  </div>
+                ))
+              ) : (
+                <span className="text-gray-500">No Reservations </span>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
-
       <div className="flex justify-between mt-4">
-        <button
-          className={`p-2 px-4 bg-gray-200 rounded ${
-            canGoBack ? "hover:bg-gray-300" : "opacity-50"
-          }`}
-          disabled={!canGoBack}
-          onClick={() => setCurrentStartIndex((prev) => prev - 6)}
+        <Button
+          onClick={handlePrevious}
+          disabled={currentPage === 0}
+          variant="outline"
         >
           Previous
-        </button>
-        <button
-          className={`p-2 px-4 bg-gray-200 rounded ${
-            canGoForward ? "hover:bg-gray-300" : "opacity-50"
-          }`}
-          disabled={!canGoForward}
-          onClick={() => setCurrentStartIndex((prev) => prev + 6)}
+        </Button>
+        <Button
+          onClick={handleNext}
+          disabled={(currentPage + 1) * slotsPerPage >= allSchedules.length}
+          variant="outline"
         >
           Next
-        </button>
+        </Button>
       </div>
     </div>
   );

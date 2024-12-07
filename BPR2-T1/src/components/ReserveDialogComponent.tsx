@@ -90,7 +90,7 @@ export function ReserveDialogComponent({ isOpen, onClose }: ReserveDialogCompone
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="date" className="text-right">
-              Time
+              Date
             </Label>
             <Input
               id="date"
