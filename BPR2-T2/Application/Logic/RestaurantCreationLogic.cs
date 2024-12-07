@@ -76,8 +76,8 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
             {
                 Uri = uri,
 
-                Type = updateRestaurantDto.ImageTypes.ElementAtOrDefault(index) ?? "default",
-                RestaurantId = restaurant.Id
+               // Type = updateRestaurantDto.ImageTypes.ElementAtOrDefault(index) ?? "default",
+                //RestaurantId = restaurant.Id
 
                 Type = "restaurant",
                 RestaurantId = updateRestaurantDto.Id

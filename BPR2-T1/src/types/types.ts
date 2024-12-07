@@ -17,6 +17,11 @@ export type RestaurantData = {
             type: string | null;
         }[];
     };
+    rating: number;
+    latitude: number;
+    longitude: number;
+    imageUris: string[];
+    reservations: any;
 };
 
 export type ReservationData = {

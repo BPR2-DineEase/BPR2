@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getRestaurantById } from "@/api/restaurantApi";
+import {fetchRestaurant} from "@/api/restaurantApi";
 import { Button } from "@/components/ui/button";
 
 interface Reservation {
@@ -73,7 +73,8 @@ const Scheduler: React.FC<SchedulerProps> = ({
   useEffect(() => {
     const fetchRestaurantData = async () => {
       try {
-        const restaurantData = await getRestaurantById(restaurantId);
+        const restaurantData = await fetchRestaurant(restaurantId);
+        console.log("Fetched restaurant data:", restaurantData);
         setRestaurant(restaurantData);
       } catch (error) {
         console.error("Failed to fetch restaurant data:", error);
@@ -90,9 +91,8 @@ const Scheduler: React.FC<SchedulerProps> = ({
     }
 
     const dateString = selectedDate.toISOString().split("T")[0];
-    const filteredReservations = restaurant.reservations.$values.filter(
-      (reservation) => reservation.date.startsWith(dateString)
-    );
+    const filteredReservations = (restaurant.reservations?.$values || [])
+        .filter((reservation) => reservation.date.startsWith(dateString));
 
     const parseTime = (time: string) => {
       const [timePart, period] = time.split(" ");

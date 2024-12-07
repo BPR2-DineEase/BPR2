@@ -79,10 +79,7 @@ public class RestaurantEfcDao : IRestaurantsDao
 
         return await _context.Restaurants
             .Include(r => r.Images)
-
-        var restaurant = await _context.Restaurants
-            .Include(r => r.Reservations)  
-
+            .Include(r => r.Reservations) 
             .FirstOrDefaultAsync(r => r.Id == restaurantId);
     }
 

@@ -1,46 +1,38 @@
 import React, { useEffect, useState } from "react";
 import restaurantLogo from "../../public/restaurantLogo.png";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+import {Card, CardContent, CardFooter, CardHeader, CardTitle,} from "./ui/card";
 import { Input } from "./ui/input";
-
-import { Restaurant } from "@/types/types";
-
-import {
-  getRestaurantById,
-  Restaurant,
-  updateRestaurant,
-} from "@/api/restaurantApi";
+import {RestaurantData} from "@/types/types";
+import {fetchRestaurant, updateRestaurant} from "@/api/restaurantApi";
 
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 
-export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
-  restaurantId,
-}) => {
-  const [restaurant, setRestaurant] = useState<Restaurant>({
+export const SettingsComponent: React.FC<{ restaurantId: number }> = ({restaurantId,}) => {
+
+  const [restaurant, setRestaurant] = useState<RestaurantData>({
     id: restaurantId,
     name: "",
+    address: "",
     city: "",
+    openHours: "",
     cuisine: "",
     rating: 0,
+    info: "",
     capacity: 0,
-    latitude: 0,
-    imageUris: [],
-    longitude: 0,
-    openHours: "",
     reservations: [],
+    latitude: 0,
+    longitude: 0,
+    imageUris: [],
+    images: {
+      $id: "",
+      $values: [],
+    },
   });
 
   const [availablePeople, setAvailablePeople] = useState<number>(0);
   const [openingHour, setOpeningHour] = useState("");
   const [closingHour, setClosingHour] = useState("");
-
   const [editRestaurant, setEditRestaurant] = useState<boolean>(true);
   const [editImages, setEditImages] = useState<boolean>(false);
 
@@ -57,8 +49,17 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
   useEffect(() => {
     const fetchRestaurantData = async () => {
       try {
-        const restaurantData = await getRestaurantById(restaurantId);
-        setRestaurant(restaurantData);
+        const restaurantData = await fetchRestaurant(restaurantId);
+        
+        const imageUris =
+            restaurantData.images?.$values?.map((img: any) => img.uri) || [];
+
+        setRestaurant({
+          ...restaurantData,
+          imageUris,
+          images: restaurantData.images || { $id: "", $values: [] },
+        });
+
         const [startHour, endHour] = restaurantData.openHours.split(" - ");
         if (!startHour || !endHour) {
           console.error("Invalid openHours format");
@@ -86,9 +87,7 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
     }
   };
 
-  const handleAvailablePeopleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleAvailablePeopleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAvailablePeople(parseInt(e.target.value, 10) || 0);
   };
 
@@ -105,14 +104,7 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
   };
 
   const handleSubmit = async () => {
-    if (restaurant) {
-      const updatedRestaurant = {
-        ...restaurant,
-        capacity: availablePeople,
-        openHours: `${openingHour} - ${closingHour}`,
-        reservations: restaurant.reservations || [],
-        imageUris: restaurant.imageUris || [],
-      };
+    const updatedRestaurant: RestaurantData = {...restaurant, capacity: availablePeople, openHours: `${openingHour} - ${closingHour}`,};
 
       try {
         await updateRestaurant(updatedRestaurant);
@@ -122,8 +114,7 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
           "Failed to update restaurant:",
           error.response?.data || error.message
         );
-        alert("Failed to update restaurant.");
-      }
+      alert("Failed to update restaurant.");
     }
   };
 

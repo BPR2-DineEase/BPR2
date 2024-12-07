@@ -19,6 +19,4 @@ public class Image
     public Restaurant Restaurant { get; set; }
     
     public Image() { }
-    public int RestaurantId { get; set; }
-    public Restaurant Restaurant { get; set; }
 }

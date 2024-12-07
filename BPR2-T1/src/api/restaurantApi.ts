@@ -47,7 +47,7 @@ export const fetchRestaurant = async (id: number): Promise<RestaurantData> => {
     }
 };
 
-/*export const getRestaurantById = async (id: number): Promise<Restaurant> => {
+export const getRestaurantById = async (id: number): Promise<Restaurant> => {
   try {
     
     const response = await axiosInstance.get(`/RestaurantCreation/${id}`);
@@ -57,7 +57,7 @@ export const fetchRestaurant = async (id: number): Promise<RestaurantData> => {
     console.error("API Error:", err);
     throw err;
   }
-};*/
+};
 
 export const updateRestaurant = async (data: Restaurant): Promise<any> => {
   try {

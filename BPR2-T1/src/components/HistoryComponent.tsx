@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getRestaurantById } from "@/api/restaurantApi";
+import {fetchRestaurant} from "@/api/restaurantApi";
 
 const HistoryComponent: React.FC<{ restaurantId: number }> = ({
   restaurantId,
@@ -20,7 +20,7 @@ const HistoryComponent: React.FC<{ restaurantId: number }> = ({
   useEffect(() => {
     const fetchRestaurantData = async () => {
       try {
-        const restaurantData = await getRestaurantById(restaurantId);
+        const restaurantData = await fetchRestaurant(restaurantId);
         setReservations(restaurantData.reservations?.$values || []);
       } catch (error) {
         console.error("Failed to fetch reservations:", error);
