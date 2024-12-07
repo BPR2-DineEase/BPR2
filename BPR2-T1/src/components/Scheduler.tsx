@@ -1,17 +1,12 @@
 import { useState, useEffect } from "react";
 import {fetchRestaurant} from "@/api/restaurantApi";
 import { Button } from "@/components/ui/button";
-
-interface Reservation {
-  guestName: string;
-  numOfPeople: number;
-  date: string;
-}
+import { ReservationData } from "@/types/types";
 
 interface Restaurant {
   id: number;
   name: string;
-  reservations: { $values: Reservation[] };
+  reservations: { $values: ReservationData[] };
 }
 
 interface SchedulerProps {
@@ -75,6 +70,8 @@ const Scheduler: React.FC<SchedulerProps> = ({
       try {
         const restaurantData = await fetchRestaurant(restaurantId);
         console.log("Fetched restaurant data:", restaurantData);
+        console.log("Fetched reservations data:", restaurantData.reservations);
+
         setRestaurant(restaurantData);
       } catch (error) {
         console.error("Failed to fetch restaurant data:", error);

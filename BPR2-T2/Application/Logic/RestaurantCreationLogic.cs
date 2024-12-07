@@ -107,6 +107,17 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
             Cuisine = restaurant.Cuisine,
             Info = restaurant.Info,
             Capacity = restaurant.Capacity,
+            Reservations = restaurant.Reservations?.Select(reservation => new Reservation
+            {
+                Id = reservation.Id,
+                Comments = reservation.Comments,
+                Company = reservation.Company,
+                Date = reservation.Date,
+                Email = reservation.Email,
+                GuestName = reservation.GuestName,
+                NumOfPeople = reservation.NumOfPeople,
+                PhoneNumber = reservation.PhoneNumber
+            }).ToList(),
             Images = restaurant.Images?.Select(img => new ImageDto
             {
                 Id = img.Id,

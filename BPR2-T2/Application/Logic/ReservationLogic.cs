@@ -50,6 +50,8 @@ public class ReservationLogic : IReservationsLogic
 
         return reservation;
     }
+
+
     
     public async Task<IEnumerable<ReservationWithRestaurantDto>> GetUserReservationsAsync(Guid userId)
     {
@@ -89,6 +91,16 @@ public class ReservationLogic : IReservationsLogic
         }
 
         await reservationsDao.DeleteReservationAsync(reservation);
+    }
+
+    public async Task<IEnumerable<Reservation>> GetReservationsByRestaurantIdAsync(int restaurantId)
+    {
+        var reservations = await reservationsDao.GetReservationsByRestaurantIdAsync(restaurantId);
+        if (reservations == null)
+        {
+            throw new Exception("Reservations not found.");
+        }
+        return reservations;
     }
 }
 

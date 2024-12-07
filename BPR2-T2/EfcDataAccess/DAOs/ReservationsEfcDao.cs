@@ -75,6 +75,8 @@ public class ReservationsEfcDao : IReservationsDao
             .ToListAsync();
     }
     
+    
+    
     public async Task UpdateReservationAsync(Reservation reservation)
     {
         _context.Reservations.Update(reservation);
@@ -86,4 +88,13 @@ public class ReservationsEfcDao : IReservationsDao
         _context.Reservations.Remove(reservation);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<IEnumerable<Reservation>> GetReservationsByRestaurantIdAsync(int restaurantId)
+    {
+        return await _context.Reservations.Include(r => r.Restaurant).ToListAsync();
+        
+    }
+
+    
+    
 }

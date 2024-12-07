@@ -25,7 +25,7 @@ export type RestaurantData = {
     latitude: number;
     longitude: number;
     imageUris: string[];
-    reservations: any;
+    reservations: { $values: ReservationData[]};
 };
 
 export type ReservationData = {
@@ -35,7 +35,7 @@ export type ReservationData = {
     email: string;
     company: string | null;
     comments: string;
-    date: Date;
+    date: string;
     time: string;
     numOfPeople: number;
     userId: string;

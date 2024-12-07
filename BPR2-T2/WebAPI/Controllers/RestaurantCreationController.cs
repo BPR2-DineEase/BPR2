@@ -1,5 +1,6 @@
 using Application.LogicInterfaces;
 using Domain.Dtos;
+using Domain.Dtos.ReservationDtos;
 using Domain.Dtos.RestaurantDtos;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -12,15 +13,19 @@ public class RestaurantCreationController : ControllerBase
 {
     private readonly IRestaurantCreationLogic _restaurantCreationLogic;
     private readonly IRestaurantsLogic _restaurantsLogic;
+    private readonly IReservationsLogic _reservationLogic;
 
-    public RestaurantCreationController(IRestaurantCreationLogic restaurantCreationLogic, IRestaurantsLogic restaurantsLogic)
+    public RestaurantCreationController(IRestaurantCreationLogic restaurantCreationLogic,
+        IRestaurantsLogic restaurantsLogic, IReservationsLogic _reservationLogic)
     {
         _restaurantCreationLogic = restaurantCreationLogic;
         _restaurantsLogic = restaurantsLogic;
+        this._reservationLogic = _reservationLogic;
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateRestaurant([FromForm] CreateRestaurantDto dto, [FromForm] List<IFormFile> files)
+    public async Task<IActionResult> CreateRestaurant([FromForm] CreateRestaurantDto dto,
+        [FromForm] List<IFormFile> files)
     {
         if (dto == null)
         {
@@ -76,6 +81,7 @@ public class RestaurantCreationController : ControllerBase
                 return NotFound("Restaurant not found.");
             }
 
+            var reservations = await _reservationLogic.GetReservationsByRestaurantIdAsync(restaurant.Id);
             var images = await _restaurantsLogic.ListImagesAsyncByRestaurantId(id);
             var restaurantProfile = new RestaurantPreviewDto()
             {
@@ -86,7 +92,12 @@ public class RestaurantCreationController : ControllerBase
                 Address = restaurant.Address,
                 Review = restaurant.Review,
                 OpenHours = restaurant.OpenHours,
-                Images = images.Select(img => new ImageDto { Uri = img.Uri, Name = img.Name }).ToList()
+                Images = images.Select(img => new ImageDto { Uri = img.Uri, Name = img.Name }).ToList(),
+                Reservations = reservations.Select(reservation => new Reservation
+                {
+                    Id = reservation.Id, GuestName = reservation.GuestName, Comments = reservation.Comments,
+                    PhoneNumber = reservation.PhoneNumber, Date = reservation.Date, RestaurantId = restaurant.Id, Time = reservation.Time, Email = reservation.Email , NumOfPeople = reservation.NumOfPeople
+                }).ToList()
             };
 
             return Ok(restaurantProfile);
@@ -126,7 +137,7 @@ public class RestaurantCreationController : ControllerBase
             var image = await _restaurantsLogic.UploadImageAsync(file, restaurantId);
 
             var restaurant = await _restaurantsLogic.GetRestaurantById(restaurantId);
-            
+
             if (restaurant == null)
             {
                 return NotFound($"Restaurant with ID {restaurantId} not found.");
@@ -138,7 +149,7 @@ public class RestaurantCreationController : ControllerBase
             }
 
             restaurant.Images.Add(image);
-            
+
             return Ok(image);
         }
         catch (Exception e)

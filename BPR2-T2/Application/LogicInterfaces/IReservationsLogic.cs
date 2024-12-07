@@ -12,4 +12,5 @@ public interface IReservationsLogic
     Task<IEnumerable<ReservationWithRestaurantDto>> GetUserReservationsAsync(Guid userId);
     Task UpdateReservationAsync(UpdateReservationDto updateReservationDto);
     Task DeleteReservationAsync(int id);
+    Task<IEnumerable<Reservation>> GetReservationsByRestaurantIdAsync(int restaurantId);
 }
