@@ -3,12 +3,14 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { Restaurant } from "../types/types";
 import L from "leaflet";
-import markerIcon from "leaflet/dist/images/marker-icon.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
-L.Icon.Default.mergeOptions({
-    iconUrl: markerIcon,
-    shadowUrl: markerShadow,
+const customIcon = new L.Icon({
+    iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
+    shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41],
 });
 interface MapViewProps {
     restaurants: Restaurant[];
@@ -32,7 +34,11 @@ const MapView: React.FC<MapViewProps> = ({ restaurants }) => {
     }, [restaurants]);
 
     return (
-        <MapContainer center={center} zoom={13} style={{ height: "500px", width: "100%" }}>
+        <MapContainer
+            center={center}
+            zoom={13}
+            className="h-[calc(50vh)] w-full lg:h-[70vh]"
+        >
             <MapUpdater />
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -42,11 +48,13 @@ const MapView: React.FC<MapViewProps> = ({ restaurants }) => {
                 <Marker
                     key={restaurant.id}
                     position={[restaurant.latitude, restaurant.longitude]}
+                    icon={customIcon}
                 >
                     <Popup>
-                        <h3>{restaurant.name}</h3>
-                        <p>{restaurant.city}</p>
+                        <h3 className="font-semibold">{restaurant.name}</h3>
+                        <p>{restaurant.address}</p>
                         <p>{restaurant.cuisine}</p>
+                        <p>{restaurant.rating}</p>
                     </Popup>
                 </Marker>
             ))}

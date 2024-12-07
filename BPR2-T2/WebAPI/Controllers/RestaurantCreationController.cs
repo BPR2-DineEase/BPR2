@@ -76,7 +76,20 @@ public class RestaurantCreationController : ControllerBase
                 return NotFound("Restaurant not found.");
             }
 
-            return Ok(restaurant);
+            var images = await _restaurantsLogic.ListImagesAsyncByRestaurantId(id);
+            var restaurantProfile = new RestaurantPreviewDto()
+            {
+                Id = restaurant.Id,
+                Name = restaurant.Name,
+                City = restaurant.City,
+                Cuisine = restaurant.Cuisine,
+                Address = restaurant.Address,
+                Review = restaurant.Review,
+                OpenHours = restaurant.OpenHours,
+                Images = images.Select(img => new ImageDto { Uri = img.Uri, Name = img.Name }).ToList()
+            };
+
+            return Ok(restaurantProfile);
         }
         catch (Exception e)
         {

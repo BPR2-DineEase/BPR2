@@ -17,6 +17,10 @@ export type RestaurantData = {
             type: string | null;
         }[];
     };
+    review?: {
+        rating: number;
+        stars: number;
+    };
     rating: number;
     latitude: number;
     longitude: number;
@@ -52,6 +56,7 @@ export type Restaurant = {
     city: string;
     cuisine: string;
     rating?: number;
+    address:string,
     latitude: number;
     longitude: number;
 };

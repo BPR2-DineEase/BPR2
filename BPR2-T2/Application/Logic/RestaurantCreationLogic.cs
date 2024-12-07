@@ -112,7 +112,14 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
                 Id = img.Id,
                 Uri = img.Uri,
                 Type = img.Type
-            }).ToList()
+            }).ToList(),
+            Review = restaurant.Reviews != null && restaurant.Reviews.Any() 
+                ? new ReviewFilterDto
+                {
+                    Rating = restaurant.Reviews.Average(r => r.Rating), 
+                    Stars = restaurant.Reviews.Count()
+                }
+                : null
         };
     }
 

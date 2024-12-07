@@ -11,4 +11,5 @@ public class RestaurantPreviewDto
     public string Info { get; set; }
     public int Capacity { get; set; }
     public ICollection<ImageDto> Images { get; set; }
+    public ReviewFilterDto Review { get; set; }
 }
