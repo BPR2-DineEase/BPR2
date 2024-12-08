@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import {fetchRestaurant} from "@/api/restaurantApi";
+import { fetchRestaurant } from "@/api/restaurantApi";
 import { Button } from "@/components/ui/button";
 import { ReservationData } from "@/types/types";
 
@@ -81,15 +81,24 @@ const Scheduler: React.FC<SchedulerProps> = ({
     fetchRestaurantData();
   }, [restaurantId]);
 
+
   useEffect(() => {
     if (!restaurant || !selectedDate) {
       setAllSchedules([]);
       return;
     }
 
-    const dateString = selectedDate.toISOString().split("T")[0];
-    const filteredReservations = (restaurant.reservations?.$values || [])
-        .filter((reservation) => reservation.date.startsWith(dateString));
+    
+    const adjustedDate = new Date(selectedDate);
+    adjustedDate.setDate(adjustedDate.getDate() + 1);
+
+    
+    const dateString = adjustedDate.toISOString().split("T")[0];
+    console.log(dateString);
+
+    const filteredReservations = (
+      restaurant.reservations?.$values || []
+    ).filter((reservation) => reservation.date.startsWith(dateString));
 
     const parseTime = (time: string) => {
       const [timePart, period] = time.split(" ");
@@ -139,6 +148,7 @@ const Scheduler: React.FC<SchedulerProps> = ({
 
     setAllSchedules(updatedSchedules);
   }, [restaurant, selectedDate]);
+
 
   const displayedSchedules = allSchedules.slice(
     currentPage * slotsPerPage,
