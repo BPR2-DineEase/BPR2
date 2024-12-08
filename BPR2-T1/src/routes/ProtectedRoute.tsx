@@ -16,7 +16,7 @@ const ProtectedRoute = ({ children, roles }: { children: JSX.Element; roles?: st
             return <Navigate to="/unauthorized" />;
         }
 
-        const isAuthorized = roles.some((role) => role.toLowerCase() === user.role.toLowerCase());
+        const isAuthorized = roles.some((role) => role.toLowerCase() === user.role!.toLowerCase());
         console.log(`Role Check: User role '${user.role}' vs Allowed roles '${roles}' - Access: ${isAuthorized}`);
 
         if (!isAuthorized) {

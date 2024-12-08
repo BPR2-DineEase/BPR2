@@ -20,7 +20,7 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({restauran
     rating: 0,
     info: "",
     capacity: 0,
-    reservations: [],
+    reservations: { $values: [] },
     latitude: 0,
     longitude: 0,
     imageUris: [],

@@ -91,8 +91,9 @@ public class ReservationsEfcDao : IReservationsDao
 
     public async Task<IEnumerable<Reservation>> GetReservationsByRestaurantIdAsync(int restaurantId)
     {
-        return await _context.Reservations.Include(r => r.Restaurant).ToListAsync();
-        
+        return await _context.Reservations.Include(r => r.Restaurant) 
+            .Where(r => r.Restaurant.Id == restaurantId) 
+            .ToListAsync();
     }
 
     

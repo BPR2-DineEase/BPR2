@@ -89,7 +89,10 @@ const Scheduler: React.FC<SchedulerProps> = ({
 
     const dateString = selectedDate.toISOString().split("T")[0];
     const filteredReservations = (restaurant.reservations?.$values || [])
-        .filter((reservation) => reservation.date.startsWith(dateString));
+        .filter((reservation) => {
+          const reservationDateString = new Date(reservation.date).toISOString().split("T")[0];
+          return reservationDateString === dateString;
+        });
 
     const parseTime = (time: string) => {
       const [timePart, period] = time.split(" ");

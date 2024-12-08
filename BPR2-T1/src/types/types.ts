@@ -35,7 +35,7 @@ export type ReservationData = {
     email: string;
     company: string | null;
     comments: string;
-    date: string;
+    date: Date;
     time: string;
     numOfPeople: number;
     userId: string;
@@ -59,8 +59,9 @@ export type Restaurant = {
   cuisine: string;
   info: string;
   capacity: number;
-  latitude?: number;
-  longitude?: number;
+  latitude: number;
+  longitude: number;
+  rating: number;
 };
 
 export type FilterOptions = {
