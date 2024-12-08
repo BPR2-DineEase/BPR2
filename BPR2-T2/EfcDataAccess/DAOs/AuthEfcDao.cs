@@ -52,4 +52,24 @@ public class AuthEfcDao : IAuthDao
 
         return user;
     }
+
+    public async Task<User> addRestaurantToUser(Guid userId, int restaurantId)
+    {
+        var findUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (findUser == null)
+        {
+            throw new Exception("User not found.");
+        }
+
+        var restaurant = await _context.Restaurants.FirstOrDefaultAsync(r => r.Id == restaurantId);
+        if (restaurant == null)
+        {
+            throw new Exception("Restaurant not found.");
+        }
+
+        findUser.RestaurantId = restaurantId;
+
+        await _context.SaveChangesAsync();
+        return findUser;
+    }
 }

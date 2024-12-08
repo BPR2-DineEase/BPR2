@@ -13,4 +13,6 @@ public interface IAuthLogic
     Task<User> GetUserByEmail(string email);
     Task<User?> GetUserById(Guid userId);
     Task<User?> GetUserCredentials(UserCredentialsDto userCredentialsDto);
+
+    Task<User> addRestaurantToUser(Guid userId, int restaurantId);
 }

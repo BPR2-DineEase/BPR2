@@ -12,7 +12,6 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace WebAPI.Controllers;
 
-
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
@@ -23,7 +22,7 @@ public class AuthController : ControllerBase
     {
         _authLogic = authLogic;
     }
-    
+
     [HttpPost, Route("register")]
     public async Task<ActionResult> Register([FromBody] UserRegisterDto userRegisterDto)
     {
@@ -63,18 +62,18 @@ public class AuthController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
-    
-    
+
+
     [HttpPost, Route("generate-reset-otp")]
     public async Task<ActionResult> GenerateResetOtp([FromBody] string email)
     {
         try
         {
             var otp = await _authLogic.GeneratePasswordResetOtp(email);
-            
+
             Console.WriteLine($"Reset otp for {email}: {otp}");
 
-            return Ok(new { Otp = otp });
+            return Ok(new {Otp = otp});
         }
         catch (Exception e)
         {
@@ -103,7 +102,7 @@ public class AuthController : ControllerBase
     {
         try
         {
-           var user = await _authLogic.GetUserById(id);
+            var user = await _authLogic.GetUserById(id);
             return Ok(user);
         }
         catch (Exception e)
@@ -112,18 +111,19 @@ public class AuthController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
-    
+
     [HttpGet("user-email/{email}")]
     public async Task<ActionResult<User>> GetUserByEmail(string email)
     {
         try
         {
-            var decodedEmail = Uri.UnescapeDataString(email); 
+            var decodedEmail = Uri.UnescapeDataString(email);
             var user = await _authLogic.GetUserByEmail(decodedEmail);
             if (user == null)
             {
-                return NotFound(new { message = "User not found" });
+                return NotFound(new {message = "User not found"});
             }
+
             return Ok(user);
         }
         catch (Exception e)
@@ -135,7 +135,7 @@ public class AuthController : ControllerBase
 
 
     [HttpGet, Route("user-credentials")]
-    public async Task<ActionResult<User>> GetUserByCredentials([FromQuery]UserCredentialsDto dto)
+    public async Task<ActionResult<User>> GetUserByCredentials([FromQuery] UserCredentialsDto dto)
     {
         try
         {
@@ -148,6 +148,21 @@ public class AuthController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
-    
-    
+
+    [HttpPost, Route("addRestaurantToUser")]
+    public async Task<ActionResult<User>> AddRestaurantToUser([FromQuery] Guid userId, [FromQuery] int restaurantId)
+    {
+        try
+        {
+            Console.WriteLine($"Controller: userId={userId}, restaurantId={restaurantId}");
+            var user = await _authLogic.addRestaurantToUser(userId, restaurantId);
+            return Ok(user);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error in AddRestaurantToUser: {e}");
+            return StatusCode(500, e.Message);
+        }
+    }
+
 }

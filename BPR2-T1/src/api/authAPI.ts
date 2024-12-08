@@ -25,7 +25,7 @@ export const loginUser = async (credentials: {
 
 export const getUserById = async (id: string) => {
   try {
-    const response = await axiosInstance.get(`/api/Auth/${id}`);
+    const response = await axiosInstance.get(`/Auth/${id}`);
     return response.data;
   } catch (error: any) {
     console.error(
@@ -40,7 +40,7 @@ export const getUserById = async (id: string) => {
 
 export const getUserByEmail = async (email: string) => {
   try {
-    const encodedEmail = encodeURIComponent(email); 
+    const encodedEmail = encodeURIComponent(email);
     const response = await axiosInstance.get(
       `/Auth/user-email/${encodedEmail}`
     );
@@ -55,7 +55,6 @@ export const getUserByEmail = async (email: string) => {
     );
   }
 };
-
 
 export const getDecodedToken = (token: string) => {
   try {
@@ -90,6 +89,22 @@ export const registerUser = async (details: {
       console.error("Validation errors:", error.response.data.errors);
     }
     throw error;
+  }
+};
+
+export const addRestaurantToUser = async (data: {
+  userId: string;
+  restaurantId: number;
+}) => {
+  try {
+    const res = await axiosInstance.post(
+      `/Auth/addRestaurantToUser?userId=${data.userId}&restaurantId=${data.restaurantId}`,
+      data
+    );
+    console.log("Response ", res);
+    return res.data;
+  } catch (error: any) {
+    console.error(error);
   }
 };
 

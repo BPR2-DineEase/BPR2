@@ -11,4 +11,5 @@ public interface IAuthDao
 
     Task<User?> GetUserById(Guid userId);
     Task<User?> GetUserCredentials(UserCredentialsDto userCredentialsDto);
+    Task<User> addRestaurantToUser(Guid userId, int restaurantId);
 }

@@ -51,14 +51,16 @@ export enum UserRole {
 
 
 export type Restaurant = {
-    id: number;
-    name: string;
-    city: string;
-    cuisine: string;
-    rating?: number;
-    address:string,
-    latitude: number;
-    longitude: number;
+  id: number;
+  name: string;
+  address: string;
+  city: string;
+  openHours: string;
+  cuisine: string;
+  info: string;
+  capacity: number;
+  latitude?: number;
+  longitude?: number;
 };
 
 export type FilterOptions = {
@@ -78,4 +80,9 @@ export interface CreateRestaurantDto {
     capacity: number;
     latitude?: number;
     longitude?: number;
+}
+
+export interface User {
+  role?: UserRole;
+  userId: string;
 }

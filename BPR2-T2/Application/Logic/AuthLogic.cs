@@ -101,7 +101,7 @@ public class AuthLogic : IAuthLogic
             new Claim(ClaimTypes.Name, user.LastName),
             new Claim(ClaimTypes.Role, user.Role),
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim("id", user.Id.ToString())               
+            new Claim("id", user.Id.ToString())
         };
         return claims.ToList();
     }
@@ -125,9 +125,9 @@ public class AuthLogic : IAuthLogic
         string resetLink = $"http://localhost/reset-password";
         var placeholders = new Dictionary<string, string>
         {
-            { "Name", user.LastName },
-            { "OTP", otp },
-            { "ResetLink", resetLink }
+            {"Name", user.LastName},
+            {"OTP", otp},
+            {"ResetLink", resetLink}
         };
 
         string emailBody = EmailTemplateProcessor.LoadTemplate("password-reset", placeholders);
@@ -172,11 +172,20 @@ public class AuthLogic : IAuthLogic
     {
         var user = await authDao.GetUserCredentials(userCredentialsDto);
         if (user == null) throw new Exception("User not found");
-        if(user.Email != userCredentialsDto.Email) throw new Exception("Invalid credentials");
-        if(user.Role != userCredentialsDto.Role) throw new Exception("Invalid credentials");
-        if(user.FirstName != userCredentialsDto.FirstName) throw new Exception("Invalid credentials");
-        if(user.LastName != userCredentialsDto.LastName) throw new Exception("Invalid credentials");
+        if (user.Email != userCredentialsDto.Email) throw new Exception("Invalid credentials");
+        if (user.Role != userCredentialsDto.Role) throw new Exception("Invalid credentials");
+        if (user.FirstName != userCredentialsDto.FirstName) throw new Exception("Invalid credentials");
+        if (user.LastName != userCredentialsDto.LastName) throw new Exception("Invalid credentials");
 
         return await Task.FromResult(user);
+    }
+
+    public async Task<User> addRestaurantToUser(Guid userId, int restaurantId)
+    {
+        Console.WriteLine(userId);
+        Console.WriteLine(restaurantId);
+        if (restaurantId <= 0) throw new Exception("Invalid restaurantId");
+        if (userId == Guid.Empty) throw new Exception("Invalid userId");
+        return await authDao.addRestaurantToUser(userId, restaurantId);
     }
 }
