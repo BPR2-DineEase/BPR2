@@ -1,15 +1,22 @@
 import React, { useEffect, useState } from "react";
 import restaurantLogo from "../../public/restaurantLogo.png";
-import {Card, CardContent, CardFooter, CardHeader, CardTitle,} from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import { Input } from "./ui/input";
-import {RestaurantData} from "@/types/types";
-import {fetchRestaurant, updateRestaurant} from "@/api/restaurantApi";
+import { RestaurantData } from "@/types/types";
+import { fetchRestaurant, updateRestaurant } from "@/api/restaurantApi";
 
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 
-export const SettingsComponent: React.FC<{ restaurantId: number }> = ({restaurantId,}) => {
-
+export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
+  restaurantId,
+}) => {
   const [restaurant, setRestaurant] = useState<RestaurantData>({
     id: restaurantId,
     name: "",
@@ -20,7 +27,7 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({restauran
     rating: 0,
     info: "",
     capacity: 0,
-    reservations: [],
+    reservations: { $values: [] },
     latitude: 0,
     longitude: 0,
     imageUris: [],
@@ -50,9 +57,9 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({restauran
     const fetchRestaurantData = async () => {
       try {
         const restaurantData = await fetchRestaurant(restaurantId);
-        
+
         const imageUris =
-            restaurantData.images?.$values?.map((img: any) => img.uri) || [];
+          restaurantData.images?.$values?.map((img: any) => img.uri) || [];
 
         setRestaurant({
           ...restaurantData,
@@ -87,7 +94,9 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({restauran
     }
   };
 
-  const handleAvailablePeopleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvailablePeopleChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setAvailablePeople(parseInt(e.target.value, 10) || 0);
   };
 
@@ -104,16 +113,20 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({restauran
   };
 
   const handleSubmit = async () => {
-    const updatedRestaurant: RestaurantData = {...restaurant, capacity: availablePeople, openHours: `${openingHour} - ${closingHour}`,};
+    const updatedRestaurant: RestaurantData = {
+      ...restaurant,
+      capacity: availablePeople,
+      openHours: `${openingHour} - ${closingHour}`,
+    };
 
-      try {
-        await updateRestaurant(updatedRestaurant);
-        alert("Restaurant updated successfully!");
-      } catch (error: any) {
-        console.error(
-          "Failed to update restaurant:",
-          error.response?.data || error.message
-        );
+    try {
+      await updateRestaurant(updatedRestaurant);
+      alert("Restaurant updated successfully!");
+    } catch (error: any) {
+      console.error(
+        "Failed to update restaurant:",
+        error.response?.data || error.message
+      );
       alert("Failed to update restaurant.");
     }
   };
@@ -214,9 +227,9 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({restauran
       )}
       {editImages && (
         <div className="w-full">
-          <div className="flex justify-center items-center space-x-12">
+          <div className="flex justify-center items-center space-x-12 space-y-2  flex-wrap">
             <div>
-              <Card className="max-w-md mx-auto bg-blue-200 w-80 h-80">
+              <Card className="max-w-md mx-auto mt-2 bg-blue-200 w-80 h-80 ">
                 <CardHeader>
                   <CardTitle>Edit Logo</CardTitle>
                 </CardHeader>
@@ -235,6 +248,28 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({restauran
                 </CardHeader>
                 <CardContent className="flex justify-center items-center mt-6">
                   <div>
+                    <img src={restaurantLogo} />
+                  </div>
+                </CardContent>
+                <CardFooter></CardFooter>
+              </Card>
+            </div>
+            <div>
+              <Card className="mx-auto bg-blue-200 min-w-80 w-full h-80">
+                <CardHeader>
+                  <CardTitle>Edit Menu Images</CardTitle>
+                </CardHeader>
+                <CardContent className="flex justify-center items-center gap-2 mt-6">
+                  <div>
+                    <img src={restaurantLogo} />
+                  </div>
+                  <div>
+                    <img src={restaurantLogo} />
+                  </div>
+                  <div>
+                    <img src={restaurantLogo} />
+                  </div>
+                    <div>
                     <img src={restaurantLogo} />
                   </div>
                 </CardContent>
