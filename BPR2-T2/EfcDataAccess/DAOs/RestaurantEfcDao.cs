@@ -76,11 +76,14 @@ public class RestaurantEfcDao : IRestaurantsDao
     
     public async Task<Restaurant?> GetRestaurantByIdAsync(int restaurantId)
     {
-        var restaurant = await _context.Restaurants
-            .FirstOrDefaultAsync(r => r.Id == restaurantId);
 
-        return restaurant;
+        return await _context.Restaurants
+            .Include(r => r.Images)
+            .Include(r => r.Reservations) 
+            .Include(r => r.Reviews)
+            .FirstOrDefaultAsync(r => r.Id == restaurantId);
     }
+
     
     public async Task<int> AddRestaurantAsync(Restaurant restaurant)
     {
@@ -101,4 +104,6 @@ public class RestaurantEfcDao : IRestaurantsDao
             .Include(r => r.Images) 
             .ToListAsync();
     }
+    
+
 }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Models;
 
@@ -15,9 +16,9 @@ public class Reservation
     public string Time { get; set; }
     public int NumOfPeople { get; set; }
 
+    public Guid UserId { get; set; }
+    public User User { get; set; }
 
-    public Reservation()
-    {
-        
-    }
+    public int RestaurantId { get; set; }
+    public Restaurant Restaurant { get; set; }
 }

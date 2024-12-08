@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Restaurant, FilterOptions } from "../api/restaurantApi";
+import {FilterOptions, Restaurant} from "@/types/types.ts";
 import { filterRestaurantsByOptions } from "../services/restaurantService";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";

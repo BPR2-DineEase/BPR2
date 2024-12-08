@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import {saveToken} from "@/services/jwtService.ts";
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -18,12 +19,16 @@ const Login: React.FC = () => {
         try {
             const token = await AuthService.login(email, password);
 
-            localStorage.setItem("jwt", token);
+            saveToken(token);
             setAuth(true);
             navigate("/");
         } catch (error: any) {
             alert(error.message);
         }
+    };
+
+    const handleForgotPassword = () => {
+        navigate("/request-reset-otp");
     };
 
     return (
@@ -60,6 +65,15 @@ const Login: React.FC = () => {
                             Login
                         </Button>
                     </form>
+                    <div className="text-right mt-4">
+                        <button
+                            type="button"
+                            onClick={handleForgotPassword}
+                            className="text-blue-500 hover:underline text-sm"
+                        >
+                            Forgot Password?
+                        </button>
+                    </div>
                 </CardContent>
                 <CardFooter className="text-center text-sm text-gray-500">
                     Don’t have an account? <a href="/register" className="text-blue-500">Register</a>

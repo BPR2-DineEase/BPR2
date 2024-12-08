@@ -1,28 +1,17 @@
 import React from "react";
 import { format, isBefore, startOfDay } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
+import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover";
+import {Card, CardContent, CardFooter, CardHeader, CardTitle,} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import ReservationProccess from "./ReservationProccess";
 import { postReservation } from "@/api/ReservationApi";
+import {useAuth} from "@/context/AuthContext.tsx";
+import {cn} from "@/lib/utils.ts";
+import {useNavigate, useSearchParams} from "react-router-dom";
 
 const TableReservation = () => {
   const [comments, setComment] = React.useState<string>("");
@@ -36,27 +25,45 @@ const TableReservation = () => {
   const [numOfPeople, setNumOfPeople] = React.useState<number>();
   const [isPopoverOpen, setIsPopoverOpen] = React.useState<boolean>(false);
   const today = startOfDay(new Date());
+  const { user } = useAuth();
+
+  const [searchParams] = useSearchParams();
+  const restaurantId = Number(searchParams.get("restaurantId"));
+  const navigate = useNavigate();
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!date) return;
-    if (!numOfPeople) return;
+    if (!date || !numOfPeople) return;
+
+    if (!user) {
+      alert("You must be logged in to make a reservation.");
+      return;
+    }
+
+    const userId = user.userId;
 
     try {
       await postReservation({
-        date,
-        time,
-        numOfPeople,
+        
         guestName,
         phoneNumber,
-        comments,
-        company,
         email,
+        company,
+        comments, 
+        date, 
+        time, 
+        numOfPeople, 
+        userId,
+        restaurantId,
       });
+
       alert("Reservation created successfully");
+      
+      navigate("/user-reservations", { state: { userId } });
     } catch (err) {
-      console.error("Failed to create Reservation. ");
+      console.error("Failed to create Reservation.", err);
     }
 
     setDate(undefined);
@@ -66,10 +73,10 @@ const TableReservation = () => {
     setComment("");
     setEmail("");
     setName("");
-    setComment("");
     setPhoneNumber("");
   };
 
+  
   const handleDateChange = (selectedDate: Date | undefined) => {
     if (selectedDate && !isBefore(selectedDate, today)) {
       setDate(selectedDate);

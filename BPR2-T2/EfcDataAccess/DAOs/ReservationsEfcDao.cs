@@ -1,9 +1,8 @@
 using Application.DaoInterfaces;
-using Domain.Dtos.ReservationDtos;
+using Domain.Dtos;
 using Domain.Models;
 using EfcDataAccess.Context;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace EfcDataAccess.DAOs;
 
@@ -31,11 +30,71 @@ public class ReservationsEfcDao : IReservationsDao
         await _context.SaveChangesAsync();
         return reservation;
     }
-
+    
     public async Task<IEnumerable<Reservation>> GetReservations()
     {
-        var reservations = await _context.Reservations.ToListAsync();
-        await _context.SaveChangesAsync();
-        return reservations;
+        return await _context.Reservations
+            .Include(r => r.Restaurant) 
+            .Include(r => r.User)     
+            .ToListAsync();
     }
+    
+    public async Task<IEnumerable<ReservationWithRestaurantDto>> GetUserReservationsAsync(Guid userId)
+    {
+        return await _context.Reservations
+            .Where(r => r.UserId == userId)
+            .Select(r => new ReservationWithRestaurantDto
+            {
+                Id = r.Id,
+                GuestName = r.GuestName,
+                PhoneNumber = r.PhoneNumber,
+                Email = r.Email,
+                Date = r.Date,
+                Time = r.Time,
+                NumOfPeople = r.NumOfPeople,
+                Comments = r.Comments,
+                Restaurant = new RestaurantPreviewDto
+                {
+                    Name = r.Restaurant.Name,
+                    Address = r.Restaurant.Address,
+                    City = r.Restaurant.City,
+                    OpenHours = r.Restaurant.OpenHours,
+                    Cuisine = r.Restaurant.Cuisine,
+                    Info = r.Restaurant.Info,
+                    Capacity = r.Restaurant.Capacity,
+                    Images = r.Restaurant.Images.Select(img => new ImageDto
+                    {
+                        Id = img.Id,
+                        Uri = img.Uri,
+                        Name = img.Name,
+                        ContentType = img.ContentType,
+                        Type = img.Type
+                    }).ToList()
+                }
+            })
+            .ToListAsync();
+    }
+    
+    
+    
+    public async Task UpdateReservationAsync(Reservation reservation)
+    {
+        _context.Reservations.Update(reservation);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteReservationAsync(Reservation reservation)
+    {
+        _context.Reservations.Remove(reservation);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<Reservation>> GetReservationsByRestaurantIdAsync(int restaurantId)
+    {
+        return await _context.Reservations.Include(r => r.Restaurant).ToListAsync();
+        
+    }
+
+    
+    
 }

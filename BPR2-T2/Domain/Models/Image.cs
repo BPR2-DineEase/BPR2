@@ -12,8 +12,11 @@ public class Image
     public Guid Id { get; set; } = Guid.Empty;  
     public string Uri { get; set; }                 
     public string? Name { get; set; }                
-    public string? ContentType { get; set; }         
-    [JsonIgnore]
+    public string? ContentType { get; set; }
+    public string? Type { get; set; }
+    
     public int RestaurantId { get; set; }
     public Restaurant Restaurant { get; set; }
+    
+    public Image() { }
 }

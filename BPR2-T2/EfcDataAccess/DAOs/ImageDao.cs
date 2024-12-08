@@ -15,6 +15,13 @@ public class ImageDao : IImageDao
 
     public async Task AddImagesAsync(IEnumerable<Image> images)
     {
+        foreach (var image in images)
+        {
+            if (image.RestaurantId == 0)  
+            {
+                throw new Exception("RestaurantId is required for each image.");
+            }
+        }
         _context.Images.AddRange(images);
         await _context.SaveChangesAsync();
     }

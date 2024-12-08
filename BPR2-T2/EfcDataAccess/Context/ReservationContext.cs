@@ -35,7 +35,10 @@ public class ReservationContext : DbContext
             .WithOne(i => i.Restaurant)
             .HasForeignKey(i => i.RestaurantId)
             .OnDelete(DeleteBehavior.Cascade); 
-        modelBuilder.Entity<User>().HasKey(x => x.Id);
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.Restaurant)
+            .WithMany()
+            .IsRequired(false);
         modelBuilder.Entity<Image>(entity =>
         {
             entity.Property(i => i.Id)

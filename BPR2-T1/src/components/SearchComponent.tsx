@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import CitySearch from "../components/CitySearch";
-import {Restaurant} from "@/api/restaurantApi.ts";
+import {Restaurant} from "@/types/types.ts";
+import CitySearch from "@/pages/CitySearchPage.tsx";
 
 const SearchComponent: React.FC = () => {
     const navigate = useNavigate();
