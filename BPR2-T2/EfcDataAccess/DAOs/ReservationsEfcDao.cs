@@ -8,17 +8,15 @@ namespace EfcDataAccess.DAOs;
 
 public class ReservationsEfcDao : IReservationsDao
 {
-    
     private readonly ReservationContext _context;
 
     public ReservationsEfcDao(ReservationContext context)
     {
         this._context = context;
     }
-    
+
     public async Task<Reservation> CreateReservation(Reservation addReservation)
     {
-        
         var reservation = await _context.Reservations.AddAsync(addReservation);
         await _context.SaveChangesAsync();
         return reservation.Entity;
@@ -30,15 +28,15 @@ public class ReservationsEfcDao : IReservationsDao
         await _context.SaveChangesAsync();
         return reservation;
     }
-    
+
     public async Task<IEnumerable<Reservation>> GetReservations()
     {
         return await _context.Reservations
-            .Include(r => r.Restaurant) 
-            .Include(r => r.User)     
+            .Include(r => r.Restaurant)
+            .Include(r => r.User)
             .ToListAsync();
     }
-    
+
     public async Task<IEnumerable<ReservationWithRestaurantDto>> GetUserReservationsAsync(Guid userId)
     {
         return await _context.Reservations
@@ -74,9 +72,8 @@ public class ReservationsEfcDao : IReservationsDao
             })
             .ToListAsync();
     }
-    
-    
-    
+
+
     public async Task UpdateReservationAsync(Reservation reservation)
     {
         _context.Reservations.Update(reservation);
@@ -91,10 +88,9 @@ public class ReservationsEfcDao : IReservationsDao
 
     public async Task<IEnumerable<Reservation>> GetReservationsByRestaurantIdAsync(int restaurantId)
     {
-        return await _context.Reservations.Include(r => r.Restaurant).ToListAsync();
-        
+        return await _context.Reservations
+            .Where(r => r.RestaurantId == restaurantId) 
+            .Include(r => r.Restaurant) 
+            .ToListAsync();
     }
-
-    
-    
 }
