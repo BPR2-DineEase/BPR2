@@ -1,4 +1,6 @@
-import {Restaurant, FilterOptions, filterRestaurants, searchRestaurants, restaurantCreate} from "../api/restaurantApi";
+import {CreateRestaurantDto, FilterOptions, Restaurant, RestaurantData} from "@/types/types.ts";
+import {fetchRestaurant, filterRestaurants, restaurantCreate, searchRestaurants} from "@/api/restaurantApi.ts";
+
 
 export const searchRestaurantsByCity = async (city: string): Promise<Restaurant[]> => {
     if (!city) {
@@ -22,10 +24,32 @@ export const filterRestaurantsByOptions = async (options: FilterOptions): Promis
     }
 };
 
-export const createRestaurant = async (data: FormData): Promise<any> => {
+export const createRestaurant = async (dto: CreateRestaurantDto, files: File[], imageTypes: string[]): Promise<any> => {
+  
+    const formData = new FormData();
+    Object.entries(dto).forEach(([key, value]) => {
+        formData.append(key, value.toString());
+    });
+    
+    files.forEach((file) => formData.append("files", file));
+    imageTypes.forEach((type) => formData.append("imageTypes", type));
+
     try {
-        return await restaurantCreate(data);
+        return await restaurantCreate(formData);
     } catch (error: any) {
         throw new Error(error.message || "Failed to create restaurant.");
+    }
+};
+
+export const fetchRestaurantById = async (id: number): Promise<RestaurantData> => {
+    if (!id) {
+        throw new Error("Restaurant ID is required to fetch the restaurant.");
+    }
+
+    try {
+        const data = await fetchRestaurant(id);
+        return data;
+    } catch (error: any) {
+        throw new Error(error.message || "Failed to fetch restaurant details.");
     }
 };

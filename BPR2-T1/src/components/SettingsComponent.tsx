@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Input } from "./ui/input";
-import { Restaurant } from "@/api/restaurantApi";
+import { Restaurant } from "@/types/types";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 

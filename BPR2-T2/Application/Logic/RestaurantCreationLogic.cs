@@ -29,7 +29,6 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
         var coordinates =
             await _googleMapsService.GetCoordinatesAsync(createRestaurantDto.Address, createRestaurantDto.City);
 
-
         var restaurant = new Restaurant
         {
             Name = createRestaurantDto.Name,
@@ -47,7 +46,7 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
 
         if (images != null && images.Any())
         {
-            await HandleImagesAsync(images, restaurantId);
+            await HandleImagesAsync(images, restaurantId, createRestaurantDto.ImageTypes);
         }
 
         return await _restaurantsDao.GetRestaurantByIdAsync(restaurantId);
@@ -73,19 +72,43 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
 
         if (updateRestaurantDto.ImageUris != null && updateRestaurantDto.ImageUris.Any())
         {
-            var images = updateRestaurantDto.ImageUris.Select(uri => new Image
+            var images = updateRestaurantDto.ImageUris.Select((uri, index) => new Image
             {
                 Uri = uri,
-                Type = "restaurant"
+                Type = updateRestaurantDto.ImageTypes.ElementAtOrDefault(index) ?? "default",
+                RestaurantId = restaurant.Id
             }).ToList();
 
             await _imageDao.AddImagesAsync(images);
         }
     }
 
-    public async Task<Restaurant?> GetRestaurantByIdAsync(int id)
+    public async Task<RestaurantPreviewDto?> GetRestaurantByIdAsync(int restaurantId)
     {
-        return await _restaurantsDao.GetRestaurantByIdAsync(id);
+        var restaurant = await _restaurantsDao.GetRestaurantByIdAsync(restaurantId);
+
+        if (restaurant == null)
+        {
+            return null;
+        }
+        
+        return new RestaurantPreviewDto
+        {
+            Id = restaurant.Id,
+            Name = restaurant.Name,
+            Address = restaurant.Address,
+            City = restaurant.City,
+            OpenHours = restaurant.OpenHours,
+            Cuisine = restaurant.Cuisine,
+            Info = restaurant.Info,
+            Capacity = restaurant.Capacity,
+            Images = restaurant.Images?.Select(img => new ImageDto
+            {
+                Id = img.Id,
+                Uri = img.Uri,
+                Type = img.Type
+            }).ToList()
+        };
     }
 
     public async Task<IEnumerable<Restaurant>> GetAllRestaurantsAsync()
@@ -93,18 +116,21 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
         return await _restaurantsDao.GetAllRestaurantsAsync();
     }
 
-    private async Task HandleImagesAsync(List<IFormFile> images, int restaurantId)
+    private async Task HandleImagesAsync(List<IFormFile> images, int restaurantId, List<string>? imageTypes)
     {
         var uploadedImages = new List<Image>();
         
         var restaurant = await _restaurantsDao.GetRestaurantByIdAsync(restaurantId);
 
-        foreach (var formFile in images)
+        for (int i = 0; i < images.Count; i++)
         {
+            var formFile = images[i];
             if (formFile.Length > 0)
             {
+                var type = imageTypes != null && imageTypes.Count > i ? imageTypes[i] : "default";
                 var uploadedImage = await _restaurantsLogic.UploadImageAsync(formFile, restaurantId);
-                if (restaurant != null) restaurant.Id = restaurantId;
+                uploadedImage.RestaurantId = restaurantId;
+                uploadedImage.Type = type;
                 uploadedImages.Add(uploadedImage);
             }
         }

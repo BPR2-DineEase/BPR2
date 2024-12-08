@@ -1,7 +1,8 @@
-namespace Domain.Dtos.RestaurantDtos;
+namespace Domain.Dtos;
 
-public class CreateRestaurantDto
+public class RestaurantPreviewDto
 {
+    public int Id { get; set; }
     public string Name { get; set; }
     public string Address { get; set; }
     public string City { get; set; }
@@ -9,5 +10,5 @@ public class CreateRestaurantDto
     public string Cuisine { get; set; }
     public string Info { get; set; }
     public int Capacity { get; set; }
-    public List<string>? ImageTypes { get; set; }
+    public ICollection<ImageDto> Images { get; set; }
 }

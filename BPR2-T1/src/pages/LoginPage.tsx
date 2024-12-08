@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import {saveToken} from "@/services/jwtService.ts";
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -18,7 +19,7 @@ const Login: React.FC = () => {
         try {
             const token = await AuthService.login(email, password);
 
-            localStorage.setItem("jwt", token);
+            saveToken(token);
             setAuth(true);
             navigate("/");
         } catch (error: any) {

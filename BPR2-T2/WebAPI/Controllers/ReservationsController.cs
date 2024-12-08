@@ -1,4 +1,6 @@
+using System.ComponentModel.DataAnnotations;
 using Application.LogicInterfaces;
+using Domain.Dtos;
 using Domain.Dtos.ReservationDtos;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -16,13 +18,26 @@ public class ReservationsController : ControllerBase
         _reservationsLogic = reservationsLogic;
     }
 
-    [HttpPost]
-    public async Task<ActionResult<Reservation>> PostReservation(Reservation dto)
+    [HttpPost, Route("create")]
+    public async Task<ActionResult> CreateReservation([FromBody] ReservationDto reservationDto)
     {
         try
         {
-            var reservation = await _reservationsLogic.AddReservationAsync(dto);
-            return Created($"$/reservations/{reservation.Id}", reservation);
+            var userIdClaim = User.FindFirst("id")?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("User ID not found in token.");
+            }
+            
+            if (!Guid.TryParse(userIdClaim, out var userId))
+            {
+                Console.WriteLine($"Invalid userId format: {userIdClaim}");
+                return BadRequest("Invalid userId format in token.");
+            }
+            
+            reservationDto.UserId = userId;
+            var reservation = await _reservationsLogic.AddReservationAsync(reservationDto);
+            return Ok(reservation);
         }
         catch (Exception e)
         {
@@ -57,6 +72,59 @@ public class ReservationsController : ControllerBase
         catch (Exception e)
         {
             Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+    
+    [HttpGet, Route("{userId}/reservations")]
+    public async Task<ActionResult<IEnumerable<ReservationWithRestaurantDto>>> GetUserReservationsAsync([FromRoute] Guid userId)
+    {
+        try
+        {
+            var reservations = await _reservationsLogic.GetUserReservationsAsync(userId);
+            return Ok(reservations);
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return StatusCode(500, new { Message = ex.Message });
+        }
+    }
+    
+    
+    [HttpPut("{id}/update")]
+    public async Task<ActionResult> UpdateReservation(int id, [FromBody] UpdateReservationDto updateReservationDto)
+    {
+        if (id != updateReservationDto.Id)
+        {
+            return BadRequest("Reservation ID mismatch.");
+        }
+
+        try
+        {
+            await _reservationsLogic.UpdateReservationAsync(updateReservationDto);
+            return NoContent();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpDelete("{id}/cancel")]
+    public async Task<ActionResult> DeleteReservation(int id)
+    {
+        try
+        {
+            await _reservationsLogic.DeleteReservationAsync(id);
+            return NoContent();
+        }
+        catch (Exception e)
+        {
             return StatusCode(500, e.Message);
         }
     }

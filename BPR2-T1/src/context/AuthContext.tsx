@@ -1,9 +1,11 @@
-import { createContext, useState, useEffect, useContext, ReactNode } from "react";
-import { jwtDecode } from "jwt-decode";
+import {createContext, useState, useEffect, useContext, ReactNode, useCallback} from "react";
+import {getDecodedToken, removeToken} from "@/services/jwtService.ts";
+import {UserRole} from "@/types/types";
 
 
 interface User {
-    role: string;
+    role: UserRole;
+    userId: string;
 }
 
 interface AuthContextType {
@@ -14,41 +16,71 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 const extractClaim = (decoded: any, claimType: string): string => {
-    const key = Object.keys(decoded).find(k => k.includes(claimType));
-    return key ? decoded[key] : "";
+    const claimMapping: Record<string, string> = {
+        role: "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
+        name: "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name",
+        email: "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
+        id: "id",
+    };
+
+    const key = claimMapping[claimType];
+    return key && decoded[key] ? decoded[key] : "";
 };
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [auth, setAuthState] = useState<boolean>(!!localStorage.getItem("jwt"));
+    const [auth, setAuthState] = useState<boolean>(() => !!localStorage.getItem('jwt'));
     const [user, setUser] = useState<User | null>(null);
 
     const setAuth = (auth: boolean) => {
-        setAuthState(auth);
         if (!auth) {
             setUser(null);
-            localStorage.removeItem("jwt");
+            setAuthState(false);
+            removeToken();
+            return;
         }
-    };
-    
-   
-    useEffect(() => {
-        const token = localStorage.getItem("jwt");
+
+        const token = localStorage.getItem('jwt');
         if (token) {
             try {
-                const decoded: any = jwtDecode(token);
-
+                const decoded = getDecodedToken(token);
                 const user: User = {
-                    role: extractClaim(decoded, "role"),
+                    role: extractClaim(decoded, 'role') as UserRole,
+                    userId: extractClaim(decoded, 'id'),
                 };
 
-                console.log("Decoded User Role:", user.role); // Debug role
+                console.log('Decoded User:', user);
                 setUser(user);
-                setAuth(true);
+                setAuthState(true);
             } catch (error) {
-                console.error("Error decoding token:", error);
-                setAuth(false);
+                console.error('Error decoding token:', error);
+                setAuthState(false);
+            }
+        }
+    };
+
+    const handleJwtFromStorage = useCallback(() => {
+        const token = localStorage.getItem('jwt');
+        if (token) {
+            try {
+                const decoded = getDecodedToken(token);
+                const user: User = {
+                    role: extractClaim(decoded, 'role') as UserRole,
+                    userId: extractClaim(decoded, 'id'),
+                };
+
+                console.log('Decoded User:', user);
+                setUser(user);
+                setAuthState(true);
+            } catch (error) {
+                console.error('Error decoding token:', error);
+                setAuthState(false);
             }
         }
     }, []);
+
+    useEffect(() => {
+        handleJwtFromStorage();
+    }, [handleJwtFromStorage]);
 
     return (
         <AuthContext.Provider value={{ auth, user, setAuth }}>
@@ -57,4 +89,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
-export const useAuth = () => useContext(AuthContext) as AuthContextType;
+export const useAuth = (): AuthContextType => useContext(AuthContext) as AuthContextType;

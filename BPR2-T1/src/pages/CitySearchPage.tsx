@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Restaurant } from "../api/restaurantApi";
 import { searchRestaurantsByCity } from "../services/restaurantService";
 import { Command, CommandInput, CommandList, CommandItem, CommandEmpty } from "@/components/ui/command";
 import { Button } from "@/components/ui/button";
+import {Restaurant} from "@/types/types.ts";
 
 const CitySearch: React.FC<{ onSearch: (restaurants: Restaurant[]) => void }> = ({ onSearch }) => {
     const [city, setCity] = useState<string>("");
