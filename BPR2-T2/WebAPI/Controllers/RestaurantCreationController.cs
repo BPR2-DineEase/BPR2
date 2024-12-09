@@ -212,8 +212,8 @@ public class RestaurantCreationController : ControllerBase
     {
         try
         {
-            await _restaurantCreationLogic.DeleteImageById(imageId);
-            return NoContent(); // Return 204 No Content for successful deletion
+            await _restaurantsLogic.DeleteImageById(imageId);
+            return NoContent(); 
         }
         catch (Exception e)
         {

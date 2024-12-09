@@ -44,12 +44,12 @@ export const fetchRestaurant = async (id: number): Promise<RestaurantData> => {
     } catch (err) {
         console.error("API Error in fetchRestaurant:", err);
         throw err;
-    }
+    } 
 };
 
 export const getRestaurantById = async (id: number): Promise<Restaurant> => {
   try {
-    
+
     const response = await axiosInstance.get(`/RestaurantCreation/${id}`);
     console.log("API Response:", response.data);
     return response.data;

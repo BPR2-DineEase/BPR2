@@ -172,16 +172,45 @@ public class RestaurantsLogic : IRestaurantsLogic
 
         return images;
     }
-    
-    public async Task DeleteImageFromStorageAsync(string imageUri)
-    {
-        var blobClient = _imagesContainer.GetBlobClient(imageUri);
-        var response = await blobClient.DeleteIfExistsAsync();
-    
-        if (!response)
-        {
-            throw new Exception($"Failed to delete image from storage: {imageUri}");
-        }
-    }
 
+    public async Task DeleteImageById(Guid imageId)
+    {
+        await foreach (var blobItem in _imagesContainer.GetBlobsAsync())
+        {
+            try
+            {
+                var lastHyphenIndex = blobItem.Name.LastIndexOf('-');
+                if (lastHyphenIndex <= 0) 
+                {
+                    continue;
+                }
+
+                var prefix = blobItem.Name.Substring(0, lastHyphenIndex);
+                var suffix = blobItem.Name.Substring(lastHyphenIndex + 1);
+
+                var parts = prefix.Split('-', 2);
+                if (parts.Length != 2)
+                {
+                    continue;
+                }
+
+                if (!Guid.TryParse(parts[1], out var parsedImageId) || parsedImageId != imageId)
+                {
+                    continue;
+                }
+                
+                var blobClient = _imagesContainer.GetBlobClient(blobItem.Name);
+                await blobClient.DeleteIfExistsAsync();
+
+                Console.WriteLine($"Deleted blob: {blobItem.Name}");
+                return;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error processing blob: {blobItem.Name}, Exception: {ex.Message}");
+            }
+        }
+        
+        throw new Exception($"Image with ID {imageId} not found.");
+    }
 }

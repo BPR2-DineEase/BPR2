@@ -15,6 +15,9 @@ public interface IRestaurantsLogic
 
     Task<List<Image>> ListImagesAsyncByRestaurantId(int restaurantId);
     Task<List<Image>> ListImagesAsyncByRestaurantIdAndType(int restaurantId, string type);
+    
+    Task DeleteImageById(Guid ImageId);
+
 
     
 }

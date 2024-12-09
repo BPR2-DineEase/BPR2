@@ -12,7 +12,6 @@ public interface IRestaurantCreationLogic
     Task UpdateRestaurantAsync(UpdateRestaurantDto updateRestaurantDto);
     Task<RestaurantPreviewDto?> GetRestaurantByIdAsync(int restaurantId);
     Task<IEnumerable<Restaurant>> GetAllRestaurantsAsync();
-    Task DeleteImageById(Guid ImageId);
 
 
 }
