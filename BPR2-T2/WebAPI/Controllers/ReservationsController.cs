@@ -36,7 +36,10 @@ public class ReservationsController : ControllerBase
             }
             
             reservationDto.UserId = userId;
+            
             var reservation = await _reservationsLogic.AddReservationAsync(reservationDto);
+            await _reservationsLogic.SendReservationConfirmationEmailAsync(reservationDto);
+            
             return Ok(reservation);
         }
         catch (Exception e)
@@ -107,6 +110,10 @@ public class ReservationsController : ControllerBase
         try
         {
             await _reservationsLogic.UpdateReservationAsync(updateReservationDto);
+            
+            var updatedReservation = await _reservationsLogic.GetReservationByIdAsync(updateReservationDto.Id);
+            await _reservationsLogic.SendReservationUpdateEmailAsync(updatedReservation);
+
             return NoContent();
         }
         catch (Exception e)
@@ -120,7 +127,15 @@ public class ReservationsController : ControllerBase
     {
         try
         {
+            var reservation = await _reservationsLogic.GetReservationByIdAsync(id);
+            if (reservation == null)
+            {
+                return NotFound("Reservation not found.");
+            }
+
+            await _reservationsLogic.SendReservationDeletionEmailAsync(reservation);
             await _reservationsLogic.DeleteReservationAsync(id);
+            
             return NoContent();
         }
         catch (Exception e)
