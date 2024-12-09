@@ -11,7 +11,10 @@ public interface IRestaurantsLogic
     Task<IEnumerable<Restaurant>> FilterRestaurants(RestaurantFilterDto filter);
     Task<Restaurant?> GetRestaurantById(int restaurantId);
 
-    Task<Image> UploadImageAsync(IFormFile file, int restaurantId);
+    Task<Image> UploadImageAsync(IFormFile file, int restaurantId, string type);
 
     Task<List<Image>> ListImagesAsyncByRestaurantId(int restaurantId);
+    Task<List<Image>> ListImagesAsyncByRestaurantIdAndType(int restaurantId, string type);
+
+    
 }

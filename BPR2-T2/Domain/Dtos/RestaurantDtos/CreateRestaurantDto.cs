@@ -9,5 +9,5 @@ public class CreateRestaurantDto
     public string Cuisine { get; set; }
     public string Info { get; set; }
     public int Capacity { get; set; }
-    public List<string>? ImageTypes { get; set; }
+    public string ImageType { get; set; }
 }

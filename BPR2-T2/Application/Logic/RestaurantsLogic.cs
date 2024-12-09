@@ -63,10 +63,10 @@ public class RestaurantsLogic : IRestaurantsLogic
         return restaurant; 
     }
 
-    public async Task<Image> UploadImageAsync(IFormFile file, int restaurantId)
+    public async Task<Image> UploadImageAsync(IFormFile file, int restaurantId, string type)
     {
         var imageId = Guid.NewGuid();
-        var blobName = $"{restaurantId}-{imageId}-{file.FileName}";
+        var blobName = $"{restaurantId}-{imageId}-{type}";
         var blobClient = _imagesContainer.GetBlobClient(blobName);
 
         var blobHttpHeaders = new BlobHttpHeaders
@@ -85,9 +85,12 @@ public class RestaurantsLogic : IRestaurantsLogic
             Id = imageId,
             Uri = blobClient.Uri.ToString(),
             Name = file.FileName,
-            ContentType = file.ContentType
+            ContentType = file.ContentType,
+            Type = type
         };
     }
+    
+    
 
     public async Task<List<Image>> ListImagesAsyncByRestaurantId(int restaurantId)
     {
@@ -95,14 +98,14 @@ public class RestaurantsLogic : IRestaurantsLogic
 
         await foreach (var blobItem in _imagesContainer.GetBlobsAsync())
         {
-            // "restaurantId-imageId-fileName"
+            // "restaurantId-imageId-type"
             var blobNameParts = blobItem.Name.Split('-', 2);
 
             if (blobNameParts.Length > 1 && int.TryParse(blobNameParts[0], out var imageRestaurantId) &&
                 imageRestaurantId == restaurantId)
             {
                 Guid imageId;
-                bool isValidGuid = Guid.TryParse(blobNameParts[1], out imageId);
+                var isValidGuid = Guid.TryParse(blobNameParts[1], out imageId);
 
                 var blobClient = _imagesContainer.GetBlobClient(blobItem.Name);
 
@@ -111,11 +114,82 @@ public class RestaurantsLogic : IRestaurantsLogic
                     Id = imageId,
                     Uri = blobClient.Uri.ToString(),
                     Name = blobItem.Name,
-                    ContentType = blobItem.Properties.ContentType
+                    ContentType = blobItem.Properties.ContentType,
                 });
             }
         }
 
         return images;
+    }
+
+    public async Task<List<Image>> ListImagesAsyncByRestaurantIdAndType(int restaurantId, string type)
+    {
+        var images = new List<Image>();
+
+        Console.WriteLine($"Started listing images for restaurantId: {restaurantId} and type: {type}");
+
+        // Log the initial state of the images list (it will be empty initially)
+        Console.WriteLine($"Initial images list count: {images.Count}");
+
+        await foreach (var blobItem in _imagesContainer.GetBlobsAsync())
+        {
+            Console.WriteLine($"Processing blob: {blobItem.Name}");
+
+            // "restaurantId-imageId-type"
+            var blobNameParts = blobItem.Name.Split('-', 3);
+
+            if (blobNameParts.Length > 1 &&
+                int.TryParse(blobNameParts[0], out var imageRestaurantId) &&
+                imageRestaurantId == restaurantId)
+            {
+                Console.WriteLine($"Blob matches restaurantId: {imageRestaurantId}");
+
+                Guid imageId;
+                var isValidGuid = Guid.TryParse(blobNameParts[1], out imageId);
+
+                if (isValidGuid)
+                {
+                    Console.WriteLine($"Blob has a valid Guid: {imageId}");
+                }
+                else
+                {
+                    Console.WriteLine($"Blob has an invalid Guid: {blobNameParts[1]}");
+                    continue; // Skip processing this blob if the Guid is invalid
+                }
+
+                var equals = blobNameParts[2].Equals(type, StringComparison.OrdinalIgnoreCase);
+                Console.WriteLine($"Blob type matches: {equals}");
+
+                if (isValidGuid && equals)
+                {
+                    var blobClient = _imagesContainer.GetBlobClient(blobItem.Name);
+                    var image = new Image
+                    {
+                        Id = imageId,
+                        Uri = blobClient.Uri.ToString(),
+                        Name = blobItem.Name,
+                        ContentType = blobItem.Properties.ContentType,
+                        Type = type
+                    };
+
+                    images.Add(image);
+                    Console.WriteLine($"Added image: {image.Name}");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Blob does not match restaurantId or type.");
+            }
+        }
+
+        Console.WriteLine($"Final images list count: {images.Count}");
+
+        foreach (var image in images)
+        {
+            Console.WriteLine($"Image: {image.Name}, Type: {image.Type}, Uri: {image.Uri}");
+        }
+
+        return images;
+
     }
 }

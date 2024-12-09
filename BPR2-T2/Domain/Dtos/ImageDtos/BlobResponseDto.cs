@@ -1,4 +1,4 @@
-namespace Domain.Dtos.ImageHandlerDtos;
+namespace Domain.Dtos.ImageDtos;
 
 public class BlobResponseDto
 {

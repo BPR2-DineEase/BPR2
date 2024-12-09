@@ -46,7 +46,7 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
 
         if (images != null && images.Any())
         {
-            await HandleImagesAsync(images, restaurantId, createRestaurantDto.ImageTypes);
+            await HandleImagesAsync(images, restaurantId, createRestaurantDto.ImageType);
         }
 
         return await _restaurantsDao.GetRestaurantByIdAsync(restaurantId);
@@ -75,18 +75,16 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
             var images = updateRestaurantDto.ImageUris.Select((uri, index) => new Image
             {
                 Uri = uri,
-
-               // Type = updateRestaurantDto.ImageTypes.ElementAtOrDefault(index) ?? "default",
-                //RestaurantId = restaurant.Id
-
-                Type = "restaurant",
-                RestaurantId = updateRestaurantDto.Id
+                RestaurantId = updateRestaurantDto.Id,
+                Type = updateRestaurantDto.ImageTypes 
 
             }).ToList();
-
+            Console.WriteLine(images);
             await _imageDao.AddImagesAsync(images);
         }
     }
+
+
 
     public async Task<RestaurantPreviewDto?> GetRestaurantByIdAsync(int restaurantId)
     {
@@ -122,7 +120,7 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
             {
                 Id = img.Id,
                 Uri = img.Uri,
-                Type = img.Type
+                Type = img.Type,
             }).ToList(),
             Review = restaurant.Reviews != null && restaurant.Reviews.Any() 
                 ? new ReviewFilterDto
@@ -139,7 +137,7 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
         return await _restaurantsDao.GetAllRestaurantsAsync();
     }
 
-    private async Task HandleImagesAsync(List<IFormFile> images, int restaurantId, List<string>? imageTypes)
+    private async Task HandleImagesAsync(List<IFormFile> images, int restaurantId, string imageTypes)
     {
         var uploadedImages = new List<Image>();
         
@@ -150,10 +148,9 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
             var formFile = images[i];
             if (formFile.Length > 0)
             {
-                var type = imageTypes != null && imageTypes.Count > i ? imageTypes[i] : "default";
-                var uploadedImage = await _restaurantsLogic.UploadImageAsync(formFile, restaurantId);
+                var uploadedImage = await _restaurantsLogic.UploadImageAsync(formFile, restaurantId,imageTypes);
                 uploadedImage.RestaurantId = restaurantId;
-                uploadedImage.Type = type;
+                uploadedImage.Type = imageTypes;
                 uploadedImages.Add(uploadedImage);
             }
         }
