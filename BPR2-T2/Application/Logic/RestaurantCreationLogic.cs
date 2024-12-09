@@ -137,6 +137,11 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
         return await _restaurantsDao.GetAllRestaurantsAsync();
     }
 
+    public async Task DeleteImageById(Guid ImageId)
+    {
+        throw new NotImplementedException();
+    }
+
     private async Task HandleImagesAsync(List<IFormFile> images, int restaurantId, string imageTypes)
     {
         var uploadedImages = new List<Image>();

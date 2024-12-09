@@ -92,7 +92,8 @@ public class RestaurantCreationController : ControllerBase
                 Address = restaurant.Address,
                 Review = restaurant.Review,
                 OpenHours = restaurant.OpenHours,
-                Images = images.Select(img => new ImageDto { Uri = img.Uri, Name = img.Name, Type = img.Type}).ToList(),
+                Images =
+                    images.Select(img => new ImageDto { Uri = img.Uri, Name = img.Name, Type = img.Type }).ToList(),
                 Reservations = reservations.Select(reservation => new Reservation
                 {
                     Id = reservation.Id, GuestName = reservation.GuestName, Comments = reservation.Comments,
@@ -187,7 +188,6 @@ public class RestaurantCreationController : ControllerBase
     {
         try
         {
-            Console.WriteLine($"Request received for restaurantId: {restaurantId} and type: {type}");
             var images = await _restaurantsLogic.ListImagesAsyncByRestaurantIdAndType(restaurantId, type);
 
             if (!images.Any())
@@ -203,6 +203,21 @@ public class RestaurantCreationController : ControllerBase
         catch (Exception e)
         {
             Console.WriteLine($"Error occurred: {e.Message}");
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpDelete("{imageId:guid}/images")]
+    public async Task<IActionResult> DeleteImageById(Guid imageId)
+    {
+        try
+        {
+            await _restaurantCreationLogic.DeleteImageById(imageId);
+            return NoContent(); // Return 204 No Content for successful deletion
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
             return StatusCode(500, e.Message);
         }
     }

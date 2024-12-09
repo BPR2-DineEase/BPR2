@@ -19,21 +19,20 @@ public class RestaurantsLogic : IRestaurantsLogic
 
     public RestaurantsLogic(IRestaurantsDao restaurantsDao, IConfiguration configuration)
     {
-        
-       _storageAccount = Environment.GetEnvironmentVariable("AZURE_STORAGE_ACCOUNT");
-       _accessKey = Environment.GetEnvironmentVariable("AZURE_STORAGE_ACCESS_KEY");
-       
-       if (string.IsNullOrEmpty(_storageAccount) || string.IsNullOrEmpty(_accessKey))
-       {
-           throw new Exception("Azure Storage account and/or access key are not set.");
-       }
+        _storageAccount = Environment.GetEnvironmentVariable("AZURE_STORAGE_ACCOUNT");
+        _accessKey = Environment.GetEnvironmentVariable("AZURE_STORAGE_ACCESS_KEY");
 
-       var credential = new StorageSharedKeyCredential(_storageAccount, _accessKey);
-       var blobUri = $"https://{_storageAccount}.blob.core.windows.net";
-       var blobServiceClient = new BlobServiceClient(new Uri(blobUri), credential);
-       _imagesContainer = blobServiceClient.GetBlobContainerClient("bpr2imagecontainer");
+        if (string.IsNullOrEmpty(_storageAccount) || string.IsNullOrEmpty(_accessKey))
+        {
+            throw new Exception("Azure Storage account and/or access key are not set.");
+        }
 
-       _restaurantsDao = restaurantsDao;
+        var credential = new StorageSharedKeyCredential(_storageAccount, _accessKey);
+        var blobUri = $"https://{_storageAccount}.blob.core.windows.net";
+        var blobServiceClient = new BlobServiceClient(new Uri(blobUri), credential);
+        _imagesContainer = blobServiceClient.GetBlobContainerClient("bpr2imagecontainer");
+
+        _restaurantsDao = restaurantsDao;
     }
 
     public async Task<IEnumerable<Restaurant>> RestaurantFilterByCuisine(string cuisine)
@@ -60,7 +59,7 @@ public class RestaurantsLogic : IRestaurantsLogic
     public async Task<Restaurant?> GetRestaurantById(int restaurantId)
     {
         var restaurant = await _restaurantsDao.GetRestaurantByIdAsync(restaurantId);
-        return restaurant; 
+        return restaurant;
     }
 
     public async Task<Image> UploadImageAsync(IFormFile file, int restaurantId, string type)
@@ -89,8 +88,7 @@ public class RestaurantsLogic : IRestaurantsLogic
             Type = type
         };
     }
-    
-    
+
 
     public async Task<List<Image>> ListImagesAsyncByRestaurantId(int restaurantId)
     {
@@ -126,70 +124,64 @@ public class RestaurantsLogic : IRestaurantsLogic
     {
         var images = new List<Image>();
 
-        Console.WriteLine($"Started listing images for restaurantId: {restaurantId} and type: {type}");
-
-        // Log the initial state of the images list (it will be empty initially)
-        Console.WriteLine($"Initial images list count: {images.Count}");
-
         await foreach (var blobItem in _imagesContainer.GetBlobsAsync())
         {
-            Console.WriteLine($"Processing blob: {blobItem.Name}");
-
-            // "restaurantId-imageId-type"
-            var blobNameParts = blobItem.Name.Split('-', 3);
-
-            if (blobNameParts.Length > 1 &&
-                int.TryParse(blobNameParts[0], out var imageRestaurantId) &&
-                imageRestaurantId == restaurantId)
+            try
             {
-                Console.WriteLine($"Blob matches restaurantId: {imageRestaurantId}");
+                var lastHyphenIndex = blobItem.Name.LastIndexOf('-');
 
-                Guid imageId;
-                var isValidGuid = Guid.TryParse(blobNameParts[1], out imageId);
+                var prefix = blobItem.Name.Substring(0, lastHyphenIndex);
+                var suffix = blobItem.Name.Substring(lastHyphenIndex + 1);
 
-                if (isValidGuid)
+                var parts = prefix.Split('-', 2);
+                if (parts.Length != 2)
                 {
-                    Console.WriteLine($"Blob has a valid Guid: {imageId}");
-                }
-                else
-                {
-                    Console.WriteLine($"Blob has an invalid Guid: {blobNameParts[1]}");
-                    continue; // Skip processing this blob if the Guid is invalid
+                    continue;
                 }
 
-                var equals = blobNameParts[2].Equals(type, StringComparison.OrdinalIgnoreCase);
-                Console.WriteLine($"Blob type matches: {equals}");
-
-                if (isValidGuid && equals)
+                if (!int.TryParse(parts[0], out var imageRestaurantId) || imageRestaurantId != restaurantId)
                 {
-                    var blobClient = _imagesContainer.GetBlobClient(blobItem.Name);
-                    var image = new Image
-                    {
-                        Id = imageId,
-                        Uri = blobClient.Uri.ToString(),
-                        Name = blobItem.Name,
-                        ContentType = blobItem.Properties.ContentType,
-                        Type = type
-                    };
-
-                    images.Add(image);
-                    Console.WriteLine($"Added image: {image.Name}");
+                    continue;
                 }
+
+                if (!suffix.Equals(type, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                if (!Guid.TryParse(parts[1], out var imageId))
+                {
+                    continue;
+                }
+
+                var blobClient = _imagesContainer.GetBlobClient(blobItem.Name);
+                images.Add(new Image
+                {
+                    Id = imageId,
+                    Uri = blobClient.Uri.ToString(),
+                    Name = blobItem.Name,
+                    ContentType = blobItem.Properties.ContentType,
+                    Type = type
+                });
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine($"Blob does not match restaurantId or type.");
+                Console.WriteLine($"Error processing blob: {blobItem.Name}, Exception: {ex.Message}");
             }
-        }
-
-        Console.WriteLine($"Final images list count: {images.Count}");
-
-        foreach (var image in images)
-        {
-            Console.WriteLine($"Image: {image.Name}, Type: {image.Type}, Uri: {image.Uri}");
         }
 
         return images;
-
     }
+    
+    public async Task DeleteImageFromStorageAsync(string imageUri)
+    {
+        var blobClient = _imagesContainer.GetBlobClient(imageUri);
+        var response = await blobClient.DeleteIfExistsAsync();
+    
+        if (!response)
+        {
+            throw new Exception($"Failed to delete image from storage: {imageUri}");
+        }
+    }
+
 }
