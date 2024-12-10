@@ -15,7 +15,7 @@ public class ReservationEmailService
             { "ReservationTime", notification.Time },
             { "NumOfPeople", notification.NumOfPeople.ToString() },
             { "Comments", notification.Comments },
-            { "SupportEmail", "support@restaurant.com" }
+            { "SupportEmail", notification.SupportEmail }
         };
 
         string emailBody = EmailTemplateProcessor.LoadTemplate("reservation-confirmation-guest", placeholders);
@@ -37,7 +37,7 @@ public class ReservationEmailService
             { "ReservationTime", notification.Time },
             { "NumOfPeople", notification.NumOfPeople.ToString() },
             { "Comments", notification.Comments },
-            { "SupportEmail", "support@restaurant.com" }
+            { "SupportEmail", notification.SupportEmail }
         };
 
         string emailBody = EmailTemplateProcessor.LoadTemplate("reservation-confirmation-owner", placeholders);
