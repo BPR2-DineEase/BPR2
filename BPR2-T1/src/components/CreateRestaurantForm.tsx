@@ -11,7 +11,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { CreateRestaurantDto, Restaurant, User } from "@/types/types.ts";
+import { CreateRestaurantDto } from "@/types/types.ts";
 import {
   addRestaurantToUser,
   getDecodedToken,

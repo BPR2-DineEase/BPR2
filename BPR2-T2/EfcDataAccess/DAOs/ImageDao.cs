@@ -28,11 +28,5 @@ public class ImageDao : IImageDao
         await _context.SaveChangesAsync();
     }
     
-    public async Task<List<Image>> GetImagesByRestaurantIdAndTypeAsync(int restaurantId, string type)
-    {
-        var images = await _context.Images
-            .Where(img => img.RestaurantId == restaurantId && img.Type.ToLower() == type.ToLower())
-            .ToListAsync();
-        return images;
-    }
+
 }
