@@ -38,7 +38,10 @@ public class ReservationsController : ControllerBase
             reservationDto.UserId = userId;
             
             var reservation = await _reservationsLogic.AddReservationAsync(reservationDto);
-            await _reservationsLogic.SendReservationConfirmationEmailAsync(reservation);
+            
+            var notification = await _reservationsLogic.CreateReservationNotificationDto(reservation);
+            
+            await _reservationsLogic.SendReservationConfirmationEmailsAsync(notification);
 
             return Ok(reservation);
         }
@@ -112,6 +115,9 @@ public class ReservationsController : ControllerBase
             await _reservationsLogic.UpdateReservationAsync(updateReservationDto);
             
             var updatedReservation = await _reservationsLogic.GetReservationByIdAsync(updateReservationDto.Id);
+            
+            var notification = await _reservationsLogic.CreateReservationNotificationDto(updatedReservation);
+            
             await _reservationsLogic.SendReservationUpdateEmailAsync(updatedReservation);
 
             return NoContent();
@@ -132,10 +138,12 @@ public class ReservationsController : ControllerBase
             {
                 return NotFound("Reservation not found.");
             }
-
-            await _reservationsLogic.SendReservationDeletionEmailAsync(reservation);
-            await _reservationsLogic.DeleteReservationAsync(id);
             
+            var notification = await _reservationsLogic.CreateReservationNotificationDto(reservation);
+            
+            await _reservationsLogic.SendReservationDeletionEmailAsync(reservation);
+            
+            await _reservationsLogic.DeleteReservationAsync(id);
             return NoContent();
         }
         catch (Exception e)

@@ -1,5 +1,6 @@
 using Application.DaoInterfaces;
 using Domain.Dtos;
+using Domain.Dtos.ReservationDtos;
 using Domain.Models;
 using EfcDataAccess.Context;
 using Microsoft.EntityFrameworkCore;
@@ -92,5 +93,31 @@ public class ReservationsEfcDao : IReservationsDao
             .Where(r => r.RestaurantId == restaurantId) 
             .Include(r => r.Restaurant) 
             .ToListAsync();
+    }
+    
+    public async Task<ReservationNotificationDto> CreateReservationNotificationDto(Reservation reservation)
+    {
+        var restaurantOwner = await _context.Users
+            .Include(u => u.Restaurant)
+            .FirstOrDefaultAsync(u => u.RestaurantId == reservation.RestaurantId);
+
+        if (restaurantOwner == null)
+        {
+            throw new Exception("Restaurant owner not found for the given reservation.");
+        }
+
+        return new ReservationNotificationDto
+        {
+            GuestName = reservation.GuestName,
+            GuestEmail = reservation.Email,
+            RestaurantOwnerName = restaurantOwner.FirstName,
+            RestaurantOwnerEmail = restaurantOwner.Email,
+            RestaurantName = reservation.Restaurant?.Name ?? "Unknown Restaurant",
+            Date = reservation.Date,
+            Time = reservation.Time,
+            NumOfPeople = reservation.NumOfPeople,
+            Comments = reservation.Comments,
+            SupportEmail = "support@dineease.dk"
+        };
     }
 }

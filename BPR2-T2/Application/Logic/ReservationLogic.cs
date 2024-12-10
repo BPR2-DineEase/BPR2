@@ -112,14 +112,27 @@ public class ReservationLogic : IReservationsLogic
         return reservations;
     }
     
-    public async Task<string> SendReservationConfirmationEmailAsync(Reservation reservation)
+    public async Task<ReservationNotificationDto> CreateReservationNotificationDto(Reservation reservation)
     {
         if (reservation == null)
         {
-            throw new Exception("Reservation details cannot be null.");
+            throw new Exception("Reservation cannot be null.");
         }
         
-        return await reservationEmailService.SendReservationConfirmationEmailAsync(reservation);
+        return await reservationsDao.CreateReservationNotificationDto(reservation);
+    }
+    
+    public async Task<string> SendReservationConfirmationEmailsAsync(ReservationNotificationDto notification)
+    {
+        if (notification == null)
+        {
+            throw new Exception("Notification details cannot be null.");
+        }
+        
+        await reservationEmailService.SendReservationConfirmationEmailToGuestAsync(notification);
+        await reservationEmailService.SendReservationConfirmationEmailToRestaurantOwnerAsync(notification);
+
+        return "Reservation confirmation emails sent successfully to guest and restaurant owner.";
     }
 
     public async Task<string> SendReservationUpdateEmailAsync(Reservation reservation)
@@ -128,7 +141,13 @@ public class ReservationLogic : IReservationsLogic
         {
             throw new Exception("Reservation details cannot be null.");
         }
-        return await reservationEmailService.SendReservationUpdateEmailAsync(reservation);
+
+        var notification = await CreateReservationNotificationDto(reservation);
+        
+        await reservationEmailService.SendReservationUpdateEmailToGuestAsync(notification);
+        await reservationEmailService.SendReservationUpdateEmailToRestaurantOwnerAsync(notification);
+        
+        return "Reservation update emails attempt completed for guest and restaurant owner.";
     }
 
     public async Task<string> SendReservationDeletionEmailAsync(Reservation reservation)
@@ -137,7 +156,13 @@ public class ReservationLogic : IReservationsLogic
         {
             throw new Exception("Reservation details cannot be null.");
         }
-        return await reservationEmailService.SendReservationDeletionEmailAsync(reservation);
+
+        var notification = await CreateReservationNotificationDto(reservation);
+     
+        await reservationEmailService.SendReservationDeletionEmailToGuestAsync(notification);
+        await reservationEmailService.SendReservationDeletionEmailToRestaurantOwnerAsync(notification);
+     
+        return "Reservation deletion emails attempt completed for guest and restaurant owner.";
     }
 
 }
