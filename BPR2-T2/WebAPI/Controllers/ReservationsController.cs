@@ -28,18 +28,18 @@ public class ReservationsController : ControllerBase
             {
                 return Unauthorized("User ID not found in token.");
             }
-            
+
             if (!Guid.TryParse(userIdClaim, out var userId))
             {
                 Console.WriteLine($"Invalid userId format: {userIdClaim}");
                 return BadRequest("Invalid userId format in token.");
             }
-            
+
             reservationDto.UserId = userId;
             
             var reservation = await _reservationsLogic.AddReservationAsync(reservationDto);
-            await _reservationsLogic.SendReservationConfirmationEmailAsync(reservationDto);
-            
+            await _reservationsLogic.SendReservationConfirmationEmailAsync(reservation);
+
             return Ok(reservation);
         }
         catch (Exception e)

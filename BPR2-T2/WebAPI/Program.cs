@@ -28,6 +28,8 @@ builder.Services.AddScoped<IReservationsLogic, ReservationLogic>();
 builder.Services.AddScoped<IRestaurantsLogic, RestaurantsLogic>();
 builder.Services.AddScoped<IAuthLogic, AuthLogic>();
 builder.Services.AddScoped<IRestaurantCreationLogic, RestaurantCreationLogic>();
+builder.Services.AddScoped<ReservationEmailService>();
+builder.Services.AddScoped<AuthEmailService>();
 
 builder.Services.AddScoped<IReservationsDao, ReservationsEfcDao>();
 builder.Services.AddScoped<IRestaurantsDao, RestaurantEfcDao>();

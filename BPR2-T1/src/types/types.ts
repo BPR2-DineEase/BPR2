@@ -61,6 +61,7 @@ export type Restaurant = {
   capacity: number;
   latitude?: number;
   longitude?: number;
+  rating?: number;
 };
 
 export type FilterOptions = {

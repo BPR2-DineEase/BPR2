@@ -12,15 +12,23 @@ namespace Application.Logic;
 public class ReservationLogic : IReservationsLogic
 {
     private readonly IReservationsDao reservationsDao;
+    private readonly ReservationEmailService reservationEmailService;
+    private readonly IAuthDao authDao;
 
-    public ReservationLogic(IReservationsDao reservationsDao)
+    public ReservationLogic(IReservationsDao reservationsDao, ReservationEmailService reservationEmailService,   IAuthDao authDao)
     {
         this.reservationsDao = reservationsDao;
+        this.reservationEmailService = reservationEmailService;
+        this.authDao = authDao;
     }
 
     public async Task<Reservation> AddReservationAsync(ReservationDto reservationDto)
     {
-      
+        if (reservationDto == null)
+        {
+            throw new ArgumentException("Reservation details cannot be null.");
+        }
+
         var reservation = new Reservation
         {
             GuestName = reservationDto.GuestName,
@@ -104,79 +112,32 @@ public class ReservationLogic : IReservationsLogic
         return reservations;
     }
     
-    public async Task<string> SendReservationConfirmationEmailAsync(ReservationDto reservationDto)
+    public async Task<string> SendReservationConfirmationEmailAsync(Reservation reservation)
     {
-        if (reservationDto == null)
+        if (reservation == null)
         {
-            throw new ArgumentException("Reservation details cannot be null.");
+            throw new Exception("Reservation details cannot be null.");
         }
         
-        var reservation = await AddReservationAsync(reservationDto);
-        
-        var placeholders = new Dictionary<string, string>
-        {
-            { "GuestName", reservation.GuestName },
-            { "RestaurantName", "Your Restaurant Name" }, 
-            { "ReservationDate", reservation.Date.ToString("yyyy-MM-dd") },
-            { "ReservationTime", reservation.Time },
-            { "NumOfPeople", reservation.NumOfPeople.ToString() },
-            { "Comments", reservation.Comments },
-            { "SupportEmail", "support@restaurant.com" } 
-        };
-        
-        string emailBody = EmailTemplateProcessor.LoadTemplate("reservation-confirmation", placeholders);
-        
-        var emailService = new EmailService();
-        await emailService.SendEmailAsync(reservation.Email, "Reservation Confirmation", emailBody);
-
-        return "Reservation confirmation email sent successfully.";
+        return await reservationEmailService.SendReservationConfirmationEmailAsync(reservation);
     }
-    
-    
+
     public async Task<string> SendReservationUpdateEmailAsync(Reservation reservation)
     {
         if (reservation == null)
         {
-            throw new ArgumentException("Reservation details cannot be null.");
+            throw new Exception("Reservation details cannot be null.");
         }
-
-        var placeholders = new Dictionary<string, string>
-        {
-            { "GuestName", reservation.GuestName },
-            { "RestaurantName", "Your Restaurant Name" },
-            { "ReservationDate", reservation.Date.ToString("yyyy-MM-dd") },
-            { "ReservationTime", reservation.Time },
-            { "NumOfPeople", reservation.NumOfPeople.ToString() },
-            { "Comments", reservation.Comments },
-            { "SupportEmail", "support@restaurant.com" }
-        };
-
-        string emailBody = EmailTemplateProcessor.LoadTemplate("reservation-updated", placeholders);
-        var emailService = new EmailService();
-        await emailService.SendEmailAsync(reservation.Email, "Reservation Updated", emailBody);
-
-        return "Reservation update email sent successfully.";
+        return await reservationEmailService.SendReservationUpdateEmailAsync(reservation);
     }
 
     public async Task<string> SendReservationDeletionEmailAsync(Reservation reservation)
     {
         if (reservation == null)
         {
-            throw new ArgumentException("Reservation details cannot be null.");
+            throw new Exception("Reservation details cannot be null.");
         }
-
-        var placeholders = new Dictionary<string, string>
-        {
-            { "GuestName", reservation.GuestName },
-            { "RestaurantName", "Your Restaurant Name" },
-            { "SupportEmail", "support@restaurant.com" }
-        };
-
-        string emailBody = EmailTemplateProcessor.LoadTemplate("reservation-deleted", placeholders);
-        var emailService = new EmailService();
-        await emailService.SendEmailAsync(reservation.Email, "Reservation Canceled", emailBody);
-
-        return "Reservation deletion email sent successfully.";
+        return await reservationEmailService.SendReservationDeletionEmailAsync(reservation);
     }
 
 }

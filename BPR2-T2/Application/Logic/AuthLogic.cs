@@ -19,10 +19,12 @@ public class AuthLogic : IAuthLogic
     private readonly string? _jwtIssuer;
     private readonly string? _jwtAudience;
     private readonly string? _jwtSubject;
+    private readonly AuthEmailService authEmailService;
 
-    public AuthLogic(IAuthDao authDao)
+    public AuthLogic(IAuthDao authDao, AuthEmailService authEmailService)
     {
         this.authDao = authDao;
+        this.authEmailService = authEmailService;
         _jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
         _jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
         _jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
@@ -123,17 +125,7 @@ public class AuthLogic : IAuthLogic
 
 
         string resetLink = $"http://localhost/reset-password";
-        var placeholders = new Dictionary<string, string>
-        {
-            {"Name", user.LastName},
-            {"OTP", otp},
-            {"ResetLink", resetLink}
-        };
-
-        string emailBody = EmailTemplateProcessor.LoadTemplate("password-reset", placeholders);
-
-        var emailService = new EmailService();
-        await emailService.SendEmailAsync(user.Email, "Password Reset OTP  ", emailBody);
+        await authEmailService.SendPasswordResetEmailAsync(user.Email, otp, resetLink, user.LastName);
 
         return "A password reset email has been sent to your address.";
     }
