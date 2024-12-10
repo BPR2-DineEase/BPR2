@@ -19,7 +19,6 @@ import {
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import axiosInstance from "@/api/axiosInstance";
-
 export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
   restaurantId,
 }) => {
@@ -65,15 +64,54 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
     setEditImages(true);
   };
 
-  const extractImageId = (url: string) => {
-    const regex = /1-([a-f0-9\-]{36})-logo/;
+  const extractImageId = async (
+    restaurantId: number,
+    url: string,
+    type: string
+  ) => {
+    const regex = new RegExp(`${restaurantId}-([a-f0-9\\-]{36})-${type}`);
     const match = url.match(regex);
     if (match) {
-      deleteImageByImageId(match[1]);
+      await deleteImageByImageId(match[1]);
+      if (type === "logo") {
+        setLogoUrl(restaurantLogo);
+      } else if (type === "background") {
+        setBackgroundUrl(restaurantLogo);
+      }
       return match[1];
     }
     return null;
   };
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const results = await Promise.allSettled([
+          getImageByRestaurantIdAndType(restaurantId, "logo"),
+          getImageByRestaurantIdAndType(restaurantId, "background"),
+        ]);
+
+        const logoResult = results[0];
+        const backgroundResult = results[1];
+
+        if (logoResult.status === "fulfilled" && logoResult.value) {
+          setLogoUrl(logoResult.value.$values[0]);
+        } else {
+          setLogoUrl(restaurantLogo);
+        }
+
+        if (backgroundResult.status === "fulfilled" && backgroundResult.value) {
+          setBackgroundUrl(backgroundResult.value.$values[0]);
+        } else {
+          setBackgroundUrl(restaurantLogo);
+        }
+      } catch (error) {
+        console.error("Error fetching images", error);
+      }
+    };
+
+    fetchImages();
+  }, [restaurantId]);
 
   useEffect(() => {
     const fetchRestaurantData = async () => {
@@ -82,20 +120,6 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
 
         const imageUris =
           restaurantData.images?.$values?.map((img: any) => img.uri) || [];
-
-        const imageLogoUri = await getImageByRestaurantIdAndType(
-          restaurantId,
-          "logo"
-        );
-        const imageBackgroundUri = await getImageByRestaurantIdAndType(
-          restaurantId,
-          "background"
-        );
-
-        if(imageUris)
-        setLogoUrl(imageLogoUri.$values[0] || restaurantLogo);
-        setBackgroundUrl(imageBackgroundUri.$values[0] || restaurantLogo);
-
 
         setRestaurant({
           ...restaurantData,
@@ -118,7 +142,7 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
     };
 
     fetchRestaurantData();
-  }, [restaurantId, backgroundUrl]);
+  }, [restaurantId]);
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -207,18 +231,6 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
   if (!restaurant) {
     return <div>Loading...</div>;
   }
-
-  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>(
-    {}
-  );
-
-  const handleImageError = (type: string) => {
-    setImageErrors((prevErrors) => ({
-      ...prevErrors,
-      [type]: true,
-    }));
-  };
-
 
   return (
     <div>
@@ -321,9 +333,9 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
                 <CardContent className="flex justify-center items-center mt-4 max-w-[500px] max-h-[500px] ">
                   <div>
                     <img
-                      src={imageErrors["logo"] ? restaurantLogo : logoUrl}
+                      src={logoUrl}
                       alt="Restaurant Logo"
-                      onError={() => handleImageError("logo")}
+                      onError={() => restaurantLogo}
                     />
                   </div>
                 </CardContent>
@@ -333,7 +345,11 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
                     accept="image/*"
                     onChange={handleLogoChange}
                   />
-                  <Button onClick={() => extractImageId(logoUrl)}>
+                  <Button
+                    onClick={() =>
+                      extractImageId(restaurantId, logoUrl, "logo")
+                    }
+                  >
                     Delete
                   </Button>
                   <Button
@@ -358,13 +374,9 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
                 <CardContent className="flex justify-center items-center mt-4 max-w-[500px] max-h-[500px] ">
                   <div>
                     <img
-                      src={
-                        imageErrors["background"]
-                          ? restaurantLogo
-                          : backgroundUrl
-                      }
+                      src={backgroundUrl}
                       alt="Restaurant Background Image"
-                      onError={() => handleImageError("background")}
+                      onError={() => restaurantLogo}
                     />
                   </div>
                 </CardContent>
@@ -374,7 +386,11 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
                     accept="image/*"
                     onChange={handleBackgroundChange}
                   />
-                  <Button onClick={() => extractImageId(logoUrl)}>
+                  <Button
+                    onClick={() =>
+                      extractImageId(restaurantId, backgroundUrl, "background")
+                    }
+                  >
                     Delete
                   </Button>
 
