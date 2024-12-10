@@ -192,12 +192,10 @@ public class RestaurantCreationController : ControllerBase
 
             if (!images.Any())
             {
-                Console.WriteLine($"No images found for restaurantId: {restaurantId} and type: {type}");
                 return NotFound($"No images of type '{type}' found for restaurant with ID {restaurantId}.");
             }
 
             var imagesUrl = images.Select(img => img.Uri).ToList();
-            Console.WriteLine($"Found {imagesUrl.Count} images for restaurantId: {restaurantId} and type: {type}");
             return Ok(imagesUrl);
         }
         catch (Exception e)

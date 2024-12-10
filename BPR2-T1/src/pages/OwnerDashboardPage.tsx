@@ -147,6 +147,7 @@ const OwnerDashboard: React.FC = () => {
                   <ReserveDialogComponent
                     isOpen={isDialogOpen}
                     onClose={() => setIsDialogOpen(false)}
+                    restaurantId = { activeRestaurant.id}
                   />
                 )}
               </div>
