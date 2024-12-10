@@ -49,7 +49,7 @@ const CreateRestaurantForm: React.FC = () => {
     const files = e.target.files;
     if (files) {
       setImages(files);
-      setImageTypes(Array.from(files).map(() => "menu"));
+      setImageTypes(Array.from(files).map(() => "logo"));
     }
   };
 
@@ -213,7 +213,7 @@ const CreateRestaurantForm: React.FC = () => {
                       onChange={(e) => handleTypeChange(index, e.target.value)}
                       className="border border-gray-300 rounded-md p-2 w-full"
                     >
-                      <option value="menu">Menu</option>
+                      <option value="logo">logo</option>
                       <option value="photos">Photos</option>
                     </select>
                   </div>

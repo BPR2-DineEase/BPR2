@@ -97,21 +97,6 @@ export const getImageByRestaurantIdAndType = async (
   }
 };
 
-export const getImageByRestaurantIdAndType2 = async (
-  restaurantId: number,
-  type: string
-): Promise<any> => {
-  try {
-    const response = await axiosInstance.get(
-      `/RestaurantCreation/${restaurantId}/images/${type}`
-    );
-    return response.data;
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-};
-
 export const deleteImageByImageId = async (imageId: string): Promise<any> => {
   try {
     const response = await axiosInstance.delete(
