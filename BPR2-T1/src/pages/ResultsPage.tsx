@@ -3,6 +3,7 @@ import {Link, useLocation} from "react-router-dom";
 import FilterOptionsComponent from "../components/FilterOptionsComponent";
 import MapView from "../components/MapView";
 import {Restaurant} from "@/types/types.ts";
+import {toast} from "@/hooks/use-toast.ts";
 
 
 const ResultsComponent: React.FC = () => {
@@ -12,38 +13,48 @@ const ResultsComponent: React.FC = () => {
 
     const handleFilterResults = (data: Restaurant[]) => {
         setFilteredRestaurants(data);
+
+        
+        toast({
+            title: "Filter Applied",
+            description: `Showing ${data.length} restaurants matching the criteria.`,
+            duration: 3000,
+        });
     };
 
     return (
-        <div className="flex">
-            <div className="w-1/4 p-4 border-r">
+        <div className="flex flex-col lg:flex-row">
+            <div className="lg:w-1/4 w-full border-r p-4">
                 <FilterOptionsComponent
                     onFilter={handleFilterResults}
                     city={restaurants[0]?.city || ""}
                 />
             </div>
-            <div className="w-3/4 p-4">
-                <h2 className="text-xl font-semibold mb-4">Restaurants in {restaurants[0]?.city}</h2>
-                <div className="flex flex-col space-y-4">
-                    <ul>
+            <div className="lg:w-3/4 w-full p-4">
+                <h2 className="text-xl font-semibold mb-4">
+                    Restaurants in {restaurants[0]?.city}
+                </h2>
+                <div className="space-y-4">
+                    <ul className="divide-y">
                         {filteredRestaurants.map((restaurant) => (
-                            <li key={restaurant.id} className="p-2 border-b">
-                                <h3 className="font-semibold">{restaurant.name}</h3>
-                                <p>{restaurant.cuisine} - {restaurant.rating} stars</p>
-                                {/* Link to Reservation Page */}
+                            <li key={restaurant.id} className="py-4">
+                                <h3 className="font-medium">{restaurant.name}</h3>
+                                <p className="text-sm text-muted-foreground">
+                                    {restaurant.cuisine} - {restaurant.rating} stars
+                                </p>
                                 <Link
-                                    to={`/reservations?restaurantId=${restaurant.id}`}
-                                    className="text-blue-500 hover:underline"
+                                    to={`/restaurants/${restaurant.id}`}
+                                    className="text-primary hover:underline"
                                 >
-                                    Make a Reservation
+                                    View Restaurant Profile
                                 </Link>
                             </li>
                         ))}
                     </ul>
                 </div>
                 <div className="mt-6">
-                    <h3 className="text-lg font-medium">Map View</h3>
-                    <MapView restaurants={filteredRestaurants} />
+                    <h3 className="text-lg font-medium mb-2">Map View</h3>
+                    <MapView restaurants={filteredRestaurants}/>
                 </div>
             </div>
         </div>

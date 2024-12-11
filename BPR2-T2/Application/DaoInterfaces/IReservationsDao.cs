@@ -12,4 +12,6 @@ public interface IReservationsDao
     Task<IEnumerable<ReservationWithRestaurantDto>> GetUserReservationsAsync(Guid userId);
     Task UpdateReservationAsync(Reservation reservation);
     Task DeleteReservationAsync(Reservation reservation);
+    Task<IEnumerable<Reservation>> GetReservationsByRestaurantIdAsync(int restaurantId);
+    Task<ReservationNotificationDto> CreateReservationNotificationDto(Reservation reservation);
 }

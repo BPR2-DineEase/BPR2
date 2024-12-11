@@ -24,7 +24,7 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
         _googleMapsService = googleMapsService;
     }
 
-    public async Task<Restaurant> AddRestaurantAsync(CreateRestaurantDto createRestaurantDto, List<IFormFile>? images)
+    public async Task<Restaurant> AddRestaurantAsync(CreateRestaurantDto createRestaurantDto)
     {
         var coordinates =
             await _googleMapsService.GetCoordinatesAsync(createRestaurantDto.Address, createRestaurantDto.City);
@@ -43,11 +43,6 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
         };
 
         var restaurantId = await _restaurantsDao.AddRestaurantAsync(restaurant);
-
-        if (images != null && images.Any())
-        {
-            await HandleImagesAsync(images, restaurantId, createRestaurantDto.ImageTypes);
-        }
 
         return await _restaurantsDao.GetRestaurantByIdAsync(restaurantId);
     }
@@ -75,13 +70,16 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
             var images = updateRestaurantDto.ImageUris.Select((uri, index) => new Image
             {
                 Uri = uri,
-                Type = updateRestaurantDto.ImageTypes.ElementAtOrDefault(index) ?? "default",
-                RestaurantId = restaurant.Id
-            }).ToList();
+                RestaurantId = updateRestaurantDto.Id,
+                Type = updateRestaurantDto.ImageTypes 
 
+            }).ToList();
+            Console.WriteLine(images);
             await _imageDao.AddImagesAsync(images);
         }
     }
+
+
 
     public async Task<RestaurantPreviewDto?> GetRestaurantByIdAsync(int restaurantId)
     {
@@ -102,12 +100,30 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
             Cuisine = restaurant.Cuisine,
             Info = restaurant.Info,
             Capacity = restaurant.Capacity,
+            Reservations = restaurant.Reservations?.Select(reservation => new Reservation
+            {
+                Id = reservation.Id,
+                Comments = reservation.Comments,
+                Company = reservation.Company,
+                Date = reservation.Date,
+                Email = reservation.Email,
+                GuestName = reservation.GuestName,
+                NumOfPeople = reservation.NumOfPeople,
+                PhoneNumber = reservation.PhoneNumber
+            }).ToList(),
             Images = restaurant.Images?.Select(img => new ImageDto
             {
                 Id = img.Id,
                 Uri = img.Uri,
-                Type = img.Type
-            }).ToList()
+                Type = img.Type,
+            }).ToList(),
+            Review = restaurant.Reviews != null && restaurant.Reviews.Any() 
+                ? new ReviewFilterDto
+                {
+                    Rating = restaurant.Reviews.Average(r => r.Rating), 
+                    Stars = restaurant.Reviews.Count()
+                }
+                : null
         };
     }
 
@@ -115,8 +131,9 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
     {
         return await _restaurantsDao.GetAllRestaurantsAsync();
     }
+    
 
-    private async Task HandleImagesAsync(List<IFormFile> images, int restaurantId, List<string>? imageTypes)
+    private async Task HandleImagesAsync(List<IFormFile> images, int restaurantId, string imageTypes)
     {
         var uploadedImages = new List<Image>();
         
@@ -127,10 +144,9 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
             var formFile = images[i];
             if (formFile.Length > 0)
             {
-                var type = imageTypes != null && imageTypes.Count > i ? imageTypes[i] : "default";
-                var uploadedImage = await _restaurantsLogic.UploadImageAsync(formFile, restaurantId);
+                var uploadedImage = await _restaurantsLogic.UploadImageAsync(formFile, restaurantId,imageTypes);
                 uploadedImage.RestaurantId = restaurantId;
-                uploadedImage.Type = type;
+                uploadedImage.Type = imageTypes;
                 uploadedImages.Add(uploadedImage);
             }
         }

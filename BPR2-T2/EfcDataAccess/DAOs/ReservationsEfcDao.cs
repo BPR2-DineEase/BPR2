@@ -1,5 +1,6 @@
 using Application.DaoInterfaces;
 using Domain.Dtos;
+using Domain.Dtos.ReservationDtos;
 using Domain.Models;
 using EfcDataAccess.Context;
 using Microsoft.EntityFrameworkCore;
@@ -8,17 +9,15 @@ namespace EfcDataAccess.DAOs;
 
 public class ReservationsEfcDao : IReservationsDao
 {
-    
     private readonly ReservationContext _context;
 
     public ReservationsEfcDao(ReservationContext context)
     {
         this._context = context;
     }
-    
+
     public async Task<Reservation> CreateReservation(Reservation addReservation)
     {
-        
         var reservation = await _context.Reservations.AddAsync(addReservation);
         await _context.SaveChangesAsync();
         return reservation.Entity;
@@ -30,15 +29,15 @@ public class ReservationsEfcDao : IReservationsDao
         await _context.SaveChangesAsync();
         return reservation;
     }
-    
+
     public async Task<IEnumerable<Reservation>> GetReservations()
     {
         return await _context.Reservations
-            .Include(r => r.Restaurant) 
-            .Include(r => r.User)     
+            .Include(r => r.Restaurant)
+            .Include(r => r.User)
             .ToListAsync();
     }
-    
+
     public async Task<IEnumerable<ReservationWithRestaurantDto>> GetUserReservationsAsync(Guid userId)
     {
         return await _context.Reservations
@@ -74,7 +73,8 @@ public class ReservationsEfcDao : IReservationsDao
             })
             .ToListAsync();
     }
-    
+
+
     public async Task UpdateReservationAsync(Reservation reservation)
     {
         _context.Reservations.Update(reservation);
@@ -85,5 +85,39 @@ public class ReservationsEfcDao : IReservationsDao
     {
         _context.Reservations.Remove(reservation);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<Reservation>> GetReservationsByRestaurantIdAsync(int restaurantId)
+    {
+        return await _context.Reservations
+            .Where(r => r.RestaurantId == restaurantId) 
+            .Include(r => r.Restaurant) 
+            .ToListAsync();
+    }
+    
+    public async Task<ReservationNotificationDto> CreateReservationNotificationDto(Reservation reservation)
+    {
+        var restaurantOwner = await _context.Users
+            .Include(u => u.Restaurant)
+            .FirstOrDefaultAsync(u => u.RestaurantId == reservation.RestaurantId);
+
+        if (restaurantOwner == null)
+        {
+            throw new Exception("Restaurant owner not found for the given reservation.");
+        }
+
+        return new ReservationNotificationDto
+        {
+            GuestName = reservation.GuestName,
+            GuestEmail = reservation.Email,
+            RestaurantOwnerName = restaurantOwner.FirstName,
+            RestaurantOwnerEmail = restaurantOwner.Email,
+            RestaurantName = reservation.Restaurant?.Name ?? "Unknown Restaurant",
+            Date = reservation.Date,
+            Time = reservation.Time,
+            NumOfPeople = reservation.NumOfPeople,
+            Comments = reservation.Comments,
+            SupportEmail = "support@dineease.dk"
+        };
     }
 }

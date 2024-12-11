@@ -12,10 +12,12 @@ using Microsoft.IdentityModel.Tokens;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+
 //builder.WebHost.UseUrls("http://0.0.0.0:80");
 
-Env.Load();
 
+Env.Load();
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddControllers();
@@ -26,6 +28,8 @@ builder.Services.AddScoped<IReservationsLogic, ReservationLogic>();
 builder.Services.AddScoped<IRestaurantsLogic, RestaurantsLogic>();
 builder.Services.AddScoped<IAuthLogic, AuthLogic>();
 builder.Services.AddScoped<IRestaurantCreationLogic, RestaurantCreationLogic>();
+builder.Services.AddScoped<ReservationEmailService>();
+builder.Services.AddScoped<AuthEmailService>();
 
 builder.Services.AddScoped<IReservationsDao, ReservationsEfcDao>();
 builder.Services.AddScoped<IRestaurantsDao, RestaurantEfcDao>();

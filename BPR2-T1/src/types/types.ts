@@ -17,6 +17,15 @@ export type RestaurantData = {
             type: string | null;
         }[];
     };
+    review?: {
+        rating: number;
+        stars: number;
+    };
+    rating: number;
+    latitude: number;
+    longitude: number;
+    imageUris: string[];
+    reservations: { $values: ReservationData[]};
 };
 
 export type ReservationData = {
@@ -26,7 +35,7 @@ export type ReservationData = {
     email: string;
     company: string | null;
     comments: string;
-    date: Date;
+    date: string;
     time: string;
     numOfPeople: number;
     userId: string;
@@ -42,13 +51,17 @@ export enum UserRole {
 
 
 export type Restaurant = {
-    id: number;
-    name: string;
-    city: string;
-    cuisine: string;
-    rating?: number;
-    latitude: number;
-    longitude: number;
+  id: number;
+  name: string;
+  address: string;
+  city: string;
+  openHours: string;
+  cuisine: string;
+  info: string;
+  capacity: number;
+  latitude?: number;
+  longitude?: number;
+  rating?: number;
 };
 
 export type FilterOptions = {
@@ -68,4 +81,9 @@ export interface CreateRestaurantDto {
     capacity: number;
     latitude?: number;
     longitude?: number;
+}
+
+export interface User {
+  role?: UserRole;
+  userId: string;
 }

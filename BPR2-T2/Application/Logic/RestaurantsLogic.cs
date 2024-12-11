@@ -19,21 +19,20 @@ public class RestaurantsLogic : IRestaurantsLogic
 
     public RestaurantsLogic(IRestaurantsDao restaurantsDao, IConfiguration configuration)
     {
-        
-       _storageAccount = Environment.GetEnvironmentVariable("AZURE_STORAGE_ACCOUNT");
-       _accessKey = Environment.GetEnvironmentVariable("AZURE_STORAGE_ACCESS_KEY");
-       
-       if (string.IsNullOrEmpty(_storageAccount) || string.IsNullOrEmpty(_accessKey))
-       {
-           throw new Exception("Azure Storage account and/or access key are not set.");
-       }
+        _storageAccount = Environment.GetEnvironmentVariable("AZURE_STORAGE_ACCOUNT");
+        _accessKey = Environment.GetEnvironmentVariable("AZURE_STORAGE_ACCESS_KEY");
 
-       var credential = new StorageSharedKeyCredential(_storageAccount, _accessKey);
-       var blobUri = $"https://{_storageAccount}.blob.core.windows.net";
-       var blobServiceClient = new BlobServiceClient(new Uri(blobUri), credential);
-       _imagesContainer = blobServiceClient.GetBlobContainerClient("bpr2imagecontainer");
+        if (string.IsNullOrEmpty(_storageAccount) || string.IsNullOrEmpty(_accessKey))
+        {
+            throw new Exception("Azure Storage account and/or access key are not set.");
+        }
 
-       _restaurantsDao = restaurantsDao;
+        var credential = new StorageSharedKeyCredential(_storageAccount, _accessKey);
+        var blobUri = $"https://{_storageAccount}.blob.core.windows.net";
+        var blobServiceClient = new BlobServiceClient(new Uri(blobUri), credential);
+        _imagesContainer = blobServiceClient.GetBlobContainerClient("bpr2imagecontainer");
+
+        _restaurantsDao = restaurantsDao;
     }
 
     public async Task<IEnumerable<Restaurant>> RestaurantFilterByCuisine(string cuisine)
@@ -60,13 +59,13 @@ public class RestaurantsLogic : IRestaurantsLogic
     public async Task<Restaurant?> GetRestaurantById(int restaurantId)
     {
         var restaurant = await _restaurantsDao.GetRestaurantByIdAsync(restaurantId);
-        return restaurant; 
+        return restaurant;
     }
 
-    public async Task<Image> UploadImageAsync(IFormFile file, int restaurantId)
+    public async Task<Image> UploadImageAsync(IFormFile file, int restaurantId, string type)
     {
         var imageId = Guid.NewGuid();
-        var blobName = $"{restaurantId}-{imageId}-{file.FileName}";
+        var blobName = $"{restaurantId}-{imageId}-{type}";
         var blobClient = _imagesContainer.GetBlobClient(blobName);
 
         var blobHttpHeaders = new BlobHttpHeaders
@@ -85,9 +84,11 @@ public class RestaurantsLogic : IRestaurantsLogic
             Id = imageId,
             Uri = blobClient.Uri.ToString(),
             Name = file.FileName,
-            ContentType = file.ContentType
+            ContentType = file.ContentType,
+            Type = type
         };
     }
+
 
     public async Task<List<Image>> ListImagesAsyncByRestaurantId(int restaurantId)
     {
@@ -95,14 +96,14 @@ public class RestaurantsLogic : IRestaurantsLogic
 
         await foreach (var blobItem in _imagesContainer.GetBlobsAsync())
         {
-            // "restaurantId-imageId-fileName"
+            // "restaurantId-imageId-type"
             var blobNameParts = blobItem.Name.Split('-', 2);
 
             if (blobNameParts.Length > 1 && int.TryParse(blobNameParts[0], out var imageRestaurantId) &&
                 imageRestaurantId == restaurantId)
             {
                 Guid imageId;
-                bool isValidGuid = Guid.TryParse(blobNameParts[1], out imageId);
+                var isValidGuid = Guid.TryParse(blobNameParts[1], out imageId);
 
                 var blobClient = _imagesContainer.GetBlobClient(blobItem.Name);
 
@@ -111,11 +112,105 @@ public class RestaurantsLogic : IRestaurantsLogic
                     Id = imageId,
                     Uri = blobClient.Uri.ToString(),
                     Name = blobItem.Name,
-                    ContentType = blobItem.Properties.ContentType
+                    ContentType = blobItem.Properties.ContentType,
                 });
             }
         }
 
         return images;
+    }
+
+    public async Task<List<Image>> ListImagesAsyncByRestaurantIdAndType(int restaurantId, string type)
+    {
+        var images = new List<Image>();
+
+        await foreach (var blobItem in _imagesContainer.GetBlobsAsync())
+        {
+            try
+            {
+                var lastHyphenIndex = blobItem.Name.LastIndexOf('-');
+
+                var prefix = blobItem.Name.Substring(0, lastHyphenIndex);
+                var suffix = blobItem.Name.Substring(lastHyphenIndex + 1);
+
+                var parts = prefix.Split('-', 2);
+                if (parts.Length != 2)
+                {
+                    continue;
+                }
+
+                if (!int.TryParse(parts[0], out var imageRestaurantId) || imageRestaurantId != restaurantId)
+                {
+                    continue;
+                }
+
+                if (!suffix.Equals(type, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                if (!Guid.TryParse(parts[1], out var imageId))
+                {
+                    continue;
+                }
+
+                var blobClient = _imagesContainer.GetBlobClient(blobItem.Name);
+                images.Add(new Image
+                {
+                    Id = imageId,
+                    Uri = blobClient.Uri.ToString(),
+                    Name = blobItem.Name,
+                    ContentType = blobItem.Properties.ContentType,
+                    Type = type
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error processing blob: {blobItem.Name}, Exception: {ex.Message}");
+            }
+        }
+
+        return images;
+    }
+
+    public async Task DeleteImageById(Guid imageId)
+    {
+        await foreach (var blobItem in _imagesContainer.GetBlobsAsync())
+        {
+            try
+            {
+                var lastHyphenIndex = blobItem.Name.LastIndexOf('-');
+                if (lastHyphenIndex <= 0) 
+                {
+                    continue;
+                }
+
+                var prefix = blobItem.Name.Substring(0, lastHyphenIndex);
+                var suffix = blobItem.Name.Substring(lastHyphenIndex + 1);
+
+                var parts = prefix.Split('-', 2);
+                if (parts.Length != 2)
+                {
+                    continue;
+                }
+
+                if (!Guid.TryParse(parts[1], out var parsedImageId) || parsedImageId != imageId)
+                {
+                    continue;
+                }
+                
+                var blobClient = _imagesContainer.GetBlobClient(blobItem.Name);
+                await blobClient.DeleteIfExistsAsync();
+
+                Console.WriteLine($"Deleted blob: {blobItem.Name}");
+                return;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error processing blob: {blobItem.Name}, Exception: {ex.Message}");
+            }
+        }
+        
+        throw new Exception($"Image with ID {imageId} not found.");
     }
 }

@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { fetchRestaurantById } from "@/services/restaurantService";
 import { RestaurantData } from "@/types/types";
-import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card.tsx";
-import {Separator} from "@radix-ui/react-select";
-import {AspectRatio} from "@/components/ui/aspect-ratio.tsx";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card.tsx";
+import { Separator } from "@/components/ui/separator";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const RestaurantProfile: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [restaurant, setRestaurant] = useState<RestaurantData | null>(null);
+    const [currentSlide, setCurrentSlide] = useState(0);
+
     useEffect(() => {
         if (id) {
             fetchRestaurantById(parseInt(id, 10))
@@ -28,6 +30,17 @@ const RestaurantProfile: React.FC = () => {
         );
     }
 
+    const images = restaurant.images?.$values || [];
+    const hasImages = images.length > 0;
+
+    const handleNext = () => {
+        setCurrentSlide((prev) => (prev + 1) % images.length);
+    };
+
+    const handlePrev = () => {
+        setCurrentSlide((prev) => (prev - 1 + images.length) % images.length);
+    };
+
     return (
         <Card className="max-w-4xl mx-auto mt-8 shadow-lg">
             <CardHeader>
@@ -36,6 +49,24 @@ const RestaurantProfile: React.FC = () => {
             </CardHeader>
             <Separator />
             <CardContent className="space-y-4">
+                <div>
+                    <h3 className="text-lg font-semibold">Cuisine</h3>
+                    <p className="text-gray-700">
+                        {restaurant.cuisine || "Cuisine information not available"}
+                    </p>
+                </div>
+                <div>
+                    <h3 className="text-lg font-semibold">Rating</h3>
+                    <p className="text-gray-700">
+                        {restaurant.review?.rating || "Rating information not available"}
+                    </p>
+                </div>
+                <div>
+                    <h3 className="text-lg font-semibold">Stars</h3>
+                    <p className="text-gray-700">
+                        {restaurant.review?.stars || "Stars information not available"}
+                    </p>
+                </div>
                 <div>
                     <h3 className="text-lg font-semibold">Address</h3>
                     <p className="text-gray-700">{restaurant.address}</p>
@@ -46,40 +77,49 @@ const RestaurantProfile: React.FC = () => {
                 </div>
                 <div>
                     <h3 className="text-lg font-semibold">Images</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                        {restaurant.images && restaurant.images.$values && restaurant.images.$values.length > 0 ? (
-                            restaurant.images.$values.map((image: {
-                                id: string;
-                                uri: string;
-                                name: string | null
-                            }, index: number) => (
-                                <div key={image.id || index} className="rounded-lg overflow-hidden shadow-sm">
-                                    <AspectRatio ratio={16 / 9}>
-                                        <img
-                                            src={image.uri}
-                                            alt={image.name || "Restaurant Image"}
-                                            className="object-cover w-full h-full"
-                                        />
-                                    </AspectRatio>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="rounded-lg overflow-hidden shadow-sm">
-                                <AspectRatio ratio={16 / 9}>
-                                    <img
-                                        src="https://via.placeholder.com/300?text=No+Image+Available"
-                                        alt="No images available"
-                                        className="object-cover w-full h-full"
-                                    />
-                                </AspectRatio>
-                            </div>
-                        )}
-                    </div>
+                    {hasImages ? (
+                        <div className="relative w-full overflow-hidden rounded-lg">
+                            <AspectRatio ratio={16 / 9}>
+                                <img
+                                    src={images[currentSlide]?.uri}
+                                    alt={images[currentSlide]?.name || "Restaurant Image"}
+                                    className="object-contain w-full h-full"
+                                />
+                            </AspectRatio>
+                            <button
+                                onClick={handlePrev}
+                                className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75"
+                            >
+                                &lt;
+                            </button>
+                            <button
+                                onClick={handleNext}
+                                className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75"
+                            >
+                                &gt;
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="rounded-lg overflow-hidden shadow-sm">
+                            <AspectRatio ratio={16 / 9}>
+                                <img
+                                    src="https://via.placeholder.com/300?text=No+Image+Available"
+                                    alt="No images available"
+                                    className="object-contain w-full h-full"
+                                />
+                            </AspectRatio>
+                        </div>
+                    )}
                 </div>
             </CardContent>
             <Separator/>
-            <CardFooter>
-                <p className="text-gray-500">Visit us for a great experience!</p>
+            <CardFooter className="text-center">
+                <Link
+                    to={`/reservations?restaurantId=${restaurant.id}`}
+                    className="inline-block px-6 py-2 text-white bg-black rounded-md hover:bg-gray-800 transition duration-300"
+                >
+                    Reserve your table now!
+                </Link>
             </CardFooter>
         </Card>
     );

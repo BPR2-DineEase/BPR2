@@ -11,6 +11,7 @@ public class User
     public string? ResetOtp { get; set; }
     public DateTime? OtpExpiry { get; set; }
     public Restaurant? Restaurant { get; set; }
+    public int? RestaurantId { get; set; }
     public ICollection<Review> Reviews { get; set; }
     public ICollection<Reservation> Reservations { get; set; }
 
