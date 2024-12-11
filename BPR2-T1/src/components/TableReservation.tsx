@@ -52,7 +52,7 @@ const TableReservation = () => {
     }
 
     const userId = user.userId;
-    const dateString = date.toString();
+    const dateString = date.toISOString();
 
     try {
       await postReservation({
