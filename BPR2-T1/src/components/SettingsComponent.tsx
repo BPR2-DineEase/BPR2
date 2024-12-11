@@ -152,7 +152,7 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
         restaurantData.ImageTypes = " ";
 
         const imageUris =
-          restaurantData.images?.$values?.map((img: any) => img.uri) || [];
+          restaurantData.images?.$values?.map((img) => img.uri) || [];
 
         setRestaurant({
           ...restaurantData,
@@ -574,16 +574,11 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
                         />
                         <Button
                           onClick={() => {
-                            const imageId = extractImageId(
-                              restaurantId,
-                              url,
-                              "restaurant"
+                            extractImageId(restaurantId, url, "restaurant");
+
+                            setRestaurantImageUrls((prev) =>
+                              prev.filter((_, i) => i !== index)
                             );
-                            if (imageId) {
-                              setRestaurantImageUrls((prev) =>
-                                prev.filter((_, i) => i !== index)
-                              );
-                            }
                           }}
                           className="absolute top-2 font-bold right-2 size-6 max-w-12 bg-red-500 text-white"
                         >
