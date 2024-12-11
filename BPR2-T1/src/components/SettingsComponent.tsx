@@ -141,7 +141,7 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
     };
 
     fetchImages();
-  }, [restaurantId, menuItemsUrl, restaurantImageUrls]);
+  }, [restaurantId, menuImages, restaurantImages]);
 
   useEffect(() => {
     const fetchRestaurantData = async () => {
@@ -205,7 +205,7 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
         file,
         url: URL.createObjectURL(file),
       }));
-      setMenuImages((prev) => [...prev, ...updatedRestaurantImages]);
+      setRestaurantImages((prev) => [...prev, ...updatedRestaurantImages]);
     }
   };
 
@@ -226,16 +226,16 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
 
   const handleUploadRestaurantImages = async () => {
     try {
-      for (const { file } of menuImages) {
+      for (const { file } of restaurantImages) {
         const formData = new FormData();
         formData.append("file", file);
 
         await uploadImage(formData, restaurantId, "restaurant");
       }
-      setMenuImages([]);
+      setRestaurantImages([]);
     } catch (error) {
-      console.error("Error uploading menu images:", error);
-      alert("Failed to upload menu images.");
+      console.error("Error uploading restaurant images:", error);
+      alert("Failed to upload restaurant images.");
     }
   };
 
@@ -562,7 +562,7 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
                               "restaurant"
                             );
                             if (imageId) {
-                              setMenuItemsUrl((prev) =>
+                              setRestaurantImageUrls((prev) =>
                                 prev.filter((_, i) => i !== index)
                               );
                             }
