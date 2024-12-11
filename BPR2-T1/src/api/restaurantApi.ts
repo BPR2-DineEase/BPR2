@@ -69,8 +69,11 @@ export const getRestaurantById = async (id: number): Promise<Restaurant> => {
   }
 };
 
-export const updateRestaurant = async (data: Restaurant): Promise<any> => {
+export const updateRestaurant = async (
+  data: RestaurantData
+): Promise<RestaurantData> => {
   try {
+    console.log("updated data : ", data);
     const response = await axiosInstance.put(
       `/RestaurantCreation/${data.id}`,
       data

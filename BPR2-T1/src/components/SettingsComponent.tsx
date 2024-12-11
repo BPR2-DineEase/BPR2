@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Input } from "./ui/input";
-import { RestaurantData } from "@/types/types";
+import { Restaurant, RestaurantData } from "@/types/types";
 import {
   deleteImageByImageId,
   fetchRestaurant,
@@ -35,7 +35,8 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
     reservations: { $values: [] },
     latitude: 0,
     longitude: 0,
-    imageUris: [],
+    ImageTypes: "",
+    imageUris: ["string"],
     images: {
       $id: "",
       $values: [],
@@ -147,6 +148,8 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
     const fetchRestaurantData = async () => {
       try {
         const restaurantData = await fetchRestaurant(restaurantId);
+
+        restaurantData.ImageTypes = " ";
 
         const imageUris =
           restaurantData.images?.$values?.map((img: any) => img.uri) || [];
@@ -264,7 +267,11 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (
+    e:
+      | React.ChangeEvent<HTMLTextAreaElement>
+      | React.ChangeEvent<HTMLInputElement>
+  ) => {
     const { name, value } = e.target;
     if (restaurant) {
       setRestaurant((prev) => ({
@@ -395,6 +402,17 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
                     value={closingHour}
                     onChange={handleClosingHourChange}
                     placeholder="E.g. 21.00"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="info">Info</Label>
+                  <textarea
+                    id="info"
+                    name="info"
+                    value={restaurant.info}
+                    onChange={handleInputChange}
+                    placeholder="Add additional information about the restaurant"
+                    className="w-full h-24 p-2 border rounded"
                   />
                 </div>
               </div>
