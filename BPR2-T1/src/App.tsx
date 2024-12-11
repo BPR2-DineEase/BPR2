@@ -14,6 +14,7 @@ import OwnerDashboard from "./pages/OwnerDashboardPage";
 import UserReservations from "@/pages/UserReservationsPage";
 import {Toaster} from "@/components/ui/toaster.tsx";
 import RestaurantProfile from "@/pages/RestaurantProfilePage";
+import UserEditForm from "@/components/UserEditProfileForm.tsx";
 
 const App: React.FC = () => {
   return  ( <>
@@ -28,6 +29,7 @@ const App: React.FC = () => {
           <Route path="/dashboard" element={<OwnerDashboard />} />
           <Route path="/user-reservations" element={<UserReservations />} />
           <Route path="/restaurants/:id" element={<RestaurantProfile />} />
+          <Route path="/user-profile" element={<UserEditForm />} />
         <Route
           path="/"
           element={

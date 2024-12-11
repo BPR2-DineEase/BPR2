@@ -180,4 +180,19 @@ public class AuthLogic : IAuthLogic
         if (userId == Guid.Empty) throw new Exception("Invalid userId");
         return await authDao.addRestaurantToUser(userId, restaurantId);
     }
+    
+    public async Task UpdateUserProfileAsync(UpdateUserProfileDto updateUserProfileDto)
+    {
+        var user = await authDao.GetUserById(updateUserProfileDto.Id);
+        if (user == null)
+        {
+            throw new Exception("User not found.");
+        }
+
+        user.FirstName = updateUserProfileDto.FirstName;
+        user.LastName = updateUserProfileDto.LastName;
+        user.Email = updateUserProfileDto.Email;
+        
+        await authDao.UpdateUserAsync(user);
+    }
 }

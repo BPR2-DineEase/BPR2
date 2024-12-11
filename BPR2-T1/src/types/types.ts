@@ -89,3 +89,10 @@ export interface User {
   role?: UserRole;
   userId: string;
 }
+
+export interface UserData {
+  Email: string;
+  Password: string;
+  FirstName: string;
+  LastName: string;
+}

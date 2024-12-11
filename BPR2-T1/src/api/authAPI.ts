@@ -1,5 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import axiosInstance from "./axiosInstance";
+import {UserData} from "@/types/types.ts";
 
 export const loginUser = async (credentials: {
   email: string;
@@ -142,5 +143,20 @@ export const resetPassword = async (resetDetails: {
     throw new Error(
       error.response?.data?.message || "Failed to reset password"
     );
+  }
+};
+
+
+export const updateUserProfile = async (userId: string, data: UserData): Promise<void> => {
+  try {
+    const response = await axiosInstance.put(`/Auth/${userId}/update`, data);
+    console.log("User Profile Update Response:", response.data);
+  } catch (err: any) {
+    if (err.isAxiosError) {
+      console.error("Axios error during profile update:", err.response?.data);
+    } else {
+      console.error("Unexpected error during profile update:", err);
+    }
+    throw err;
   }
 };

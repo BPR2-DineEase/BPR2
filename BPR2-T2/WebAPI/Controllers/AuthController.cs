@@ -164,5 +164,30 @@ public class AuthController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+    
+    [HttpPut("{id}/update")]
+    public async Task<ActionResult> UpdateUserProfile(Guid id, [FromBody] UpdateUserProfileDto updateUserProfileDto)
+    {
+        if (updateUserProfileDto == null)
+        {
+            return BadRequest("Invalid user data.");
+        }
+
+        if (id != updateUserProfileDto.Id)
+        {
+            return BadRequest("User ID mismatch.");
+        }
+
+        try
+        {
+            await _authLogic.UpdateUserProfileAsync(updateUserProfileDto);
+            return NoContent();
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine(e);
+            return StatusCode(500, "An error occurred while updating the profile.");
+        }
+    }
 
 }
