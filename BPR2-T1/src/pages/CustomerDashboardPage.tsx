@@ -15,7 +15,7 @@ const CustomerDashboardPage: React.FC<Props> = () => {
   >("HISTORY");
 
   const [activeRestaurant, setActiveRestaurant] = useState<any>(null);
-  const [userDetails ,setUserDetails] = useState<any>(null);
+  const [userDetails, setUserDetails] = useState<any>(null);
 
   const { setAuth, user } = useAuth();
   const navigate = useNavigate();
@@ -77,18 +77,16 @@ const CustomerDashboardPage: React.FC<Props> = () => {
   return (
     <div className="flex min-h-screen">
       <div className="w-[300px] bg-gray-50">
-        <SideBar onNavigate={setActiveView} role="RestaurantOwner" />
+        <SideBar onNavigate={setActiveView} role="Customer" />
       </div>
 
       <div className="flex-1 flex flex-col">
         <Navbar title={activeView} />
 
         <div className="flex-1 p-8">
-          {activeView === "RESERVATION SCHEDULE" && <div>ficko</div>}
-          {activeView === "HISTORY" &&
-            activeRestaurant && ( 
-              <HistoryComponent restaurantId={activeRestaurant.id} />
-            )}
+          {activeView === "HISTORY" && activeRestaurant && (
+            <HistoryComponent restaurantId={activeRestaurant.id} />
+          )}
         </div>
       </div>
     </div>
