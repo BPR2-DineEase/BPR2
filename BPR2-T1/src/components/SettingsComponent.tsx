@@ -132,7 +132,12 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
   };
 
   if (!restaurant) {
-    return <div>Loading...</div>;
+    return (
+        <div className="flex justify-center items-center h-screen">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-500"></div>
+          <span className="ml-3 text-lg">Loading...</span>
+        </div>
+    );
   }
 
   return (

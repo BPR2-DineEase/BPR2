@@ -11,7 +11,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { CreateRestaurantDto, Restaurant, User } from "@/types/types.ts";
+import { CreateRestaurantDto } from "@/types/types.ts";
 import {
   addRestaurantToUser,
   getDecodedToken,
@@ -29,8 +29,6 @@ const CreateRestaurantForm: React.FC = () => {
     info: "",
     capacity: 0,
   });
-  const [images, setImages] = useState<FileList | null>(null);
-  const [imageTypes, setImageTypes] = useState<string[]>([]);
   const [message, setMessage] = useState<string | null>(null);
 
   const navigate = useNavigate();
@@ -45,36 +43,12 @@ const CreateRestaurantForm: React.FC = () => {
     }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      setImages(files);
-      setImageTypes(Array.from(files).map(() => "menu"));
-    }
-  };
-
-  const handleTypeChange = (index: number, type: string) => {
-    const updatedTypes = [...imageTypes];
-    updatedTypes[index] = type;
-    setImageTypes(updatedTypes);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage(null);
 
-    if (!images || images.length === 0) {
-      setMessage("Please upload at least one image.");
-      return;
-    }
-
     try {
-      const filesArray = Array.from(images);
-      const createdRestaurant = await createRestaurant(
-        formData,
-        filesArray,
-        imageTypes
-      );
+      const createdRestaurant = await createRestaurant(formData);
       if (!createdRestaurant) throw new Error("Restaurant creation failed.");
 
       const restaurantId = createdRestaurant.id;
@@ -191,35 +165,6 @@ const CreateRestaurantForm: React.FC = () => {
                 className="border border-gray-300 rounded-md p-2 w-full"
               />
             </div>
-            <div>
-              <Label htmlFor="images">Images</Label>
-              <Input
-                id="images"
-                type="file"
-                multiple
-                onChange={handleFileChange}
-                className="file-input file-input-bordered w-full"
-              />
-            </div>
-            {images && (
-              <div>
-                {Array.from(images).map((file, index) => (
-                  <div key={index} className="space-y-2">
-                    <p>{file.name}</p>
-                    <Label htmlFor={`imageType-${index}`}>Image Type</Label>
-                    <select
-                      id={`imageType-${index}`}
-                      value={imageTypes[index]}
-                      onChange={(e) => handleTypeChange(index, e.target.value)}
-                      className="border border-gray-300 rounded-md p-2 w-full"
-                    >
-                      <option value="menu">Menu</option>
-                      <option value="photos">Photos</option>
-                    </select>
-                  </div>
-                ))}
-              </div>
-            )}
             <Button type="submit" className="w-full">
               Create Restaurant
             </Button>

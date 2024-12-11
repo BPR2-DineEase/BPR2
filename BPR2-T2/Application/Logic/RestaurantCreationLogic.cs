@@ -24,7 +24,7 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
         _googleMapsService = googleMapsService;
     }
 
-    public async Task<Restaurant> AddRestaurantAsync(CreateRestaurantDto createRestaurantDto, List<IFormFile>? images)
+    public async Task<Restaurant> AddRestaurantAsync(CreateRestaurantDto createRestaurantDto)
     {
         var coordinates =
             await _googleMapsService.GetCoordinatesAsync(createRestaurantDto.Address, createRestaurantDto.City);
@@ -43,11 +43,6 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
         };
 
         var restaurantId = await _restaurantsDao.AddRestaurantAsync(restaurant);
-
-        if (images != null && images.Any())
-        {
-            await HandleImagesAsync(images, restaurantId, createRestaurantDto.ImageType);
-        }
 
         return await _restaurantsDao.GetRestaurantByIdAsync(restaurantId);
     }

@@ -9,7 +9,7 @@ import SideBar from "@/components/SideBar";
 import { useAuth } from "@/context/AuthContext";
 import { removeToken } from "@/services/jwtService";
 import { format, startOfDay } from "date-fns";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -85,7 +85,12 @@ const OwnerDashboard: React.FC = () => {
   }, [activeView]);
 
   if (!userDetails || !activeRestaurant) {
-    return <div>Loading...</div>;
+    return (
+        <div className="flex justify-center items-center h-screen">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-500"></div>
+          <span className="ml-3 text-lg">Loading...</span>
+        </div>
+    );
   }
 
   return (
