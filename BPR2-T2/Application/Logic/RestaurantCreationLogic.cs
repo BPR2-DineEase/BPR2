@@ -121,7 +121,7 @@ public class RestaurantCreationLogic : IRestaurantCreationLogic
                 ? new ReviewFilterDto
                 {
                     Rating = restaurant.Reviews.Average(r => r.Rating), 
-                    Stars = restaurant.Reviews.Count()
+                    Stars = (int?)restaurant.Reviews.Average(r => r.Stars)
                 }
                 : null
         };

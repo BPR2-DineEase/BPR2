@@ -61,7 +61,7 @@ const MapView: React.FC<MapViewProps> = ({ restaurants }) => {
             <h3 className="font-semibold">{restaurant.name}</h3>
             <p>{restaurant.address}</p>
             <p>{restaurant.cuisine}</p>
-            <p>{restaurant.rating}</p>
+            <p>{restaurant.openHours}</p>
           </Popup>
         </Marker>
       ))}
