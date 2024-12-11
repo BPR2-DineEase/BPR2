@@ -1,7 +1,5 @@
 import { getDecodedToken, getUserByEmail } from "@/api/authAPI";
-import {
-  CustomCardComponent,
-} from "@/components/CustomCardComponent";
+import { CustomCardComponent } from "@/components/CustomCardComponent";
 import HistoryComponent from "@/components/HistoryComponent";
 import Navbar from "@/components/Navbar";
 import { SettingsComponent } from "@/components/SettingsComponent";
@@ -34,11 +32,10 @@ const OwnerDashboard: React.FC = () => {
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
-   const today = startOfDay(new Date());
+  const today = startOfDay(new Date());
 
-  const { setAuth } = useAuth();
+  const { setAuth, user } = useAuth();
   const navigate = useNavigate();
-
 
   const handleLogout = () => {
     removeToken();
@@ -75,6 +72,16 @@ const OwnerDashboard: React.FC = () => {
   };
 
   useEffect(() => {
+    if (user?.role !== "RestaurantOwner") {
+      navigate("/unauthorized");
+    }
+  }, [user, navigate]);
+
+  if (user?.role !== "RestaurantOwner") {
+    return null;
+  }
+
+  useEffect(() => {
     checkUserLoggedIn();
   }, []);
 
@@ -86,17 +93,17 @@ const OwnerDashboard: React.FC = () => {
 
   if (!userDetails || !activeRestaurant) {
     return (
-        <div className="flex justify-center items-center h-screen">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-500"></div>
-          <span className="ml-3 text-lg">Loading...</span>
-        </div>
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-500"></div>
+        <span className="ml-3 text-lg">Loading...</span>
+      </div>
     );
   }
 
   return (
     <div className="flex min-h-screen">
       <div className="w-[300px] bg-gray-50">
-        <SideBar onNavigate={setActiveView} />
+        <SideBar onNavigate={setActiveView} role="RestaurantOwner" />
       </div>
 
       <div className="flex-1 flex flex-col">
@@ -152,14 +159,17 @@ const OwnerDashboard: React.FC = () => {
                   <ReserveDialogComponent
                     isOpen={isDialogOpen}
                     onClose={() => setIsDialogOpen(false)}
-                    restaurantId = { activeRestaurant.id}
+                    restaurantId={activeRestaurant.id}
                   />
                 )}
               </div>
             </div>
           )}
           {activeView === "RESERVATION SCHEDULE" && (
-            <Scheduler restaurantId={activeRestaurant.id} selectedDate={date ?? today} />
+            <Scheduler
+              restaurantId={activeRestaurant.id}
+              selectedDate={date ?? today}
+            />
           )}
           {activeView === "HISTORY" && (
             <HistoryComponent restaurantId={activeRestaurant.id} />
@@ -174,4 +184,3 @@ const OwnerDashboard: React.FC = () => {
 };
 
 export default OwnerDashboard;
-

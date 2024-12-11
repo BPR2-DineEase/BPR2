@@ -12,70 +12,77 @@ import ResetPassword from "@/pages/ResetPasswordPage";
 import RequestResetOtp from "@/pages/ResetOtpPage";
 import OwnerDashboard from "./pages/OwnerDashboardPage";
 import UserReservations from "@/pages/UserReservationsPage";
-import {Toaster} from "@/components/ui/toaster.tsx";
+import { Toaster } from "@/components/ui/toaster.tsx";
 import RestaurantProfile from "@/pages/RestaurantProfilePage";
+import { useAuth } from "./context/AuthContext";
+import CustomerDashboardPage from "./pages/CustomerDashboardPage";
 
 const App: React.FC = () => {
-  return  ( <>
-   <Toaster />
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/create-restaurant" element={<CreateRestaurant />} />
-        <Route path="/request-reset-otp" element={<RequestResetOtp />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/dashboard" element={<OwnerDashboard />} />
+  const { user } = useAuth();
+  return (
+    <>
+      <Toaster />
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/create-restaurant" element={<CreateRestaurant />} />
+          <Route path="/request-reset-otp" element={<RequestResetOtp />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/user-reservations" element={<UserReservations />} />
           <Route path="/restaurants/:id" element={<RestaurantProfile />} />
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/search"
-          element={
-            <ProtectedRoute roles={["Customer", "RestaurantOwner"]}>
-              <SearchComponent />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/results"
-          element={
-            <ProtectedRoute roles={["Customer", "RestaurantOwner"]}>
-              <ResultsComponent />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/reservations"
-          element={
-            <ProtectedRoute roles={["Customer"]}>
-              <TableReservation />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute roles={["RestaurantOwner"]}>
-              <OwnerDashboard />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/search"
+            element={
+              <ProtectedRoute roles={["Customer", "RestaurantOwner"]}>
+                <SearchComponent />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/results"
+            element={
+              <ProtectedRoute roles={["Customer", "RestaurantOwner"]}>
+                <ResultsComponent />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reservations"
+            element={
+              <ProtectedRoute roles={["Customer"]}>
+                <TableReservation />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute roles={["Customer", "RestaurantOwner"]}>
+                {user?.role === "Customer" ? (
+                  <CustomerDashboardPage />
+                ) : (
+                  <OwnerDashboard />
+                )}
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/unauthorized"
-          element={<div>You are not authorized to view this page.</div>}
-        />
-      </Routes>
-    </Router>
-   </>
+          <Route
+            path="/unauthorized"
+            element={<div>You are not authorized to view this page.</div>}
+          />
+        </Routes>
+      </Router>
+    </>
   );
 };
 
