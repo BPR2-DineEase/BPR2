@@ -8,12 +8,17 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Input } from "./ui/input";
-import { RestaurantData } from "@/types/types";
-import { fetchRestaurant, updateRestaurant } from "@/api/restaurantApi";
+import { Restaurant, RestaurantData } from "@/types/types";
+import {
+  deleteImageByImageId,
+  fetchRestaurant,
+  getImageByRestaurantIdAndType,
+  updateRestaurant,
+} from "@/api/restaurantApi";
 
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
-
+import axiosInstance from "@/api/axiosInstance";
 export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
   restaurantId,
 }) => {
@@ -30,7 +35,8 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
     reservations: { $values: [] },
     latitude: 0,
     longitude: 0,
-    imageUris: [],
+    ImageTypes: "",
+    imageUris: ["string"],
     images: {
       $id: "",
       $values: [],
@@ -43,6 +49,22 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
   const [editRestaurant, setEditRestaurant] = useState<boolean>(true);
   const [editImages, setEditImages] = useState<boolean>(false);
 
+  const [logo, setLogo] = useState<File>();
+  const [logoUrl, setLogoUrl] = useState<string>(restaurantLogo);
+
+  const [background, setBackground] = useState<File>();
+  const [backgroundUrl, setBackgroundUrl] = useState<string>(restaurantLogo);
+
+  const [menuImages, setMenuImages] = useState<{ file: File; url: string }[]>(
+    []
+  );
+  const [menuItemsUrl, setMenuItemsUrl] = useState<string[]>([]);
+
+  const [restaurantImages, setRestaurantImages] = useState<
+    { file: File; url: string }[]
+  >([]);
+  const [restaurantImageUrls, setRestaurantImageUrls] = useState<string[]>([]);
+
   const handleEditRestaurant = () => {
     setEditRestaurant(true);
     setEditImages(false);
@@ -53,10 +75,81 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
     setEditImages(true);
   };
 
+  const extractImageId = async (
+    restaurantId: number,
+    url: string,
+    type: string
+  ) => {
+    const regex = new RegExp(`${restaurantId}-([a-f0-9\\-]{36})-${type}`);
+    const match = url.match(regex);
+    if (match) {
+      await deleteImageByImageId(match[1]);
+      if (type === "logo") {
+        setLogoUrl(restaurantLogo);
+      } else if (type === "background") {
+        setBackgroundUrl(restaurantLogo);
+      }
+
+      return match[1];
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const results = await Promise.allSettled([
+          getImageByRestaurantIdAndType(restaurantId, "logo"),
+          getImageByRestaurantIdAndType(restaurantId, "background"),
+          getImageByRestaurantIdAndType(restaurantId, "menu"),
+          getImageByRestaurantIdAndType(restaurantId, "restaurant"),
+        ]);
+
+        const logoResult = results[0];
+        const backgroundResult = results[1];
+        const menuResult = results[2];
+        const restaurantResult = results[3];
+
+        if (logoResult.status === "fulfilled" && logoResult.value) {
+          setLogoUrl(logoResult.value.$values[0]);
+        } else {
+          setLogoUrl(restaurantLogo);
+        }
+
+        if (backgroundResult.status === "fulfilled" && backgroundResult.value) {
+          setBackgroundUrl(backgroundResult.value.$values[0]);
+        } else {
+          setBackgroundUrl(restaurantLogo);
+        }
+
+        if (
+          menuResult.status === "fulfilled" &&
+          menuResult.value &&
+          menuResult.value.$values?.length
+        ) {
+          setMenuItemsUrl(menuResult.value.$values);
+        }
+        if (
+          restaurantResult.status === "fulfilled" &&
+          restaurantResult.value &&
+          restaurantResult.value.$values?.length
+        ) {
+          setRestaurantImageUrls(restaurantResult.value.$values);
+        }
+      } catch (error) {
+        console.error("Error fetching images", error);
+      }
+    };
+
+    fetchImages();
+  }, [restaurantId, menuImages, restaurantImages]);
+
   useEffect(() => {
     const fetchRestaurantData = async () => {
       try {
         const restaurantData = await fetchRestaurant(restaurantId);
+
+        restaurantData.ImageTypes = " ";
 
         const imageUris =
           restaurantData.images?.$values?.map((img: any) => img.uri) || [];
@@ -84,7 +177,101 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
     fetchRestaurantData();
   }, [restaurantId]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setLogo(e.target.files[0]);
+    }
+  };
+
+  const handleBackgroundChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setBackground(e.target.files[0]);
+    }
+  };
+
+  const handleMenuChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      const updatedMenuImages = filesArray.map((file) => ({
+        file,
+        url: URL.createObjectURL(file),
+      }));
+      setMenuImages((prev) => [...prev, ...updatedMenuImages]);
+    }
+  };
+  const handleRestaurantImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      const updatedRestaurantImages = filesArray.map((file) => ({
+        file,
+        url: URL.createObjectURL(file),
+      }));
+      setRestaurantImages((prev) => [...prev, ...updatedRestaurantImages]);
+    }
+  };
+
+  const handleUploadMenuImages = async () => {
+    try {
+      for (const { file } of menuImages) {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        await uploadImage(formData, restaurantId, "menu");
+      }
+      setMenuImages([]);
+    } catch (error) {
+      console.error("Error uploading menu images:", error);
+      alert("Failed to upload menu images.");
+    }
+  };
+
+  const handleUploadRestaurantImages = async () => {
+    try {
+      for (const { file } of restaurantImages) {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        await uploadImage(formData, restaurantId, "restaurant");
+      }
+      setRestaurantImages([]);
+    } catch (error) {
+      console.error("Error uploading restaurant images:", error);
+      alert("Failed to upload restaurant images.");
+    }
+  };
+
+  const uploadImage = async (
+    data: FormData,
+    restaurantId: number,
+    type: string
+  ): Promise<any> => {
+    try {
+      const response = await axiosInstance.post(
+        `/RestaurantCreation/uploadImage?restaurantId=${restaurantId}&type=${type}`,
+        data,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      if (response.data.type == "logo") {
+        setLogoUrl(response.data.uri);
+      } else if (response.data.type == "background")
+        setBackgroundUrl(response.data.uri);
+
+      return response.data;
+    } catch (err: any) {
+      console.error("API Error: ", err);
+      throw err;
+    }
+  };
+
+  const handleInputChange = (
+    e:
+      | React.ChangeEvent<HTMLTextAreaElement>
+      | React.ChangeEvent<HTMLInputElement>
+  ) => {
     const { name, value } = e.target;
     if (restaurant) {
       setRestaurant((prev) => ({
@@ -222,6 +409,17 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
                     placeholder="E.g. 21.00"
                   />
                 </div>
+                <div>
+                  <Label htmlFor="info">Info</Label>
+                  <textarea
+                    id="info"
+                    name="info"
+                    value={restaurant.info}
+                    onChange={handleInputChange}
+                    placeholder="Add additional information about the restaurant"
+                    className="w-full h-24 p-2 border rounded"
+                  />
+                </div>
               </div>
             </CardContent>
             <CardFooter>
@@ -232,53 +430,135 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
       )}
       {editImages && (
         <div className="w-full">
-          <div className="flex justify-center items-center space-x-12 space-y-2  flex-wrap">
+          <div className="flex justify-center items-center space-x-12 space-y-2 flex-wrap">
             <div>
-              <Card className="max-w-md mx-auto mt-2 bg-blue-200 w-80 h-80 ">
+              <Card className="max-w-md mx-auto mt-2 bg-blue-200 w-[500px] h-[500px] ">
                 <CardHeader>
                   <CardTitle>Edit Logo</CardTitle>
                 </CardHeader>
-                <CardContent className="flex justify-center items-center mt-6">
+                <CardContent className="flex justify-center items-center mt-4 max-w-[500px] max-h-[500px] ">
                   <div>
-                    <img src={restaurantLogo} />
+                    <img
+                      src={logoUrl}
+                      alt="Restaurant Logo"
+                      onError={() => restaurantLogo}
+                    />
                   </div>
                 </CardContent>
-                <CardFooter></CardFooter>
+                <CardFooter className="flex gap-2 justify-end">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoChange}
+                  />
+                  <Button
+                    onClick={() =>
+                      extractImageId(restaurantId, logoUrl, "logo")
+                    }
+                  >
+                    Delete
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      if (logo) {
+                        const formData = new FormData();
+                        formData.append("file", logo);
+                        uploadImage(formData, restaurantId, "logo");
+                      }
+                    }}
+                  >
+                    Upload
+                  </Button>
+                </CardFooter>
               </Card>
             </div>
             <div>
-              <Card className="max-w-md mx-auto bg-blue-200 w-80 h-80">
+              <Card className="max-w-md mx-auto mt-2 bg-blue-200  w-[500px] h-[500px] ">
                 <CardHeader>
                   <CardTitle>Edit Background Image</CardTitle>
                 </CardHeader>
-                <CardContent className="flex justify-center items-center mt-6">
+                <CardContent className="flex justify-center items-center mt-4 max-w-[500px] max-h-[500px] ">
                   <div>
-                    <img src={restaurantLogo} />
+                    <img
+                      src={backgroundUrl}
+                      alt="Restaurant Background Image"
+                      onError={() => restaurantLogo}
+                    />
                   </div>
                 </CardContent>
-                <CardFooter></CardFooter>
+                <CardFooter className="flex gap-2 justify-end">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleBackgroundChange}
+                  />
+                  <Button
+                    onClick={() =>
+                      extractImageId(restaurantId, backgroundUrl, "background")
+                    }
+                  >
+                    Delete
+                  </Button>
+
+                  <Button
+                    onClick={() => {
+                      if (background) {
+                        const formData = new FormData();
+                        formData.append("file", background);
+                        uploadImage(formData, restaurantId, "background");
+                      }
+                    }}
+                  >
+                    Upload
+                  </Button>
+                </CardFooter>
               </Card>
             </div>
             <div>
-              <Card className="mx-auto bg-blue-200 min-w-80 w-full h-80">
+              <Card className=" mt-2 bg-blue-200 w-full">
                 <CardHeader>
                   <CardTitle>Edit Menu Images</CardTitle>
                 </CardHeader>
-                <CardContent className="flex justify-center items-center gap-2 mt-6">
-                  <div>
-                    <img src={restaurantLogo} />
-                  </div>
-                  <div>
-                    <img src={restaurantLogo} />
-                  </div>
-                  <div>
-                    <img src={restaurantLogo} />
-                  </div>
-                    <div>
-                    <img src={restaurantLogo} />
+                <CardContent className="flex flex-col items-center gap-4">
+                  <div className="grid grid-cols-3 gap-2 ">
+                    {menuItemsUrl.map((url, index) => (
+                      <Card key={index} className="bg-blue-100 p-4 relative">
+                        <img
+                          src={url}
+                          alt={`Menu item ${index + 1}`}
+                          className="object-cover h-[200px] w-auto"
+                        />
+                        <Button
+                          onClick={() => {
+                            const imageId = extractImageId(
+                              restaurantId,
+                              url,
+                              "menu"
+                            );
+                            if (imageId) {
+                              setMenuItemsUrl((prev) =>
+                                prev.filter((_, i) => i !== index)
+                              );
+                            }
+                          }}
+                          className="absolute top-2 right-2 size-6 max-w-12 bg-red-500 text-white"
+                        >
+                          X
+                        </Button>
+                      </Card>
+                    ))}
                   </div>
                 </CardContent>
-                <CardFooter></CardFooter>
+                <CardFooter className="flex gap-2 justify-end">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleMenuChange}
+                    className="max-w-60 w-auto"
+                  />
+                  <Button onClick={handleUploadMenuImages}>Upload All</Button>
+                </CardFooter>
               </Card>
             </div>
           </div>
@@ -288,34 +568,48 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
                 <CardHeader>
                   <CardTitle>Edit Restaurant Images</CardTitle>
                 </CardHeader>
-                <div className="flex-row flex flex-wrap h-140 w-140 gap-2 ">
-                  <CardContent>
-                    <div>
-                      <img src={restaurantLogo} alt="Restaurant Logo" />
-                    </div>
-                  </CardContent>
-                  <CardContent>
-                    <div>
-                      <img src={restaurantLogo} alt="Restaurant Logo" />
-                    </div>
-                  </CardContent>
-                  <CardContent>
-                    <div>
-                      <img src={restaurantLogo} alt="Restaurant Logo" />
-                    </div>
-                  </CardContent>
-                  <CardContent>
-                    <div>
-                      <img src={restaurantLogo} alt="Restaurant Logo" />
-                    </div>
-                  </CardContent>
-                  <CardContent>
-                    <div>
-                      <img src={restaurantLogo} alt="Restaurant Logo" />
-                    </div>
-                  </CardContent>
-                </div>
-                <CardFooter></CardFooter>
+                <CardContent className="flex flex-col items-center gap-4">
+                  <div className="grid grid-cols-3 gap-2 ">
+                    {restaurantImageUrls.map((url, index) => (
+                      <Card key={index} className="bg-blue-100 p-4 relative">
+                        <img
+                          src={url}
+                          alt={`Restaurant item ${index + 1}`}
+                          className="object-cover h-[200px] w-auto"
+                        />
+                        <Button
+                          onClick={() => {
+                            const imageId = extractImageId(
+                              restaurantId,
+                              url,
+                              "restaurant"
+                            );
+                            if (imageId) {
+                              setRestaurantImageUrls((prev) =>
+                                prev.filter((_, i) => i !== index)
+                              );
+                            }
+                          }}
+                          className="absolute top-2 font-bold right-2 size-6 max-w-12 bg-red-500 text-white"
+                        >
+                          X
+                        </Button>
+                      </Card>
+                    ))}
+                  </div>
+                </CardContent>
+                <CardFooter className="flex gap-2 justify-end">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleRestaurantImageChange}
+                    className="max-w-60 w-auto"
+                  />
+                  <Button onClick={handleUploadRestaurantImages}>
+                    Upload All
+                  </Button>
+                </CardFooter>
               </Card>
             </div>
           </div>

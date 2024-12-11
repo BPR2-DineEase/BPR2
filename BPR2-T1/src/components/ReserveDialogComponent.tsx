@@ -8,24 +8,51 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { postReservation } from "@/api/ReservationApi";
+import { getUserByEmail } from "@/api/authAPI";
 
 interface ReserveDialogComponentProps {
   isOpen: boolean;
   onClose: () => void;
+  restaurantId: number;
 }
 
-export function ReserveDialogComponent({ isOpen, onClose }: ReserveDialogComponentProps) {
+export function ReserveDialogComponent({
+  isOpen,
+  onClose,
+  restaurantId,
+}: ReserveDialogComponentProps) {
   const [guestName, setGuestName] = useState<string>("");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [time, setTime] = useState<string>("");
   const [date, setDate] = useState<string>("");
   const [comments, setComments] = useState<string>("");
+  const [numOfPeople, setNumOfPeople] = useState<number>(0);
+  const [company, setCompany] = useState<string>("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(date);
-    alert(`Reservation confirmed for ${guestName}`);
+
+    try {
+      const user = await getUserByEmail(email);
+      const userId = user.id;
+      const response = await postReservation({
+        guestName,
+        phoneNumber,
+        email,
+        time,
+        date,
+        comments,
+        numOfPeople,
+        restaurantId,
+        company,
+        userId,
+      });
+    } catch (error: any) {
+      console.error("Api error: ", error);
+    }
+
     onClose();
   };
 
@@ -58,6 +85,20 @@ export function ReserveDialogComponent({ isOpen, onClose }: ReserveDialogCompone
               onChange={(e) => setPhoneNumber(e.target.value)}
               className="col-span-3"
               placeholder="Enter Users phone number"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="phoneNumber" className="text-right">
+              Number of people
+            </Label>
+            <Input
+              id="numOfPeople"
+              value={numOfPeople}
+              required
+              onChange={(e) => setNumOfPeople(e.target.valueAsNumber)}
+              type="number"
+              className="col-span-3"
+              placeholder="Amount of people coming"
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
