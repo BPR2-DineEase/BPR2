@@ -28,15 +28,21 @@ public class ReservationsController : ControllerBase
             {
                 return Unauthorized("User ID not found in token.");
             }
-            
+
             if (!Guid.TryParse(userIdClaim, out var userId))
             {
                 Console.WriteLine($"Invalid userId format: {userIdClaim}");
                 return BadRequest("Invalid userId format in token.");
             }
-            
+
             reservationDto.UserId = userId;
+            
             var reservation = await _reservationsLogic.AddReservationAsync(reservationDto);
+            
+            var notification = await _reservationsLogic.CreateReservationNotificationDto(reservation);
+            
+            await _reservationsLogic.SendReservationConfirmationEmailsAsync(notification);
+
             return Ok(reservation);
         }
         catch (Exception e)
@@ -107,6 +113,13 @@ public class ReservationsController : ControllerBase
         try
         {
             await _reservationsLogic.UpdateReservationAsync(updateReservationDto);
+            
+            var updatedReservation = await _reservationsLogic.GetReservationByIdAsync(updateReservationDto.Id);
+            
+            var notification = await _reservationsLogic.CreateReservationNotificationDto(updatedReservation);
+            
+            await _reservationsLogic.SendReservationUpdateEmailAsync(updatedReservation);
+
             return NoContent();
         }
         catch (Exception e)
@@ -120,6 +133,16 @@ public class ReservationsController : ControllerBase
     {
         try
         {
+            var reservation = await _reservationsLogic.GetReservationByIdAsync(id);
+            if (reservation == null)
+            {
+                return NotFound("Reservation not found.");
+            }
+            
+            var notification = await _reservationsLogic.CreateReservationNotificationDto(reservation);
+            
+            await _reservationsLogic.SendReservationDeletionEmailAsync(reservation);
+            
             await _reservationsLogic.DeleteReservationAsync(id);
             return NoContent();
         }

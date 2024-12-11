@@ -37,23 +37,20 @@ export const filterRestaurantsByOptions = async (
   }
 };
 
-export const createRestaurant = async (
-  dto: CreateRestaurantDto,
-  files: File[],
-  imageTypes: string[]
-): Promise<any> => {
+export const createRestaurant = async (dto: CreateRestaurantDto): Promise<any> => {
   const formData = new FormData();
   Object.entries(dto).forEach(([key, value]) => {
-    formData.append(key, value.toString());
+    if (value !== undefined && value !== null) {
+      formData.append(key, value.toString());
+    }
   });
 
-  files.forEach((file) => formData.append("files", file));
-  imageTypes.forEach((type) => formData.append("imageTypes", type));
-
   try {
-    return await restaurantCreate(formData);
-  } catch (error: any) {
-    throw new Error(error.message || "Failed to create restaurant.");
+    const responseData = await restaurantCreate(formData);
+    return responseData;
+  } catch (error) {
+    console.error("Error creating restaurant:", error);
+    throw error;
   }
 };
 

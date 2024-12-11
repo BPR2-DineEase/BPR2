@@ -3,6 +3,7 @@ import { AuthService } from "../services/authService";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import {useNavigate} from "react-router-dom";
 
 const ResetPassword: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -10,6 +11,7 @@ const ResetPassword: React.FC = () => {
     const [newPassword, setNewPassword] = useState("");
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     const handleReset = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -21,6 +23,10 @@ const ResetPassword: React.FC = () => {
             await AuthService.resetPassword({ email, otp, newPassword });
             
             setMessage("Your password has been reset successfully. You can now log in with your new password.");
+            
+            setTimeout(() => {
+                navigate("/login");
+            }, 2000); 
         } catch (error: any) {
             setError("An error occurred. Please try again.");
         }

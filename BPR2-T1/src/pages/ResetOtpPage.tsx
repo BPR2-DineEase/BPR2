@@ -3,11 +3,13 @@ import { AuthService } from "../services/authService";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import {useNavigate} from "react-router-dom";
 
 const RequestResetOtp: React.FC = () => {
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     const handleRequest = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -20,8 +22,12 @@ const RequestResetOtp: React.FC = () => {
 
             
             setMessage(
-                "A password reset link has been sent to your email address. Please check your inbox."
+                "A password reset link has been sent to your email address. Redirecting..."
             );
+            
+            setTimeout(() => {
+                navigate("/reset-password");
+            }, 2000);
         } catch (error: any) {
             setError("An error occurred. Please try again.");
         }

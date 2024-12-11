@@ -8,10 +8,10 @@ namespace Application.LogicInterfaces;
 public interface IRestaurantCreationLogic
 {
     
-    Task<Restaurant> AddRestaurantAsync(CreateRestaurantDto createRestaurantDto, List<IFormFile> images);
+    Task<Restaurant> AddRestaurantAsync(CreateRestaurantDto createRestaurantDto);
     Task UpdateRestaurantAsync(UpdateRestaurantDto updateRestaurantDto);
     Task<RestaurantPreviewDto?> GetRestaurantByIdAsync(int restaurantId);
     Task<IEnumerable<Restaurant>> GetAllRestaurantsAsync();
-    
-    
+
+
 }

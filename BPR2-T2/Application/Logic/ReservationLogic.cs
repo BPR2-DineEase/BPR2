@@ -2,6 +2,7 @@ using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using Application.DaoInterfaces;
 using Application.LogicInterfaces;
+using Application.Services;
 using Domain.Dtos;
 using Domain.Dtos.ReservationDtos;
 using Domain.Models;
@@ -11,15 +12,23 @@ namespace Application.Logic;
 public class ReservationLogic : IReservationsLogic
 {
     private readonly IReservationsDao reservationsDao;
+    private readonly ReservationEmailService reservationEmailService;
+    private readonly IAuthDao authDao;
 
-    public ReservationLogic(IReservationsDao reservationsDao)
+    public ReservationLogic(IReservationsDao reservationsDao, ReservationEmailService reservationEmailService,   IAuthDao authDao)
     {
         this.reservationsDao = reservationsDao;
+        this.reservationEmailService = reservationEmailService;
+        this.authDao = authDao;
     }
 
     public async Task<Reservation> AddReservationAsync(ReservationDto reservationDto)
     {
-      
+        if (reservationDto == null)
+        {
+            throw new ArgumentException("Reservation details cannot be null.");
+        }
+
         var reservation = new Reservation
         {
             GuestName = reservationDto.GuestName,
@@ -102,5 +111,59 @@ public class ReservationLogic : IReservationsLogic
         }
         return reservations;
     }
+    
+    public async Task<ReservationNotificationDto> CreateReservationNotificationDto(Reservation reservation)
+    {
+        if (reservation == null)
+        {
+            throw new Exception("Reservation cannot be null.");
+        }
+        
+        return await reservationsDao.CreateReservationNotificationDto(reservation);
+    }
+    
+    public async Task<string> SendReservationConfirmationEmailsAsync(ReservationNotificationDto notification)
+    {
+        if (notification == null)
+        {
+            throw new Exception("Notification details cannot be null.");
+        }
+        
+        await reservationEmailService.SendReservationConfirmationEmailToGuestAsync(notification);
+        await reservationEmailService.SendReservationConfirmationEmailToRestaurantOwnerAsync(notification);
+
+        return "Reservation confirmation emails sent successfully to guest and restaurant owner.";
+    }
+
+    public async Task<string> SendReservationUpdateEmailAsync(Reservation reservation)
+    {
+        if (reservation == null)
+        {
+            throw new Exception("Reservation details cannot be null.");
+        }
+
+        var notification = await CreateReservationNotificationDto(reservation);
+        
+        await reservationEmailService.SendReservationUpdateEmailToGuestAsync(notification);
+        await reservationEmailService.SendReservationUpdateEmailToRestaurantOwnerAsync(notification);
+        
+        return "Reservation update emails attempt completed for guest and restaurant owner.";
+    }
+
+    public async Task<string> SendReservationDeletionEmailAsync(Reservation reservation)
+    {
+        if (reservation == null)
+        {
+            throw new Exception("Reservation details cannot be null.");
+        }
+
+        var notification = await CreateReservationNotificationDto(reservation);
+     
+        await reservationEmailService.SendReservationDeletionEmailToGuestAsync(notification);
+        await reservationEmailService.SendReservationDeletionEmailToRestaurantOwnerAsync(notification);
+     
+        return "Reservation deletion emails attempt completed for guest and restaurant owner.";
+    }
+
 }
 
