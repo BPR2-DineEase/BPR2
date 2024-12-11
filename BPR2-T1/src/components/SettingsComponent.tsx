@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Input } from "./ui/input";
-import { Restaurant, RestaurantData } from "@/types/types";
+import { RestaurantData } from "@/types/types";
 import {
   deleteImageByImageId,
   fetchRestaurant,
@@ -320,10 +320,10 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
 
   if (!restaurant) {
     return (
-        <div className="flex justify-center items-center h-screen">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-500"></div>
-          <span className="ml-3 text-lg">Loading...</span>
-        </div>
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-500"></div>
+        <span className="ml-3 text-lg">Loading...</span>
+      </div>
     );
   }
 
@@ -530,16 +530,11 @@ export const SettingsComponent: React.FC<{ restaurantId: number }> = ({
                         />
                         <Button
                           onClick={() => {
-                            const imageId = extractImageId(
-                              restaurantId,
-                              url,
-                              "menu"
+                            extractImageId(restaurantId, url, "menu");
+
+                            setMenuItemsUrl((prev) =>
+                              prev.filter((_, i) => i !== index)
                             );
-                            if (imageId) {
-                              setMenuItemsUrl((prev) =>
-                                prev.filter((_, i) => i !== index)
-                              );
-                            }
                           }}
                           className="absolute top-2 right-2 size-6 max-w-12 bg-red-500 text-white"
                         >

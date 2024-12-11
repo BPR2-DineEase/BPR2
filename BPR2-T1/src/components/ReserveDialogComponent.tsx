@@ -29,7 +29,7 @@ export function ReserveDialogComponent({
   const [date, setDate] = useState<string>("");
   const [comments, setComments] = useState<string>("");
   const [numOfPeople, setNumOfPeople] = useState<number>(0);
-  const [company, setCompany] = useState<string>("");
+  const [company] = useState<string>("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +37,7 @@ export function ReserveDialogComponent({
     try {
       const user = await getUserByEmail(email);
       const userId = user.id;
-      const response = await postReservation({
+      await postReservation({
         guestName,
         phoneNumber,
         email,
@@ -49,7 +49,7 @@ export function ReserveDialogComponent({
         company,
         userId,
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Api error: ", error);
     }
 
