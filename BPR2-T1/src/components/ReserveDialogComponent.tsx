@@ -49,8 +49,6 @@ export function ReserveDialogComponent({
         company,
         userId,
       });
-
-      console.log("Reservation Created : ",  response);
     } catch (error: any) {
       console.error("Api error: ", error);
     }
