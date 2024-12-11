@@ -30,7 +30,7 @@ const UserReservations: React.FC = () => {
                 const data = await fetchUserReservations(userId);
                 const formattedData = data.map((reservation: ReservationData) => ({
                     ...reservation,
-                    date: new Date(reservation.date), 
+                    date: new Date(reservation.date).toISOString(),
                 }));
                 setReservations(formattedData);
             } catch (err) {
@@ -52,7 +52,7 @@ const UserReservations: React.FC = () => {
         toast({
             title: "Reservation Updated",
             description: "Your reservation has been successfully updated.",
-            duration: 3000, 
+            duration: 3000,
         });
     };
 

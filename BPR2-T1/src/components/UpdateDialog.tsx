@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea"; 
+import { Textarea } from "@/components/ui/textarea";
 import { updateReservation } from "@/api/ReservationApi";
 import { ReservationData, ReservationPayload } from "@/types/types";
 
@@ -15,7 +15,7 @@ interface UpdateDialogProps {
 
 const UpdateDialog: React.FC<UpdateDialogProps> = ({ isOpen, onClose, reservation, onUpdateSuccess }) => {
     const [formData, setFormData] = useState({
-        date: reservation.date.toISOString().split("T")[0], 
+        date: reservation.date.toString().split("T")[0],
         time: reservation.time,
         numOfPeople: reservation.numOfPeople.toString(),
         comments: reservation.comments,
@@ -33,7 +33,7 @@ const UpdateDialog: React.FC<UpdateDialogProps> = ({ isOpen, onClose, reservatio
             const updatedData: ReservationPayload = {
                 id: reservation.id,
                 guestName: reservation.guestName,
-                comments: formData.comments, 
+                comments: formData.comments,
                 phoneNumber: reservation.phoneNumber,
                 email: reservation.email,
                 company: reservation.company,
@@ -44,9 +44,9 @@ const UpdateDialog: React.FC<UpdateDialogProps> = ({ isOpen, onClose, reservatio
                 restaurantId: reservation.restaurantId,
                 restaurant: reservation.restaurant,
             };
-            
+
             await updateReservation(reservation.id!.toString(), updatedData);
-            const updatedReservation = { ...reservation, ...updatedData, date: new Date(updatedData.date) };
+            const updatedReservation = { ...reservation, ...updatedData, date: new Date(updatedData.date).toISOString() };
             onUpdateSuccess(updatedReservation);
             onClose();
         } catch (error) {

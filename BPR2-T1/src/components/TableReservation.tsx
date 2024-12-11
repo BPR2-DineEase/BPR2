@@ -3,15 +3,25 @@ import { format, isBefore, startOfDay } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover";
-import {Card, CardContent, CardFooter, CardHeader, CardTitle,} from "@/components/ui/card";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import ReservationProccess from "./ReservationProccess";
 import { postReservation } from "@/api/ReservationApi";
-import {useAuth} from "@/context/AuthContext.tsx";
-import {cn} from "@/lib/utils.ts";
-import {useNavigate, useSearchParams} from "react-router-dom";
+import { useAuth } from "@/context/AuthContext.tsx";
+import { cn } from "@/lib/utils.ts";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const TableReservation = () => {
   const [comments, setComment] = React.useState<string>("");
@@ -31,7 +41,6 @@ const TableReservation = () => {
   const restaurantId = Number(searchParams.get("restaurantId"));
   const navigate = useNavigate();
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -43,24 +52,24 @@ const TableReservation = () => {
     }
 
     const userId = user.userId;
+    const dateString = date.toString();
 
     try {
       await postReservation({
-        
         guestName,
         phoneNumber,
         email,
         company,
-        comments, 
-        date, 
-        time, 
-        numOfPeople, 
+        comments,
+        date: dateString,
+        time,
+        numOfPeople,
         userId,
         restaurantId,
       });
 
       alert("Reservation created successfully");
-      
+
       navigate("/user-reservations", { state: { userId } });
     } catch (err) {
       console.error("Failed to create Reservation.", err);
@@ -76,7 +85,6 @@ const TableReservation = () => {
     setPhoneNumber("");
   };
 
-  
   const handleDateChange = (selectedDate: Date | undefined) => {
     if (selectedDate && !isBefore(selectedDate, today)) {
       setDate(selectedDate);
@@ -173,9 +181,7 @@ const TableReservation = () => {
                         id="PhoneNumber"
                         value={phoneNumber}
                         required
-                        onChange={(e) =>
-                          setPhoneNumber(e.target.value)
-                        }
+                        onChange={(e) => setPhoneNumber(e.target.value)}
                         type="number"
                         placeholder="Enter your phone number"
                       />
