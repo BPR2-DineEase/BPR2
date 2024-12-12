@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { fetchUserReservations } from "@/api/ReservationApi";
-// import { useLocation } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import UpdateDialog from "@/components/UpdateDialog";
@@ -8,16 +7,17 @@ import CancelDialog from "@/components/CancelDialog";
 import { ReservationData } from "@/types/types";
 import { toast } from "@/hooks/use-toast.ts";
 
-const UserReservations: React.FC = ({ userId }) => {
+interface UserReservationsProps {
+  userId: string | undefined;
+}
+
+const UserReservations: React.FC<UserReservationsProps> = ({ userId }) => {
   const [reservations, setReservations] = useState<ReservationData[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedReservation, setSelectedReservation] =
     useState<ReservationData | null>(null);
   const [isUpdateDialogOpen, setUpdateDialogOpen] = useState(false);
   const [isCancelDialogOpen, setCancelDialogOpen] = useState(false);
-
-  // const location = useLocation();
-  // const userId = location.state?.userId;
 
   useEffect(() => {
     const fetchReservations = async () => {

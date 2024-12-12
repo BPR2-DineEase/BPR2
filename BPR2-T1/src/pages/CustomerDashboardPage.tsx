@@ -43,6 +43,7 @@ const CustomerDashboardPage: React.FC = () => {
   }, [activeView]);
 
   const handleSearchResults = (searchResults: Restaurant[]) => {
+    console.log(restaurants)
     setRestaurants(searchResults);
     navigate("/results", { state: { restaurants: searchResults } });
     console.log("Search Results:", searchResults);

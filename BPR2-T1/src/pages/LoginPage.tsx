@@ -17,7 +17,7 @@ import { saveToken } from "@/services/jwtService.ts";
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { setAuth , user } = useAuth();
+  const { setAuth  } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
