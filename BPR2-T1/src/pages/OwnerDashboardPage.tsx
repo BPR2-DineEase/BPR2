@@ -23,7 +23,11 @@ import { ReserveDialogComponent } from "@/components/ReserveDialogComponent";
 
 const OwnerDashboard: React.FC = () => {
   const [activeView, setActiveView] = useState<
-    "RESERVATION SCHEDULE" | "HISTORY" | "SETTINGS" | "LOGOUT"
+    | "RESERVATION SCHEDULE"
+    | "HISTORY"
+    | "SETTINGS"
+    | "LOGOUT"
+    | "MY RESERVATIONS"
   >("RESERVATION SCHEDULE");
   const [userDetails, setUserDetails] = useState<any>(null);
   const [activeRestaurant, setActiveRestaurant] = useState<any>(null);

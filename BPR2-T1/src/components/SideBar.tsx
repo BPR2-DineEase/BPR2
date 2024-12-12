@@ -6,7 +6,12 @@ import restaurantLogo from "../../public/restaurantLogo.png";
 
 interface SideBarProps {
   onNavigate: (
-    view: "RESERVATION SCHEDULE" | "HISTORY" | "SETTINGS" | "LOGOUT"
+    view:
+      | "RESERVATION SCHEDULE"
+      | "HISTORY"
+      | "SETTINGS"
+      | "LOGOUT"
+      | "MY RESERVATIONS"
   ) => void;
   role: "RestaurantOwner" | "Customer";
 }
@@ -23,6 +28,19 @@ const SideBar: React.FC<SideBarProps> = ({ onNavigate, role }) => {
           <div className="flex flex-col mt-44 ml-14">
             {role === "Customer" && (
               <>
+                <div
+                  onClick={() => onNavigate("MY RESERVATIONS")}
+                  className="flex items-center space-x-6 rounded-xl p-2 cursor-pointer hover:bg-blue-200 transform transition duration-300"
+                >
+                  <img
+                    src={dashboard}
+                    alt="Dashboard Logo"
+                    className="max-h-6 ml-1 my-[5px]"
+                  />
+                  <h1 className="text-xl text-blue-400 font-semibold ">
+                    My Reservations
+                  </h1>
+                </div>
                 <div
                   onClick={() => onNavigate("HISTORY")}
                   className="flex mt-4 items-center space-x-6 rounded-xl p-2 cursor-pointer hover:bg-blue-200 transform transition duration-300"

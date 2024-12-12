@@ -6,13 +6,18 @@ import Navbar from "@/components/Navbar";
 import SideBar from "@/components/SideBar";
 import { useAuth } from "@/context/AuthContext";
 import { removeToken } from "@/services/jwtService";
+import UserReservations from "./UserReservationsPage";
 
 type Props = {};
 
 const CustomerDashboardPage: React.FC<Props> = () => {
   const [activeView, setActiveView] = useState<
-    "RESERVATION SCHEDULE" | "HISTORY" | "SETTINGS" | "LOGOUT"
-  >("HISTORY");
+    | "RESERVATION SCHEDULE"
+    | "HISTORY"
+    | "SETTINGS"
+    | "LOGOUT"
+    | "MY RESERVATIONS"
+  >("MY RESERVATIONS");
 
   const [activeRestaurant, setActiveRestaurant] = useState<any>(null);
   const [userDetails, setUserDetails] = useState<any>(null);
@@ -87,6 +92,12 @@ const CustomerDashboardPage: React.FC<Props> = () => {
           {activeView === "HISTORY" && activeRestaurant && (
             <HistoryComponent restaurantId={activeRestaurant.id} />
           )}
+        </div>
+
+        <div className="flex-1 p-8">
+          {
+            activeView === "MY RESERVATIONS" && ( <UserReservations userId = {user.userId} />)
+          }
         </div>
       </div>
     </div>
