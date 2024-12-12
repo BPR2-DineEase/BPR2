@@ -114,7 +114,11 @@ export const deleteImageByImageId = async (imageId: string): Promise<any> => {
 };
 
 /*
-export const uploadImage = async (data: FormData): Promise<any> => {
+export const uploadImage = async (
+  restaurantId: number,
+  type: string,
+  data: FormData
+): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `/RestaurantCreation/uploadImage?restaurantId=${restaurantId}&type=${type}`,

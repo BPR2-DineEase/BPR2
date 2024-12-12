@@ -70,7 +70,7 @@ const TableReservation = () => {
 
       alert("Reservation created successfully");
 
-      navigate("/user-reservations", { state: { userId } });
+      navigate("/dashboard");
     } catch (err) {
       console.error("Failed to create Reservation.", err);
     }

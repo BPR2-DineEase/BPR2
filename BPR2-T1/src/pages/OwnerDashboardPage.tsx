@@ -28,6 +28,8 @@ const OwnerDashboard: React.FC = () => {
     | "SETTINGS"
     | "LOGOUT"
     | "MY RESERVATIONS"
+    | "PROFILE"
+    | "SEARCH FOR RESTAURANT"
   >("RESERVATION SCHEDULE");
   const [userDetails, setUserDetails] = useState<any>(null);
   const [activeRestaurant, setActiveRestaurant] = useState<any>(null);
@@ -35,6 +37,16 @@ const OwnerDashboard: React.FC = () => {
   const [date, setDate] = useState<Date>();
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    checkUserLoggedIn();
+  }, []);
+
+  useEffect(() => {
+    if (activeView === "LOGOUT") {
+      handleLogout();
+    }
+  }, [activeView]);
 
   const today = startOfDay(new Date());
 
@@ -85,17 +97,11 @@ const OwnerDashboard: React.FC = () => {
     return null;
   }
 
-  useEffect(() => {
-    checkUserLoggedIn();
-  }, []);
+  if (!activeRestaurant) {
+    navigate("/create-restaurant");
+  }
 
-  useEffect(() => {
-    if (activeView === "LOGOUT") {
-      handleLogout();
-    }
-  }, [activeView]);
-
-  if (!userDetails || !activeRestaurant) {
+  if (!userDetails) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-500"></div>
@@ -107,7 +113,11 @@ const OwnerDashboard: React.FC = () => {
   return (
     <div className="flex min-h-screen">
       <div className="w-[300px] bg-gray-50">
-        <SideBar onNavigate={setActiveView} role="RestaurantOwner" />
+        <SideBar
+          onNavigate={setActiveView}
+          restaurantId={activeRestaurant.id}
+          role="RestaurantOwner"
+        />
       </div>
 
       <div className="flex-1 flex flex-col">

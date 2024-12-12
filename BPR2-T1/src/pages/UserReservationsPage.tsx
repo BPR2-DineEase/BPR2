@@ -8,7 +8,6 @@ import CancelDialog from "@/components/CancelDialog";
 import { ReservationData } from "@/types/types";
 import { toast } from "@/hooks/use-toast.ts";
 
-
 const UserReservations: React.FC = ({ userId }) => {
   const [reservations, setReservations] = useState<ReservationData[]>([]);
   const [loading, setLoading] = useState(true);

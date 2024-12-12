@@ -61,7 +61,7 @@ const CreateRestaurantPage: React.FC = () => {
             if (user?.id) {
                 await addRestaurantToUser({ userId: user.id, restaurantId });
                 setMessage("Restaurant added to user successfully!");
-                navigate(`/restaurants/${restaurantId}`);
+                navigate("/dashboard");
             } else {
                 throw new Error("Failed to fetch user details.");
             }
