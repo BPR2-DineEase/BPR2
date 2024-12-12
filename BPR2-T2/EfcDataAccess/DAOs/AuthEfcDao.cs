@@ -73,20 +73,5 @@ public class AuthEfcDao : IAuthDao
         return findUser;
     }
     
-    public async Task UpdateUserProfileAsync(UpdateUserProfileDto updateUserProfileDto)
-    {
-        var user = await _context.Users.FindAsync(updateUserProfileDto.Id);
-        if (user == null)
-        {
-            throw new Exception("User not found.");
-        }
-        
-        user.FirstName = updateUserProfileDto.FirstName;
-        user.LastName = updateUserProfileDto.LastName;
-        user.Email = updateUserProfileDto.Email;
-        
-        _context.Users.Update(user);
-        await _context.SaveChangesAsync();
-    }
     
 }

@@ -39,7 +39,7 @@ public class AuthLogic : IAuthLogic
             throw new Exception("User not found");
         }
 
-        if (!existingUser.Password.Equals(password))
+        if (!BCrypt.Net.BCrypt.Verify(password, existingUser.PasswordHash))
         {
             throw new Exception("Password incorrect");
         }
@@ -54,12 +54,14 @@ public class AuthLogic : IAuthLogic
         {
             throw new ValidationException($"User with email {userRegisterDto.Email} already exists.");
         }
-
+        
+        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(userRegisterDto.Password);
+        
         var user = new User
         {
             Id = userRegisterDto.Id,
             Email = userRegisterDto.Email,
-            Password = userRegisterDto.Password,
+            PasswordHash = hashedPassword,
             FirstName = userRegisterDto.FirstName,
             LastName = userRegisterDto.LastName,
             Role = userRegisterDto.Role
@@ -138,9 +140,10 @@ public class AuthLogic : IAuthLogic
             throw new Exception("Invalid or expired token");
         }
 
-        user.Password = resetDto.NewPassword;
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(resetDto.NewPassword);
         user.ResetOtp = null;
         user.OtpExpiry = null;
+        
         await authDao.UpdateUserAsync(user);
     }
 

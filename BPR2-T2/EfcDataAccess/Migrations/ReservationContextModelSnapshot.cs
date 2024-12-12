@@ -208,7 +208,7 @@ namespace EfcDataAccess.Migrations
                     b.Property<DateTime?>("OtpExpiry")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

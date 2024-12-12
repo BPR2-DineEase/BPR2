@@ -32,7 +32,7 @@ public class AuthController : ControllerBase
             {
                 Id = userRegisterDto.Id,
                 Email = userRegisterDto.Email,
-                Password = userRegisterDto.Password,
+                PasswordHash = userRegisterDto.Password,
                 FirstName = userRegisterDto.FirstName,
                 LastName = userRegisterDto.LastName,
                 Role = userRegisterDto.Role
