@@ -34,7 +34,14 @@ const RequestResetOtp: React.FC = () => {
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-100">
+        <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
+            <div className="relative mb-6 w-80 text-center">
+                <img
+                    src="/DineEaseLogo.png"
+                    alt="Logo"
+                    className="w-full h-auto rounded-lg"
+                />
+            </div>
             <form onSubmit={handleRequest} className="space-y-4 p-6 bg-white rounded shadow-md w-96">
                 <h1 className="text-xl font-semibold text-center">Request Password Reset</h1>
                 <div>
