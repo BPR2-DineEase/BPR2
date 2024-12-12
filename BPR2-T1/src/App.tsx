@@ -11,7 +11,6 @@ import CreateRestaurant from "@/pages/CreateRestaurantPage";
 import ResetPassword from "@/pages/ResetPasswordPage";
 import RequestResetOtp from "@/pages/ResetOtpPage";
 import OwnerDashboard from "./pages/OwnerDashboardPage";
-import UserReservations from "@/pages/UserReservationsPage";
 import { Toaster } from "@/components/ui/toaster.tsx";
 import RestaurantProfile from "@/pages/RestaurantProfilePage";
 import { useAuth } from "./context/AuthContext";
@@ -29,7 +28,6 @@ const App: React.FC = () => {
           <Route path="/create-restaurant" element={<CreateRestaurant />} />
           <Route path="/request-reset-otp" element={<RequestResetOtp />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/user-reservations" element={<UserReservations />} />
           <Route path="/restaurants/:id" element={<RestaurantProfile />} />
           <Route
             path="/"
