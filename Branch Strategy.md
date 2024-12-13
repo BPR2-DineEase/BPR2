@@ -2,8 +2,7 @@
  
 ## Branch Strategy 
 * **Main branch**: (Production), all developers must approve the pull request to merge the changes to main branch
-* **Test branch**: before merging to main on this branch the product must be tested thoroughly.
-* **Dev branch**: at least one developer must approve the pull request to merge the changes to main branch.
+* **Dev branch**: at least one developer must approve to merge the changes to main branch.
 * **Feature branch**: any developer can create a feature branch from the dev branch.
 	* Naming convention - feature_[feature-name]
 	* Example - fix_reservation_tier3
@@ -11,8 +10,7 @@
 	* Naming convention - Bug_[short-bug-description]
 	* Example - Bug_login-not-working
 
-> Use all lowercase characters
->  Use "-" for space
+
 > First letter of the branch type must be uppercase 
 > Use the character "_" for space between branch type and branch name
 > Avoid long and descriptive names 
@@ -22,13 +20,13 @@ Feature -> Dev -> Main
 
 Feature -> Bug -> Feature
 
-Dev, Test, Main -> Bug -> Test
+Dev, Main -> Bug -> Dev
 
 ## Commit message strategy 
 > Always use git cli
 > Use Commitlint
 > Avoid big commits such as where you commit a whole feature, rather instead brake the feature down to smaller more understandable pieces and make commits out of them.
-> Use all lowercase text
+> Use all lowercase text if possible
 
 Commit types:
 -   build
