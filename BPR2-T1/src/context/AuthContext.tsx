@@ -24,7 +24,7 @@ export const extractClaim = (decoded: any, claimType: string): string => {
     id: "id",
   };
 
-  const key = claimMapping[claimType];
+  const key = claimMapping[claimType];  
   return key && decoded[key] ? decoded[key] : "";
 };
 

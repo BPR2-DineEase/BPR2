@@ -87,16 +87,6 @@ const Scheduler: React.FC<SchedulerProps> = ({
       return;
     }
 
-    const adjustedDate = new Date(selectedDate);
-    adjustedDate.setDate(adjustedDate.getDate() + 1);
-
-    const dateString = adjustedDate.toISOString().split("T")[0];
-    console.log(dateString);
-
-    const filteredReservations = (
-      restaurant.reservations?.$values || []
-    ).filter((reservation) => reservation.date.startsWith(dateString));
-
     const parseTime = (time: string) => {
       const [timePart, period] = time.split(" ");
       const [hours, minutes] = timePart.split(":").map(Number);
@@ -113,21 +103,28 @@ const Scheduler: React.FC<SchedulerProps> = ({
       );
     };
 
+    const adjustedDate = new Date(selectedDate);
+    adjustedDate.setDate(adjustedDate.getDate() + 1);
+    const selectedDateString = adjustedDate.toISOString().split("T")[0];
+
     const updatedSchedules = staticTimeSlots.map((timeSlot) => {
       const [start, end] = timeSlot.split(" - ").map(parseTime);
 
-      const matchingReservations = filteredReservations.filter(
-        (reservation) => {
-          const reservationTime = parseTime(
-            new Date(reservation.date).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            })
-          );
-          return reservationTime >= start && reservationTime < end;
+      const matchingReservations = (
+        restaurant.reservations?.$values || []
+      ).filter((reservation) => {
+        const reservationDate = new Date(reservation.date);
+        const reservationDateString = reservationDate
+          .toISOString()
+          .split("T")[0];
+
+        if (reservationDateString !== selectedDateString) {
+          return false;
         }
-      );
+
+        const reservationTime = parseTime(reservation.time);
+        return reservationTime >= start && reservationTime < end;
+      });
 
       return {
         time: timeSlot,
@@ -178,7 +175,6 @@ const Scheduler: React.FC<SchedulerProps> = ({
                   <div key={idx}>
                     <div className="font-semibold mt-2">{slot.name}</div>
                     <div>People: {slot.people}</div>
-                    <div>Time: {slot.time}</div>
                   </div>
                 ))
               ) : (

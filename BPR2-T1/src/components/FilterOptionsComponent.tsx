@@ -20,7 +20,7 @@ const FilterOptionsComponent: React.FC<{
         } catch (error: any) {
             setError(error.message);
         }
-    };
+    };  
 
     return (
         <div className="w-full max-w-md mt-6">

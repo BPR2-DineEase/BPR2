@@ -21,7 +21,7 @@ const CitySearch: React.FC<{
       setError(null);
       const data = await searchRestaurantsByCity(city);
       onSearch(data);
-    } catch (error: any) {
+    } catch (error: any) {  
       setError(error.message);
     }
   };
