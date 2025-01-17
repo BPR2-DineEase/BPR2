@@ -23,40 +23,35 @@ export const extractClaim = (decoded: any, claimType: string): string => {
     email: "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
     id: "id",
   };
-
-  const key = claimMapping[claimType];  
-  return key && decoded[key] ? decoded[key] : "";
+  return decoded[claimMapping[claimType]] || "";
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [auth, setAuthState] = useState<boolean>(
-    () => !!localStorage.getItem("jwt")
-  );
+  const [auth, setAuthState] = useState<boolean>(() => !!localStorage.getItem("jwt"));
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const setAuth = (auth: boolean) => {
     if (!auth) {
       setUser(null);
       setAuthState(false);
       removeToken();
-      return;
-    }
-
-    const token = localStorage.getItem("jwt");
-    if (token) {
-      try {
-        const decoded = getDecodedToken(token);
-        const user: User = {
-          role: extractClaim(decoded, "role") as UserRole,
-          userId: extractClaim(decoded, "id"),
-        };
-
-        console.log("Decoded User:", user);
-        setUser(user);
-        setAuthState(true);
-      } catch (error) {
-        console.error("Error decoding token:", error);
-        setAuthState(false);
+    } else {
+      const token = localStorage.getItem("jwt");
+      if (token) {
+        try {
+          const decoded = getDecodedToken(token);
+          const user: User = {
+            role: extractClaim(decoded, "role") as UserRole,
+            userId: extractClaim(decoded, "id"),
+          };
+          console.log("Decoded User:", user);
+          setUser(user);
+          setAuthState(true);
+        } catch (error) {
+          console.error("Error decoding token:", error);
+          setAuthState(false);
+        }
       }
     }
   };
@@ -73,6 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         setUser(user);
         setAuthState(true);
+        setAuth(true);
       } catch (error) {
         console.error("Error decoding token:", error);
         setAuthState(false);
@@ -82,7 +78,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     handleJwtFromStorage();
+    setIsLoading(false);
   }, [handleJwtFromStorage]);
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <AuthContext.Provider value={{ auth, user, setAuth }}>

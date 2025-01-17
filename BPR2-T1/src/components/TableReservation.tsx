@@ -52,7 +52,8 @@ const TableReservation = () => {
     }
 
     const userId = user.userId;
-    const dateString = date.toISOString();
+    const adjustedDate = new Date(date.getTime() + 24 * 60 * 60 * 1000);
+    const dateString = adjustedDate.toISOString();
 
     try {
       await postReservation({
